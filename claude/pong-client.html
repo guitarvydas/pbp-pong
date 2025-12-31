@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game - Client Display</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #1a1a1a;
+      font-family: 'Courier New', monospace;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .info {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .status {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+    }
+
+    .connected {
+      color: #0f0;
+    }
+
+    .disconnected {
+      color: #f00;
+    }
+
+    #gameCanvas {
+      border: 2px solid #fff;
+      background-color: #000;
+      display: block;
+    }
+
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 40px;
+      border: 3px solid #fff;
+      text-align: center;
+      display: none;
+    }
+
+    .game-over h2 {
+      font-size: 48px;
+      margin: 0 0 20px 0;
+      color: #0f0;
+    }
+
+    .game-over .score {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .game-over .winner {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ff0;
+    }
+
+    .game-over .instructions {
+      font-size: 18px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body tabindex="0">
+  <h1>Pong Game - Client Display</h1>
+  
+  <div class="info">
+    <div class="status">
+      Status: <span id="status" class="disconnected">Disconnected</span>
+    </div>
+    <div id="score">Score: Left 0 - Right 0</div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="game-over" id="gameOver">
+    <h2>GAME OVER</h2>
+    <div class="winner" id="winner"></div>
+    <div class="score" id="finalScore"></div>
+    <div class="instructions">Press R to play again</div>
+  </div>
+
+  <div class="controls">
+    <strong>Controls:</strong><br>
+    Left Paddle: W (up), S (down)<br>
+    Right Paddle: ↑ (up), ↓ (down)<br>
+    Reset Game: R (when game over)
+  </div>
+
+  <script>
+    // CLIENT IS A DISPLAY PART - MAINTAINS LOCAL STATE ONLY
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const scoreEl = document.getElementById('score');
+    const gameOverEl = document.getElementById('gameOver');
+    const winnerEl = document.getElementById('winner');
+    const finalScoreEl = document.getElementById('finalScore');
+
+    let ws = null;
+    
+    // Client's local state (updated only by server commands)
+    let clientState = {
+      ball: { x: 0, y: 0 },
+      leftPaddle: { x: 0, y: 0 },
+      rightPaddle: { x: 0, y: 0 },
+      score: { left: 0, right: 0 },
+      gameOver: false,
+      winner: null,
+      // Game dimensions (from secondary API)
+      gameWidth: 0,
+      gameHeight: 0,
+      paddleWidth: 0,
+      paddleHeight: 0,
+      ballSize: 0
+    };
+
+    // Connect to WebSocket server
+    function connect() {
+      ws = new WebSocket('ws://localhost:8080');
+
+      ws.onopen = () => {
+        console.log('Connected to server');
+        statusEl.textContent = 'Connected';
+        statusEl.className = 'connected';
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          handleServerMessage(message);
+        } catch (e) {
+          console.error('Error parsing message:', e);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected from server');
+        statusEl.textContent = 'Disconnected';
+        statusEl.className = 'disconnected';
+        // Attempt to reconnect after 2 seconds
+        setTimeout(connect, 2000);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    }
+
+    // Handle incoming messages from server (PRIMARY INPUT API)
+    function handleServerMessage(message) {
+      switch(message.type) {
+        case 'init':
+          // Secondary API - initialization
+          clientState.gameWidth = message.gameWidth;
+          clientState.gameHeight = message.gameHeight;
+          clientState.paddleWidth = message.paddleWidth;
+          clientState.paddleHeight = message.paddleHeight;
+          clientState.ballSize = message.ballSize;
+          
+          // Set canvas size
+          canvas.width = message.gameWidth;
+          canvas.height = message.gameHeight;
+          
+          console.log('Game initialized:', message);
+          break;
+          
+        case 'ball_position':
+          // Update ball position in client state
+          clientState.ball.x = message.x;
+          clientState.ball.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'left_paddle_position':
+          // Update left paddle position in client state
+          clientState.leftPaddle.x = message.x;
+          clientState.leftPaddle.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'right_paddle_position':
+          // Update right paddle position in client state
+          clientState.rightPaddle.x = message.x;
+          clientState.rightPaddle.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'score_update':
+          // Update score in client state
+          clientState.score.left = message.left;
+          clientState.score.right = message.right;
+          // Update display
+          scoreEl.textContent = `Score: Left ${message.left} - Right ${message.right}`;
+          break;
+          
+        case 'game_over':
+          // Update game over state
+          clientState.gameOver = message.gameOver;
+          clientState.winner = message.winner;
+          
+          if (message.gameOver) {
+            // Show game over screen
+            winnerEl.textContent = message.winner.toUpperCase() + ' PLAYER WINS!';
+            finalScoreEl.textContent = `Final Score: Left ${clientState.score.left} - Right ${clientState.score.right}`;
+            gameOverEl.style.display = 'block';
+          } else {
+            // Hide game over screen
+            gameOverEl.style.display = 'none';
+          }
+          break;
+      }
+    }
+
+    // Send paddle command to server (CLIENT OUTPUT API)
+    function sendPaddleCommand(command) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'paddle_command',
+          command: command
+        }));
+      }
+    }
+
+    // Send reset game command
+    function sendResetGame() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'reset_game'
+        }));
+      }
+    }
+
+    // Keyboard event handlers (CLIENT OUTPUT API)
+    const keys = {};
+
+    document.addEventListener('keydown', (e) => {
+      keys[e.key] = true;
+      
+      // Send discrete step commands to server
+      if (e.key === 'w' || e.key === 'W') {
+        sendPaddleCommand('left_paddle_up');
+      } else if (e.key === 's' || e.key === 'S') {
+        sendPaddleCommand('left_paddle_down');
+      } else if (e.key === 'ArrowUp') {
+        sendPaddleCommand('right_paddle_up');
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        sendPaddleCommand('right_paddle_down');
+        e.preventDefault();
+      } else if ((e.key === 'r' || e.key === 'R') && clientState.gameOver) {
+        sendResetGame();
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keys[e.key] = false;
+    });
+
+    // Render function - CLIENT DISPLAY FUNCTION
+    function render() {
+      // Clear canvas (erase)
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, clientState.gameWidth, clientState.gameHeight);
+
+      // Draw center line
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(clientState.gameWidth / 2, 0);
+      ctx.lineTo(clientState.gameWidth / 2, clientState.gameHeight);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw left paddle at current state
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(
+        clientState.leftPaddle.x,
+        clientState.leftPaddle.y,
+        clientState.paddleWidth,
+        clientState.paddleHeight
+      );
+
+      // Draw right paddle at current state
+      ctx.fillRect(
+        clientState.rightPaddle.x,
+        clientState.rightPaddle.y,
+        clientState.paddleWidth,
+        clientState.paddleHeight
+      );
+
+      // Draw ball at current state
+      ctx.fillRect(
+        clientState.ball.x,
+        clientState.ball.y,
+        clientState.ballSize,
+        clientState.ballSize
+      );
+    }
+
+    // Auto-focus on page load
+    window.onload = () => {
+      document.body.focus();
+      connect();
+    };
+
+    // Click to focus
+    document.body.addEventListener('click', () => {
+      document.body.focus();
+    });
+  </script>
+</body>
+</html>
