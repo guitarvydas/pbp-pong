@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game - MVC with WebSocket</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #1a1a1a;
+      font-family: 'Courier New', monospace;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .info {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .status {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+    }
+
+    .connected {
+      color: #0f0;
+    }
+
+    .disconnected {
+      color: #f00;
+    }
+
+    #gameCanvas {
+      border: 2px solid #fff;
+      background-color: #000;
+    }
+
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .score {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pong - MVC Architecture</h1>
+  <div class="info">
+    <div>Model (Server) ↔ WebSocket ↔ View + Controller (Browser)</div>
+  </div>
+  
+  <div class="status" id="status">
+    <span class="disconnected">Disconnected from server</span>
+  </div>
+
+  <div class="score" id="score">0 - 0</div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="controls">
+    <div><strong>Controls:</strong></div>
+    <div>Left Paddle: W (up), S (down)</div>
+    <div>Right Paddle: ↑ (up), ↓ (down)</div>
+  </div>
+
+  <script>
+    // VIEW: Canvas rendering
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const scoreEl = document.getElementById('score');
+
+    // CONTROLLER: Keyboard state
+    const controls = {
+      leftUp: false,
+      leftDown: false,
+      rightUp: false,
+      rightDown: false
+    };
+
+    // WebSocket connection to MODEL
+    let ws = null;
+    let gameState = null;
+
+    function connect() {
+      ws = new WebSocket('ws://localhost:8080');
+
+      ws.onopen = () => {
+        console.log('Connected to game server');
+        statusEl.innerHTML = '<span class="connected">Connected to server</span>';
+      };
+
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        
+        if (message.type === 'state') {
+          gameState = message.data;
+          
+          // Initialize canvas size if needed
+          if (canvas.width !== gameState.gameWidth) {
+            canvas.width = gameState.gameWidth;
+            canvas.height = gameState.gameHeight;
+          }
+          
+          // Render the game state (VIEW)
+          render();
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected from server');
+        statusEl.innerHTML = '<span class="disconnected">Disconnected from server - Reconnecting...</span>';
+        
+        // Attempt to reconnect after 2 seconds
+        setTimeout(connect, 2000);
+      };
+    }
+
+    // VIEW: Render function
+    function render() {
+      if (!gameState) return;
+
+      // Clear canvas
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw center line
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw left paddle
+      ctx.fillStyle = '#0f0';
+      ctx.fillRect(
+        gameState.leftPaddle.x,
+        gameState.leftPaddle.y,
+        gameState.paddleWidth,
+        gameState.leftPaddle.height
+      );
+
+      // Draw right paddle
+      ctx.fillStyle = '#0ff';
+      ctx.fillRect(
+        gameState.rightPaddle.x,
+        gameState.rightPaddle.y,
+        gameState.paddleWidth,
+        gameState.rightPaddle.height
+      );
+
+      // Draw ball
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(
+        gameState.ball.x,
+        gameState.ball.y,
+        gameState.ballSize,
+        gameState.ballSize
+      );
+
+      // Update score display
+      scoreEl.textContent = `${gameState.score.left} - ${gameState.score.right}`;
+    }
+
+    // CONTROLLER: Keyboard input handling
+    document.addEventListener('keydown', (e) => {
+      let updated = false;
+
+      switch(e.key) {
+        case 'w':
+        case 'W':
+          if (!controls.leftUp) {
+            controls.leftUp = true;
+            updated = true;
+          }
+          break;
+        case 's':
+        case 'S':
+          if (!controls.leftDown) {
+            controls.leftDown = true;
+            updated = true;
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (!controls.rightUp) {
+            controls.rightUp = true;
+            updated = true;
+          }
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          if (!controls.rightDown) {
+            controls.rightDown = true;
+            updated = true;
+          }
+          break;
+      }
+
+      // Send controller state to MODEL
+      if (updated && ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'controls',
+          data: controls
+        }));
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      let updated = false;
+
+      switch(e.key) {
+        case 'w':
+        case 'W':
+          if (controls.leftUp) {
+            controls.leftUp = false;
+            updated = true;
+          }
+          break;
+        case 's':
+        case 'S':
+          if (controls.leftDown) {
+            controls.leftDown = false;
+            updated = true;
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (controls.rightUp) {
+            controls.rightUp = false;
+            updated = true;
+          }
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          if (controls.rightDown) {
+            controls.rightDown = false;
+            updated = true;
+          }
+          break;
+      }
+
+      // Send controller state to MODEL
+      if (updated && ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'controls',
+          data: controls
+        }));
+      }
+    });
+
+    // Initialize connection
+    connect();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+I want to write a Pong-like game that works on an MVC basis. The view is in the browser, the controller is in the browser, the model is on the command line that sends commands to the view via websockets and receives controller information via websockets.
