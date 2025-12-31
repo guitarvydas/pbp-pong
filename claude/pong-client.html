@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pong Game - MVC with WebSocket</title>
+  <title>Pong Game - Client Display</title>
   <style>
     body {
       margin: 0;
@@ -16,7 +16,6 @@
       background-color: #1a1a1a;
       font-family: 'Courier New', monospace;
       color: #fff;
-      outline: none;
     }
 
     h1 {
@@ -46,250 +45,301 @@
     #gameCanvas {
       border: 2px solid #fff;
       background-color: #000;
+      display: block;
     }
 
     .controls {
       margin-top: 20px;
       text-align: center;
-      line-height: 1.8;
+      line-height: 1.6;
     }
 
-    .score {
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 40px;
+      border: 3px solid #fff;
+      text-align: center;
+      display: none;
+    }
+
+    .game-over h2 {
       font-size: 48px;
-      font-weight: bold;
+      margin: 0 0 20px 0;
+      color: #0f0;
+    }
+
+    .game-over .score {
+      font-size: 24px;
       margin-bottom: 20px;
+    }
+
+    .game-over .winner {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ff0;
+    }
+
+    .game-over .instructions {
+      font-size: 18px;
+      color: #ccc;
     }
   </style>
 </head>
 <body tabindex="0">
-  <h1>Pong - MVC Architecture</h1>
-  <div class="info">
-    <div>Model (Server) ↔ WebSocket ↔ View + Controller (Browser)</div>
-  </div>
+  <h1>Pong Game - Client Display</h1>
   
-  <div class="status" id="status">
-    <span class="disconnected">Disconnected from server</span>
+  <div class="info">
+    <div class="status">
+      Status: <span id="status" class="disconnected">Disconnected</span>
+    </div>
+    <div id="score">Score: Left 0 - Right 0</div>
   </div>
-
-  <div class="score" id="score">0 - 0</div>
 
   <canvas id="gameCanvas"></canvas>
 
+  <div class="game-over" id="gameOver">
+    <h2>GAME OVER</h2>
+    <div class="winner" id="winner"></div>
+    <div class="score" id="finalScore"></div>
+    <div class="instructions">Press R to play again</div>
+  </div>
+
   <div class="controls">
-    <div><strong>Controls:</strong></div>
-    <div>Left Paddle: W (up), S (down)</div>
-    <div>Right Paddle: ↑ (up), ↓ (down)</div>
-    <div style="margin-top: 10px; color: #ff0;"><em>Click anywhere on the page to enable keyboard controls</em></div>
+    <strong>Controls:</strong><br>
+    Left Paddle: W (up), S (down)<br>
+    Right Paddle: ↑ (up), ↓ (down)<br>
+    Reset Game: R (when game over)
   </div>
 
   <script>
-    // Ensure page has focus for keyboard events
-    window.addEventListener('load', () => {
-      document.body.focus();
-    });
-
-    // Allow clicking anywhere to regain focus
-    document.body.addEventListener('click', () => {
-      document.body.focus();
-    });
-
-    // VIEW: Canvas rendering
+    // CLIENT IS A DISPLAY PART - MAINTAINS LOCAL STATE ONLY
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const statusEl = document.getElementById('status');
     const scoreEl = document.getElementById('score');
+    const gameOverEl = document.getElementById('gameOver');
+    const winnerEl = document.getElementById('winner');
+    const finalScoreEl = document.getElementById('finalScore');
 
-    // CONTROLLER: Keyboard state
-    const controls = {
-      leftUp: false,
-      leftDown: false,
-      rightUp: false,
-      rightDown: false
+    let ws = null;
+    
+    // Client's local state (updated only by server commands)
+    let clientState = {
+      ball: { x: 0, y: 0 },
+      leftPaddle: { x: 0, y: 0 },
+      rightPaddle: { x: 0, y: 0 },
+      score: { left: 0, right: 0 },
+      gameOver: false,
+      winner: null,
+      // Game dimensions (from secondary API)
+      gameWidth: 0,
+      gameHeight: 0,
+      paddleWidth: 0,
+      paddleHeight: 0,
+      ballSize: 0
     };
 
-    // WebSocket connection to MODEL
-    let ws = null;
-    let gameState = null;
-
+    // Connect to WebSocket server
     function connect() {
       ws = new WebSocket('ws://localhost:8080');
 
       ws.onopen = () => {
-        console.log('Connected to game server');
-        statusEl.innerHTML = '<span class="connected">Connected to server</span>';
+        console.log('Connected to server');
+        statusEl.textContent = 'Connected';
+        statusEl.className = 'connected';
       };
 
       ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        
-        if (message.type === 'state') {
-          gameState = message.data;
-          
-          // Initialize canvas size if needed
-          if (canvas.width !== gameState.gameWidth) {
-            canvas.width = gameState.gameWidth;
-            canvas.height = gameState.gameHeight;
-          }
-          
-          // Render the game state (VIEW)
-          render();
+        try {
+          const message = JSON.parse(event.data);
+          handleServerMessage(message);
+        } catch (e) {
+          console.error('Error parsing message:', e);
         }
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected from server');
+        statusEl.textContent = 'Disconnected';
+        statusEl.className = 'disconnected';
+        // Attempt to reconnect after 2 seconds
+        setTimeout(connect, 2000);
       };
 
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
-
-      ws.onclose = () => {
-        console.log('Disconnected from server');
-        statusEl.innerHTML = '<span class="disconnected">Disconnected from server - Reconnecting...</span>';
-        
-        // Attempt to reconnect after 2 seconds
-        setTimeout(connect, 2000);
-      };
     }
 
-    // VIEW: Render function
-    function render() {
-      if (!gameState) return;
+    // Handle incoming messages from server (PRIMARY INPUT API)
+    function handleServerMessage(message) {
+      switch(message.type) {
+        case 'init':
+          // Secondary API - initialization
+          clientState.gameWidth = message.gameWidth;
+          clientState.gameHeight = message.gameHeight;
+          clientState.paddleWidth = message.paddleWidth;
+          clientState.paddleHeight = message.paddleHeight;
+          clientState.ballSize = message.ballSize;
+          
+          // Set canvas size
+          canvas.width = message.gameWidth;
+          canvas.height = message.gameHeight;
+          
+          console.log('Game initialized:', message);
+          break;
+          
+        case 'ball_position':
+          // Update ball position in client state
+          clientState.ball.x = message.x;
+          clientState.ball.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'left_paddle_position':
+          // Update left paddle position in client state
+          clientState.leftPaddle.x = message.x;
+          clientState.leftPaddle.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'right_paddle_position':
+          // Update right paddle position in client state
+          clientState.rightPaddle.x = message.x;
+          clientState.rightPaddle.y = message.y;
+          // Erase and redraw
+          render();
+          break;
+          
+        case 'score_update':
+          // Update score in client state
+          clientState.score.left = message.left;
+          clientState.score.right = message.right;
+          // Update display
+          scoreEl.textContent = `Score: Left ${message.left} - Right ${message.right}`;
+          break;
+          
+        case 'game_over':
+          // Update game over state
+          clientState.gameOver = message.gameOver;
+          clientState.winner = message.winner;
+          
+          if (message.gameOver) {
+            // Show game over screen
+            winnerEl.textContent = message.winner.toUpperCase() + ' PLAYER WINS!';
+            finalScoreEl.textContent = `Final Score: Left ${clientState.score.left} - Right ${clientState.score.right}`;
+            gameOverEl.style.display = 'block';
+          } else {
+            // Hide game over screen
+            gameOverEl.style.display = 'none';
+          }
+          break;
+      }
+    }
 
-      // Clear canvas
+    // Send paddle command to server (CLIENT OUTPUT API)
+    function sendPaddleCommand(command) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'paddle_command',
+          command: command
+        }));
+      }
+    }
+
+    // Send reset game command
+    function sendResetGame() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'reset_game'
+        }));
+      }
+    }
+
+    // Keyboard event handlers (CLIENT OUTPUT API)
+    const keys = {};
+
+    document.addEventListener('keydown', (e) => {
+      keys[e.key] = true;
+      
+      // Send discrete step commands to server
+      if (e.key === 'w' || e.key === 'W') {
+        sendPaddleCommand('left_paddle_up');
+      } else if (e.key === 's' || e.key === 'S') {
+        sendPaddleCommand('left_paddle_down');
+      } else if (e.key === 'ArrowUp') {
+        sendPaddleCommand('right_paddle_up');
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        sendPaddleCommand('right_paddle_down');
+        e.preventDefault();
+      } else if ((e.key === 'r' || e.key === 'R') && clientState.gameOver) {
+        sendResetGame();
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keys[e.key] = false;
+    });
+
+    // Render function - CLIENT DISPLAY FUNCTION
+    function render() {
+      // Clear canvas (erase)
       ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, clientState.gameWidth, clientState.gameHeight);
 
       // Draw center line
       ctx.strokeStyle = '#444';
       ctx.lineWidth = 2;
       ctx.setLineDash([10, 10]);
       ctx.beginPath();
-      ctx.moveTo(canvas.width / 2, 0);
-      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.moveTo(clientState.gameWidth / 2, 0);
+      ctx.lineTo(clientState.gameWidth / 2, clientState.gameHeight);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw left paddle
-      ctx.fillStyle = '#0f0';
-      ctx.fillRect(
-        gameState.leftPaddle.x,
-        gameState.leftPaddle.y,
-        gameState.paddleWidth,
-        gameState.leftPaddle.height
-      );
-
-      // Draw right paddle
-      ctx.fillStyle = '#0ff';
-      ctx.fillRect(
-        gameState.rightPaddle.x,
-        gameState.rightPaddle.y,
-        gameState.paddleWidth,
-        gameState.rightPaddle.height
-      );
-
-      // Draw ball
+      // Draw left paddle at current state
       ctx.fillStyle = '#fff';
       ctx.fillRect(
-        gameState.ball.x,
-        gameState.ball.y,
-        gameState.ballSize,
-        gameState.ballSize
+        clientState.leftPaddle.x,
+        clientState.leftPaddle.y,
+        clientState.paddleWidth,
+        clientState.paddleHeight
       );
 
-      // Update score display
-      scoreEl.textContent = `${gameState.score.left} - ${gameState.score.right}`;
+      // Draw right paddle at current state
+      ctx.fillRect(
+        clientState.rightPaddle.x,
+        clientState.rightPaddle.y,
+        clientState.paddleWidth,
+        clientState.paddleHeight
+      );
+
+      // Draw ball at current state
+      ctx.fillRect(
+        clientState.ball.x,
+        clientState.ball.y,
+        clientState.ballSize,
+        clientState.ballSize
+      );
     }
 
-    // CONTROLLER: Keyboard input handling
-    document.addEventListener('keydown', (e) => {
-      let updated = false;
+    // Auto-focus on page load
+    window.onload = () => {
+      document.body.focus();
+      connect();
+    };
 
-      switch(e.key) {
-        case 'w':
-        case 'W':
-          if (!controls.leftUp) {
-            controls.leftUp = true;
-            updated = true;
-          }
-          break;
-        case 's':
-        case 'S':
-          if (!controls.leftDown) {
-            controls.leftDown = true;
-            updated = true;
-          }
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          if (!controls.rightUp) {
-            controls.rightUp = true;
-            updated = true;
-          }
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          if (!controls.rightDown) {
-            controls.rightDown = true;
-            updated = true;
-          }
-          break;
-      }
-
-      // Send controller state to MODEL
-      if (updated && ws && ws.readyState === WebSocket.OPEN) {
-        console.log('Sending controls (keydown):', controls);
-        ws.send(JSON.stringify({
-          type: 'controls',
-          data: controls
-        }));
-      }
+    // Click to focus
+    document.body.addEventListener('click', () => {
+      document.body.focus();
     });
-
-    document.addEventListener('keyup', (e) => {
-      let updated = false;
-
-      switch(e.key) {
-        case 'w':
-        case 'W':
-          if (controls.leftUp) {
-            controls.leftUp = false;
-            updated = true;
-          }
-          break;
-        case 's':
-        case 'S':
-          if (controls.leftDown) {
-            controls.leftDown = false;
-            updated = true;
-          }
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          if (controls.rightUp) {
-            controls.rightUp = false;
-            updated = true;
-          }
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          if (controls.rightDown) {
-            controls.rightDown = false;
-            updated = true;
-          }
-          break;
-      }
-
-      // Send controller state to MODEL
-      if (updated && ws && ws.readyState === WebSocket.OPEN) {
-        console.log('Sending controls (keyup):', controls);
-        ws.send(JSON.stringify({
-          type: 'controls',
-          data: controls
-        }));
-      }
-    });
-
-    // Initialize connection
-    connect();
   </script>
 </body>
 </html>
-
