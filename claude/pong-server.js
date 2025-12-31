@@ -137,9 +137,32 @@ function resetBall() {
   gameState.ball.dy = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
 }
 
+// Game loop interval
+let gameLoopInterval = null;
+
+function startGameLoop() {
+  if (!gameLoopInterval) {
+    gameLoopInterval = setInterval(gameLoop, 1000 / 60);
+    console.log('Game loop started');
+  }
+}
+
+function stopGameLoop() {
+  if (gameLoopInterval) {
+    clearInterval(gameLoopInterval);
+    gameLoopInterval = null;
+    console.log('Game loop stopped');
+  }
+}
+
 // WebSocket connection handler
 wss.on('connection', (ws) => {
   console.log('Client connected');
+
+  // Start game loop when first client connects
+  if (wss.clients.size === 1) {
+    startGameLoop();
+  }
 
   // Send initial state
   ws.send(JSON.stringify({
@@ -170,13 +193,23 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     console.log('Client disconnected');
+    
+    // Stop game loop when last client disconnects
+    if (wss.clients.size === 0) {
+      stopGameLoop();
+      // Reset controls when no one is connected
+      controls = {
+        leftUp: false,
+        leftDown: false,
+        rightUp: false,
+        rightDown: false
+      };
+    }
   });
 });
 
-// Start game loop (60 FPS)
-setInterval(gameLoop, 1000 / 60);
-
 console.log(`Pong game server running on ws://localhost:${PORT}`);
+console.log('Waiting for clients to connect...');
 console.log('Controls:');
 console.log('  Left paddle: W (up), S (down)');
 console.log('  Right paddle: Arrow Up, Arrow Down');
