@@ -185,6 +185,7 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message);
       if (data.type === 'controls') {
         controls = { ...controls, ...data.data };
+        console.log('Controls updated:', controls);
       }
     } catch (e) {
       console.error('Error parsing message:', e);

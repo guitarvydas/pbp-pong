@@ -16,6 +16,7 @@
       background-color: #1a1a1a;
       font-family: 'Courier New', monospace;
       color: #fff;
+      outline: none;
     }
 
     h1 {
@@ -60,7 +61,7 @@
     }
   </style>
 </head>
-<body>
+<body tabindex="0">
   <h1>Pong - MVC Architecture</h1>
   <div class="info">
     <div>Model (Server) ↔ WebSocket ↔ View + Controller (Browser)</div>
@@ -78,9 +79,20 @@
     <div><strong>Controls:</strong></div>
     <div>Left Paddle: W (up), S (down)</div>
     <div>Right Paddle: ↑ (up), ↓ (down)</div>
+    <div style="margin-top: 10px; color: #ff0;"><em>Click anywhere on the page to enable keyboard controls</em></div>
   </div>
 
   <script>
+    // Ensure page has focus for keyboard events
+    window.addEventListener('load', () => {
+      document.body.focus();
+    });
+
+    // Allow clicking anywhere to regain focus
+    document.body.addEventListener('click', () => {
+      document.body.focus();
+    });
+
     // VIEW: Canvas rendering
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -223,6 +235,7 @@
 
       // Send controller state to MODEL
       if (updated && ws && ws.readyState === WebSocket.OPEN) {
+        console.log('Sending controls (keydown):', controls);
         ws.send(JSON.stringify({
           type: 'controls',
           data: controls
@@ -266,6 +279,7 @@
 
       // Send controller state to MODEL
       if (updated && ws && ws.readyState === WebSocket.OPEN) {
+        console.log('Sending controls (keyup):', controls);
         ws.send(JSON.stringify({
           type: 'controls',
           data: controls
@@ -278,3 +292,4 @@
   </script>
 </body>
 </html>
+
