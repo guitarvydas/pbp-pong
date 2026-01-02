@@ -34,7 +34,7 @@ const cmdServer = net.createServer((socket) => {
       const cmd = line.trim();
       if (!cmd) continue;
       
-      console.log('[Daemon] Received command:', cmd);
+      // console.log('[Daemon] Received command:', cmd);  // DISABLED for performance
       
       if (guiClient && guiClient.readyState === WebSocket.OPEN) {
         guiClient.send(cmd);

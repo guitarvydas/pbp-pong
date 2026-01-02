@@ -54,6 +54,9 @@
     // Display state
     let objects = {};
     
+    // Render throttling
+    let renderScheduled = false;
+    
     function log(msg) {
       const entry = document.createElement('div');
       entry.className = 'log-entry';
@@ -102,13 +105,20 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        //log(`Received: ${JSON.stringify(data)}`);
+        // log(`Received: ${JSON.stringify(data)}`);  // DISABLED for performance
         
         // Update object state
         const id = data.id || data.type;
         objects[id] = { ...objects[id], ...data };
         
-        render();
+        // Schedule render (throttled to browser refresh rate)
+        if (!renderScheduled) {
+          renderScheduled = true;
+          requestAnimationFrame(() => {
+            render();
+            renderScheduled = false;
+          });
+        }
       } catch (e) {
         log(`Error parsing message: ${e.message}`);
       }
