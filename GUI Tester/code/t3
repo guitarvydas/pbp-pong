@@ -1,0 +1,2 @@
+./send-command '{"type":"paddle","id":"right","x":730,"y":250,"width":15}'
+

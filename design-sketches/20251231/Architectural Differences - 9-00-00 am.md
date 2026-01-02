@@ -1,3 +1,5 @@
+# Architectural Differences - Dec 31, 2025 9:00.00 am
+
 I started going down the let-Claude-build-the-GUI rabbit hole...
 
 Claude built a _whole_ browser-based Pong game, but,,,

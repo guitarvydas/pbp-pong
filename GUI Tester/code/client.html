@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test GUI</title>
+  <style>
+    body { 
+      margin: 20px; 
+      font-family: monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    #canvas { 
+      border: 2px solid #4ec9b0; 
+      background: #000;
+      display: block;
+      margin: 20px 0;
+    }
+    #log {
+      background: #252526;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #3e3e42;
+    }
+    .log-entry {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Test GUI - Slave Display</h2>
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <div id="log"></div>
+
+  <script>
+    // Centralized default dimensions
+    const DEFAULTS = {
+      paddle: { 
+        width: 20, 
+        height: 100,
+        color: '#4ec9b0'
+      },
+      ball: { 
+        radius: 10,
+        color: '#ffffff'
+      }
+    };
+    
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const logDiv = document.getElementById('log');
+    
+    // Display state
+    let objects = {};
+    
+    // Render throttling
+    let renderScheduled = false;
+    
+    function log(msg) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function render() {
+      // Clear canvas
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw all objects
+      for (const [id, obj] of Object.entries(objects)) {
+        if (obj.type === 'ball') {
+          ctx.fillStyle = obj.color || DEFAULTS.ball.color;
+          ctx.beginPath();
+          ctx.arc(
+            obj.x, 
+            obj.y, 
+            obj.radius !== undefined ? obj.radius : DEFAULTS.ball.radius,
+            0, 
+            Math.PI * 2
+          );
+          ctx.fill();
+        } else if (obj.type === 'paddle') {
+          ctx.fillStyle = obj.color || DEFAULTS.paddle.color;
+          ctx.fillRect(
+            obj.x, 
+            obj.y, 
+            obj.width !== undefined ? obj.width : DEFAULTS.paddle.width,
+            obj.height !== undefined ? obj.height : DEFAULTS.paddle.height
+          );
+        }
+      }
+    }
+    
+    // Connect to daemon
+    const ws = new WebSocket('ws://localhost:8080');
+    
+    ws.onopen = () => {
+      log('Connected to daemon');
+    };
+    
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // log(`Received: ${JSON.stringify(data)}`);  // DISABLED for performance
+        
+        // Update object state
+        const id = data.id || data.type;
+        objects[id] = { ...objects[id], ...data };
+        
+        // Schedule render (throttled to browser refresh rate)
+        if (!renderScheduled) {
+          renderScheduled = true;
+          requestAnimationFrame(() => {
+            render();
+            renderScheduled = false;
+          });
+        }
+      } catch (e) {
+        log(`Error parsing message: ${e.message}`);
+      }
+    };
+    
+    ws.onclose = () => {
+      log('Disconnected from daemon');
+    };
+    
+    ws.onerror = (error) => {
+      log(`WebSocket error: ${error.message}`);
+    };
+    
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
