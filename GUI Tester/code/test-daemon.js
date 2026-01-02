@@ -21,15 +21,27 @@ wss.on('connection', (ws) => {
 const cmdServer = net.createServer((socket) => {
   console.log('[Daemon] Command client connected');
   
+  let buffer = '';
+  
   socket.on('data', (data) => {
-    const cmd = data.toString().trim();
-    console.log('[Daemon] Received command:', cmd);
+    buffer += data.toString();
     
-    if (guiClient && guiClient.readyState === WebSocket.OPEN) {
-      guiClient.send(cmd);
-      socket.write('OK\n');
-    } else {
-      socket.write('ERROR: No GUI connected\n');
+    // Process complete lines (commands end with \n)
+    let lines = buffer.split('\n');
+    buffer = lines.pop(); // Keep incomplete line in buffer
+    
+    for (const line of lines) {
+      const cmd = line.trim();
+      if (!cmd) continue;
+      
+      console.log('[Daemon] Received command:', cmd);
+      
+      if (guiClient && guiClient.readyState === WebSocket.OPEN) {
+        guiClient.send(cmd);
+        socket.write('OK\n');
+      } else {
+        socket.write('ERROR: No GUI connected\n');
+      }
     }
   });
   

@@ -34,6 +34,19 @@
   <div id="log"></div>
 
   <script>
+    // Centralized default dimensions
+    const DEFAULTS = {
+      paddle: { 
+        width: 20, 
+        height: 100,
+        color: '#4ec9b0'
+      },
+      ball: { 
+        radius: 10,
+        color: '#ffffff'
+      }
+    };
+    
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const logDiv = document.getElementById('log');
@@ -57,13 +70,24 @@
       // Draw all objects
       for (const [id, obj] of Object.entries(objects)) {
         if (obj.type === 'ball') {
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = obj.color || DEFAULTS.ball.color;
           ctx.beginPath();
-          ctx.arc(obj.x, obj.y, obj.radius || 10, 0, Math.PI * 2);
+          ctx.arc(
+            obj.x, 
+            obj.y, 
+            obj.radius !== undefined ? obj.radius : DEFAULTS.ball.radius,
+            0, 
+            Math.PI * 2
+          );
           ctx.fill();
         } else if (obj.type === 'paddle') {
-          ctx.fillStyle = '#4ec9b0';
-          ctx.fillRect(obj.x, obj.y, obj.width || 20, obj.height || 100);
+          ctx.fillStyle = obj.color || DEFAULTS.paddle.color;
+          ctx.fillRect(
+            obj.x, 
+            obj.y, 
+            obj.width !== undefined ? obj.width : DEFAULTS.paddle.width,
+            obj.height !== undefined ? obj.height : DEFAULTS.paddle.height
+          );
         }
       }
     }
@@ -78,7 +102,7 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        log(`Received: ${JSON.stringify(data)}`);
+        //log(`Received: ${JSON.stringify(data)}`);
         
         // Update object state
         const id = data.id || data.type;
