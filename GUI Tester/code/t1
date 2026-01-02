@@ -1,0 +1,11 @@
+./send-command.js '{"type":"ball","x":600,"y":300}'
+./send-command.js '{"type":"ball","x":550,"y":300}'
+./send-command.js '{"type":"ball","x":50,"y":300}'
+./send-command.js '{"type":"ball","x":450,"y":300}'
+./send-command.js '{"type":"ball","x":400,"y":300}'
+./send-command.js '{"type":"ball","x":3500,"y":300}'
+./send-command.js '{"type":"ball","x":300,"y":300}'
+./send-command.js '{"type":"ball","x":250,"y":300}'
+./send-command.js '{"type":"ball","x":200,"y":300}'
+./send-command.js '{"type":"ball","x":150,"y":300}'
+

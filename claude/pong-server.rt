@@ -1,0 +1,88 @@
+#preamble ()
+
+defobj GameState () {
+    • width ⇐ 800
+    • height ⇐ 600
+    • paddle_width ⇐ 10
+    • paddle_height ⇐ 100
+    • ball_size ⇐ 10
+    • paddle_step ⇐ 8
+    • ball_speed_x ⇐ 5
+    • ball_speed_y ⇐ 5
+    • winning_score ⇐ 11
+
+    • x ⇐ ϕ
+    • y ⇐ ϕ
+
+
+
+
+
+
+
+
+defobj Point () {
+    • x ⇐ ϕ
+    • y ⇐ ϕ
+}
+
+defobj Ball {
+    • xdirection ⇐ #random_choice (["leftwards", "rightwards"])
+    • ydirection ⇐ #random_choice (["downwards", "upwards"])
+    • x ⇐ 0
+    • y ⇐ #random_zero_centered_unit ()
+}
+
+defobj UnitVector {
+    • x ⇐ #random_zero_centered_unit ()
+    • y ⇐ #random_zero_centered_unit ()
+}
+
+
+defn ballStepper_install (reg) {
+    register_component (reg, mkTemplate (“BallStepper”, ϕ, ↪︎ballStepper_instantiator))
+}
+defn ballStepper_instantiator (reg, owner, name, template_data) {
+    name_with_id ≡ gensymbol (“ballStepper”)
+    newSelf ≡ #fresh (Ball)
+    return make_leaf (name_with_id, owner, newSelf, ↪︎ballStepper_handler)
+}
+
+
+
+class Ball_State:
+    def __init__ (self):
+        self.reset ()
+
+    def reset (self):
+        # coord (0,0) is in the middle of the display
+        #  x is +ve for left-to-right, -ve for right-to-left
+        #  y is +ve for upwards, -ve for downwards
+
+        self.xdirection = random.choice (["leftwards", "rightwards"])
+        self.ydirection = random.choice (["downwards", "upwards"])
+
+        self.location = Point (0, self.scale (random.random ())) # x,y both floats between 0 and 1
+
+        # vector is a unit vector
+        ydir = 1
+        xdir = 1
+        if self.xdirection == "leftwards":
+            xdir = -1
+        if self.ydirection == "downwards":
+            ydir = -1
+        self.vector = Point (xdir * random.random (), ydir * random.random ()) # unit vector
+
+    def scale (self, n):
+        # scale n (0..1) so that it is between -0.5 .. 0.5
+        return n - 0.5
+
+    def reflect (self, paddle_position):
+        # paddle_position is -0.5 .. 0.5, with 0 begin dead-center
+        # I'm not sure yet how I want this to affect the reflection, so I'll ignore it for now
+        if self.xdirection == "leftwards":
+            self.xdirection = "rightwards"
+        else:
+            self.xdirection = "leftwards"
+        self.vector = Point (-1 * self.vector.x, -1 * self.vector.y)
+

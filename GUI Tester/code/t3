@@ -1,0 +1,1 @@
+./send-command.js '{"type":"paddle","id":"left","x":50,"y":250}'

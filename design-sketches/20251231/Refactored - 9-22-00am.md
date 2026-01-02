@@ -1,6 +1,9 @@
+# Refactored Dec 31, 2025, 922.00 AM
 I asked Claude to refactor all of the code, making the GUI just a slave and the server - on the command line - running all motion logic. [The actual prompt I used is in `prompt.md` in the repo.]
 
 The performance is "not bad" and quite usable, but not as snappy as the previous version. This means that sending ball position messages seems to work well enough, but, the paddle keystroke->server->GUI round trip could be optimized in some way.
+
+aside: This is actually quite encouraging! I'm chewing up a lot of cpu cycles by sending each keystroke through websockets, yet, it works. It could be faster, but it's not terribly slow. I was worried about latencies on the order of seconds, but I'm only seeing latencies in the millisecond range. (20msec is the keystroke latency I remember from the 8-bit days. Humans feel that 20msec is "sluggish" while anything faster than 20msec is "good enough").
 
 The first thought that comes to mind is to create two separate clients - a Left Client and a Right Client. Each client handles its own paddle motion internally, but gets updates on the other paddle motion from the server.
 
