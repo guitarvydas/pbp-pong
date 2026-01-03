@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8",
-    "ohm-js": "^17.1.0",
+    "ohm-js": "^17.3.0",
     "prompt-sync": "^4.2.0",
     "ws": "^8.18.3",
     "yargs": "^18.0.0"

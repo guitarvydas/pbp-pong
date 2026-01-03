@@ -567,7 +567,7 @@
         "id": 16
       },
       {
-        "name": ":$ node send-command",
+        "name": ":$ node send-stdin",
         "id": 20
       },
       {
@@ -634,7 +634,7 @@
           "id": 24
         },
         "target": {
-          "name": ":$ node send-command",
+          "name": ":$ node send-stdin",
           "id": 20
         }
       },
@@ -643,7 +643,16 @@
         "source_port": "✗",
         "target_port": "✗",
         "source": {
-          "name": ":$ node send-command",
+          "name": ":$ node send-stdin",
+          "id": 20
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ node send-stdin",
           "id": 20
         }
       }
@@ -656,10 +665,6 @@
       {
         "name": ":$ node send-command",
         "id": 5
-      },
-      {
-        "name": ":?err",
-        "id": 8
       }
     ],
     "connections": [
@@ -670,19 +675,6 @@
         "target": {
           "name": ":$ node send-command",
           "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "✗",
-        "target_port": "",
-        "source": {
-          "name": ":$ node send-command",
-          "id": 5
-        },
-        "target": {
-          "name": ":?err",
-          "id": 8
         }
       },
       {
