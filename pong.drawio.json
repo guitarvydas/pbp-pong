@@ -563,16 +563,12 @@
         "id": 13
       },
       {
-        "name": ":$ ./bounce3.sh",
+        "name": ":$ ./test.sh",
         "id": 17
       },
       {
-        "name": ":$ node send-stdin",
+        "name": ":?x",
         "id": 21
-      },
-      {
-        "name": ":{\"type\":\"ball\",\"x\":400,\"y\":300,\"color\":\"#00ff00\"}",
-        "id": 25
       }
     ],
     "connections": [
@@ -608,7 +604,7 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": ":$ ./bounce3.sh",
+          "name": ":$ ./test.sh",
           "id": 17
         }
       },
@@ -617,7 +613,7 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": ":$ ./bounce3.sh",
+          "name": ":$ ./test.sh",
           "id": 17
         },
         "target": {
@@ -630,11 +626,11 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": ":{\"type\":\"ball\",\"x\":400,\"y\":300,\"color\":\"#00ff00\"}",
-          "id": 25
+          "name": ":$ ./test.sh",
+          "id": 17
         },
         "target": {
-          "name": ":$ node send-stdin",
+          "name": ":?x",
           "id": 21
         }
       },
@@ -661,7 +657,7 @@
         "source_port": "✗",
         "target_port": "✗",
         "source": {
-          "name": ":$ ./bounce3.sh",
+          "name": ":$ ./test.sh",
           "id": 17
         }
       }
@@ -674,6 +670,10 @@
       {
         "name": ":$ node send-stdin",
         "id": 7
+      },
+      {
+        "name": ":?B",
+        "id": 11
       }
     ],
     "connections": [
@@ -684,6 +684,15 @@
         "target": {
           "name": ":$ node send-stdin",
           "id": 7
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": ":?B",
+          "id": 11
         }
       },
       {
