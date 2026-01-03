@@ -563,12 +563,8 @@
         "id": 13
       },
       {
-        "name": ":$ ./test.sh",
+        "name": "Test",
         "id": 17
-      },
-      {
-        "name": ":?x",
-        "id": 21
       }
     ],
     "connections": [
@@ -604,7 +600,7 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": ":$ ./test.sh",
+          "name": "Test",
           "id": 17
         }
       },
@@ -613,25 +609,12 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": ":$ ./test.sh",
+          "name": "Test",
           "id": 17
         },
         "target": {
           "name": "GUI",
           "id": 13
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": ":$ ./test.sh",
-          "id": 17
-        },
-        "target": {
-          "name": ":?x",
-          "id": 21
         }
       },
       {
@@ -657,7 +640,7 @@
         "source_port": "✗",
         "target_port": "✗",
         "source": {
-          "name": ":$ ./test.sh",
+          "name": "Test",
           "id": 17
         }
       }
@@ -670,10 +653,6 @@
       {
         "name": ":$ node send-stdin",
         "id": 7
-      },
-      {
-        "name": ":?B",
-        "id": 11
       }
     ],
     "connections": [
@@ -684,15 +663,6 @@
         "target": {
           "name": ":$ node send-stdin",
           "id": 7
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "",
-        "target_port": "",
-        "target": {
-          "name": ":?B",
-          "id": 11
         }
       },
       {
