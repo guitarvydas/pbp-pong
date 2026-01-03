@@ -564,15 +564,15 @@
       },
       {
         "name": ":$ ./bounce3.sh",
-        "id": 16
+        "id": 17
       },
       {
         "name": ":$ node send-stdin",
-        "id": 20
+        "id": 21
       },
       {
         "name": ":{\"type\":\"ball\",\"x\":400,\"y\":300,\"color\":\"#00ff00\"}",
-        "id": 24
+        "id": 25
       }
     ],
     "connections": [
@@ -608,8 +608,8 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": ":{\"type\":\"ball\",\"x\":400,\"y\":300,\"color\":\"#00ff00\"}",
-          "id": 24
+          "name": ":$ ./bounce3.sh",
+          "id": 17
         }
       },
       {
@@ -618,7 +618,7 @@
         "target_port": "",
         "source": {
           "name": ":$ ./bounce3.sh",
-          "id": 16
+          "id": 17
         },
         "target": {
           "name": "GUI",
@@ -631,20 +631,11 @@
         "target_port": "",
         "source": {
           "name": ":{\"type\":\"ball\",\"x\":400,\"y\":300,\"color\":\"#00ff00\"}",
-          "id": 24
+          "id": 25
         },
         "target": {
           "name": ":$ node send-stdin",
-          "id": 20
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": ":$ node send-stdin",
-          "id": 20
+          "id": 21
         }
       },
       {
@@ -652,8 +643,26 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": ":$ node send-stdin",
-          "id": 20
+          "name": "GUI",
+          "id": 13
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "GUI",
+          "id": 13
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": ":$ ./bounce3.sh",
+          "id": 17
         }
       }
     ],
@@ -663,8 +672,8 @@
     "name": "GUI",
     "children": [
       {
-        "name": ":$ node send-command",
-        "id": 5
+        "name": ":$ node send-stdin",
+        "id": 7
       }
     ],
     "connections": [
@@ -673,8 +682,8 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": ":$ node send-command",
-          "id": 5
+          "name": ":$ node send-stdin",
+          "id": 7
         }
       },
       {
@@ -682,8 +691,17 @@
         "source_port": "✗",
         "target_port": "✗",
         "source": {
-          "name": ":$ node send-command",
-          "id": 5
+          "name": ":$ node send-stdin",
+          "id": 7
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ node send-stdin",
+          "id": 7
         }
       }
     ],

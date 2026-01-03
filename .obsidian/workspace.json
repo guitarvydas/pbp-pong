@@ -298,6 +298,8 @@
   },
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
+    "#junk#",
+    "junk.txt",
     "node_modules/readline/test/fixtures/nmbr.txt",
     "node_modules/readline/test/fixtures/file-in-win1251.txt",
     "node_modules/readline/test/fixtures/afile.txt",
@@ -308,8 +310,6 @@
     "node_modules/readline/package.json",
     "node_modules/readline/README.md",
     "node_modules/readline",
-    "daemon.js",
-    "send-stdin.js~",
     "node_modules/ohm-js/README.md",
     "node_modules/yargs/README.md",
     "node_modules/@xmldom/xmldom/SECURITY.md",
