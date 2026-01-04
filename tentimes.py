@@ -11,11 +11,8 @@ class Counter:
         return (self.count >= 10)
     def reset (self):
         self.count = 0
-    def value (self):
-        return self.count
 
 def handler (eh,mev):
-    print (f'etentimes handler', file=sys.stderr)
     self = eh.instance_data
     try:
         self = eh.instance_data
@@ -23,7 +20,7 @@ def handler (eh,mev):
             self.reset ()
         else:
             self.inc ()
-            zd.send (eh, "", f'{self.value ()}', mev)
+            zd.send (eh, "", f'{self.count}', mev)
     except (etentimes):
         zd.send (eh, "✗", f"*** error in Tentimes.py *** {etentimes}", mev)
         
