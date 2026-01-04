@@ -36,29 +36,29 @@
   <script>
     // Centralized default dimensions
     const DEFAULTS = {
-	canvas: {
-	    width: 800,
-	    height: 600
-	},
-	paddle: { 
-	    width: 20, 
-	    height: 100,
-	    color: '#4ec9b0'
-	},
-	ball: { 
-	    radius: 10,
-	    color: '#ffffff'
-	}
+      canvas: {
+        width: 800,
+        height: 600
+      },
+      paddle: { 
+        width: 20, 
+        height: 100,
+        color: '#4ec9b0'
+      },
+      ball: { 
+        radius: 10,
+        color: '#ffffff'
+      }
     };
-
+    
     const canvas = document.getElementById('canvas');
     canvas.width = DEFAULTS.canvas.width;
     canvas.height = DEFAULTS.canvas.height;
     const ctx = canvas.getContext('2d');
-    const logDiv = document.getElementById('log');  // MISSING LINE
+    const logDiv = document.getElementById('log');
     
     // Display state
-    let objects = {};    
+    let objects = {};
     
     // Render throttling
     let renderScheduled = false;
@@ -101,6 +101,33 @@
       }
     }
     
+    // Handle queries and return responses
+    function handleQuery(msg) {
+      const response = { id: msg.id };
+      
+      switch (msg.query) {
+        case 'canvas_size':
+          response.result = {
+            width: canvas.width,
+            height: canvas.height
+          };
+          break;
+        
+        case 'defaults':
+          response.result = DEFAULTS;
+          break;
+        
+        case 'objects':
+          response.result = objects;
+          break;
+        
+        default:
+          response.error = `Unknown query: ${msg.query}`;
+      }
+      
+      return response;
+    }
+    
     // Connect to daemon
     const ws = new WebSocket('ws://localhost:8080');
     
@@ -111,7 +138,14 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        log(`Received: ${JSON.stringify(data)}`);
+        // log(`Received: ${JSON.stringify(data)}`);  // DISABLED for performance
+        
+        // Check if this is a query
+        if (data.query) {
+          const response = handleQuery(data);
+          ws.send(JSON.stringify(response));
+          return;
+        }
         
         // Handle both single object and array of objects
         const commands = Array.isArray(data) ? data : [data];

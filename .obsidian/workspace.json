@@ -298,6 +298,7 @@
   },
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
+    "query-client.js",
     "#client.html#",
     "__pycache__/tentimes.cpython-312.pyc",
     "#test.py#",
@@ -308,7 +309,6 @@
     "__pycache__",
     "test.py~",
     "test.py",
-    "test.sh~",
     "node_modules/readline/README.md",
     "node_modules/ohm-js/README.md",
     "node_modules/yargs/README.md",

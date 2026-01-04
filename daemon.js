@@ -7,9 +7,28 @@ const net = require('net');
 const wss = new WebSocket.Server({ port: 8080 });
 let guiClient = null;
 
+// Track pending requests: requestId -> TCP socket
+const pendingRequests = new Map();
+
 wss.on('connection', (ws) => {
   console.log('[Daemon] GUI connected');
   guiClient = ws;
+  
+  ws.on('message', (data) => {
+    // Handle responses from GUI
+    try {
+      const response = JSON.parse(data.toString());
+      // console.log('[Daemon] Received response from GUI:', response);
+      
+      if (response.id && pendingRequests.has(response.id)) {
+        const socket = pendingRequests.get(response.id);
+        socket.write(JSON.stringify(response) + '\n');
+        pendingRequests.delete(response.id);
+      }
+    } catch (e) {
+      console.error('[Daemon] Error handling GUI response:', e.message);
+    }
+  });
   
   ws.on('close', () => {
     console.log('[Daemon] GUI disconnected');
@@ -34,11 +53,26 @@ const cmdServer = net.createServer((socket) => {
       const cmd = line.trim();
       if (!cmd) continue;
       
-      // console.log('[Daemon] Received command:', cmd);  // DISABLED for performance
+      // console.log('[Daemon] Received command:', cmd);
       
       if (guiClient && guiClient.readyState === WebSocket.OPEN) {
-        guiClient.send(cmd);
-        socket.write('OK\n');
+        try {
+          const parsed = JSON.parse(cmd);
+          
+          // If this has an ID (query or tracked command), register for response
+          if (parsed.id) {
+            pendingRequests.set(parsed.id, socket);
+          }
+          
+          guiClient.send(cmd);
+          
+          // Only send OK for commands without ID (fire-and-forget)
+          if (!parsed.id) {
+            socket.write('OK\n');
+          }
+        } catch (e) {
+          socket.write(`ERROR: Invalid JSON - ${e.message}\n`);
+        }
       } else {
         socket.write('ERROR: No GUI connected\n');
       }
@@ -47,6 +81,12 @@ const cmdServer = net.createServer((socket) => {
   
   socket.on('end', () => {
     console.log('[Daemon] Command client disconnected');
+    // Clean up any pending requests from this socket
+    for (const [id, sock] of pendingRequests.entries()) {
+      if (sock === socket) {
+        pendingRequests.delete(id);
+      }
+    }
   });
 });
 
