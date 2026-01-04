@@ -569,6 +569,10 @@
       {
         "name": "TenTimes",
         "id": 21
+      },
+      {
+        "name": "Get Canvas Size",
+        "id": 25
       }
     ],
     "connections": [
@@ -604,6 +608,15 @@
         "source_port": "",
         "target_port": "",
         "target": {
+          "name": "Get Canvas Size",
+          "id": 25
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
           "name": "Test",
           "id": 17
         }
@@ -681,6 +694,24 @@
         "source": {
           "name": "Test",
           "id": 17
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 25
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 25
         }
       }
     ],
@@ -729,6 +760,45 @@
     "name": "Ball Stepper",
     "children": [],
     "connections": [],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Get Canvas Size",
+    "children": [
+      {
+        "name": ":$ node query-client.js",
+        "id": 5
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": ":$ node query-client.js",
+          "id": 5
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ node query-client.js",
+          "id": 5
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": ":$ node query-client.js",
+          "id": 5
+        }
+      }
+    ],
     "file": "pong.drawio"
   }
 ]
