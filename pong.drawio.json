@@ -565,6 +565,10 @@
       {
         "name": "Test",
         "id": 17
+      },
+      {
+        "name": "TenTimes",
+        "id": 21
       }
     ],
     "connections": [
@@ -615,6 +619,41 @@
         "target": {
           "name": "GUI",
           "id": 13
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "GUI",
+          "id": 13
+        },
+        "target": {
+          "name": "TenTimes",
+          "id": 21
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "TenTimes",
+          "id": 21
+        },
+        "target": {
+          "name": "Test",
+          "id": 17
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "TenTimes",
+          "id": 21
         }
       },
       {

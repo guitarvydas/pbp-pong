@@ -4,9 +4,14 @@ import kernel0d as zd
 
 def handler (eh,mev):
     try:
-        zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ff00ff"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
-    except (e):
-        zd.send (eh, "✗", "*** error in Test.py ***", mev)
+        if '' == mev.datum.v:
+            zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ff00ff"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
+        else:
+            print (f'test: {mev.datum.v}', file=sys.stderr)
+            x = int(mev.datum.v) * 10
+            zd.send (eh, "", "{" + f'"type":"ball","x":"{x}","y":"310","color":"#ff00ff"' + "}" , mev)
+    except (testerr):
+        zd.send (eh, "✗", f"*** error in Test.py *** {testerr}", mev)
         
 def instantiate (reg,owner,name, arg, template_data):
     name_with_id = zd.gensymbol ( "Test")
