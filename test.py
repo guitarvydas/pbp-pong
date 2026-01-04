@@ -7,7 +7,6 @@ def handler (eh,mev):
         if '' == mev.datum.v:
             zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ff00ff"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
         else:
-            print (f'test: {mev.datum.v}', file=sys.stderr)
             x = int(mev.datum.v) * 10
             zd.send (eh, "", "{" + f'"type":"ball","x":"{x}","y":"310","color":"#ff00ff"' + "}" , mev)
     except (testerr):

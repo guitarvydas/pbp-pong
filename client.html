@@ -30,29 +30,35 @@
 </head>
 <body>
   <h2>Test GUI - Slave Display</h2>
-  <canvas id="canvas" width="800" height="600"></canvas>
+  <canvas id="canvas"></canvas>
   <div id="log"></div>
 
   <script>
     // Centralized default dimensions
     const DEFAULTS = {
-      paddle: { 
-        width: 20, 
-        height: 100,
-        color: '#4ec9b0'
-      },
-      ball: { 
-        radius: 10,
-        color: '#ffffff'
-      }
+	canvas: {
+	    width: 800,
+	    height: 600
+	},
+	paddle: { 
+	    width: 20, 
+	    height: 100,
+	    color: '#4ec9b0'
+	},
+	ball: { 
+	    radius: 10,
+	    color: '#ffffff'
+	}
     };
-    
+
     const canvas = document.getElementById('canvas');
+    canvas.width = DEFAULTS.canvas.width;
+    canvas.height = DEFAULTS.canvas.height;
     const ctx = canvas.getContext('2d');
-    const logDiv = document.getElementById('log');
+    const logDiv = document.getElementById('log');  // MISSING LINE
     
     // Display state
-    let objects = {};
+    let objects = {};    
     
     // Render throttling
     let renderScheduled = false;
@@ -105,7 +111,7 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        log(`Received: ${JSON.stringify(data)}`);  // DISABLED for performance
+        log(`Received: ${JSON.stringify(data)}`);
         
         // Handle both single object and array of objects
         const commands = Array.isArray(data) ? data : [data];
