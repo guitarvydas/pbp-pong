@@ -138,7 +138,7 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        // log(`Received: ${JSON.stringify(data)}`);  // DISABLED for performance
+        log(`Received: ${JSON.stringify(data)}`);
         
         // Check if this is a query
         if (data.query) {

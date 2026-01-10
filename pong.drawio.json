@@ -555,70 +555,30 @@
     "name": "GUItest",
     "children": [
       {
-        "name": "Ball Stepper",
-        "id": 8
-      },
-      {
         "name": "GUI",
-        "id": 13
+        "id": 5
       },
       {
         "name": "Test",
-        "id": 17
+        "id": 9
       },
       {
         "name": "TenTimes",
-        "id": 21
+        "id": 13
       },
       {
         "name": "Get Canvas Size",
-        "id": 25
+        "id": 17
       }
     ],
     "connections": [
       {
         "dir": 0,
-        "source_port": "reflect",
-        "target_port": "reflect",
-        "target": {
-          "name": "Ball Stepper",
-          "id": 8
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "reset",
-        "target_port": "⟳",
-        "target": {
-          "name": "Ball Stepper",
-          "id": 8
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "tick",
-        "target_port": "tick",
-        "target": {
-          "name": "Ball Stepper",
-          "id": 8
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "",
-        "target_port": "",
-        "target": {
-          "name": "Get Canvas Size",
-          "id": 25
-        }
-      },
-      {
-        "dir": 0,
         "source_port": "",
         "target_port": "",
         "target": {
           "name": "Test",
-          "id": 17
+          "id": 9
         }
       },
       {
@@ -627,10 +587,23 @@
         "target_port": "",
         "source": {
           "name": "Test",
-          "id": 17
+          "id": 9
         },
         "target": {
           "name": "GUI",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "sent",
+        "target_port": "",
+        "source": {
+          "name": "GUI",
+          "id": 5
+        },
+        "target": {
+          "name": "TenTimes",
           "id": 13
         }
       },
@@ -639,25 +612,12 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": "GUI",
+          "name": "TenTimes",
           "id": 13
-        },
-        "target": {
-          "name": "TenTimes",
-          "id": 21
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "TenTimes",
-          "id": 21
         },
         "target": {
           "name": "Test",
-          "id": 17
+          "id": 9
         }
       },
       {
@@ -666,16 +626,16 @@
         "target_port": "✗",
         "source": {
           "name": "TenTimes",
-          "id": 21
+          "id": 13
         }
       },
       {
         "dir": 2,
-        "source_port": "",
+        "source_port": "sent",
         "target_port": "",
         "source": {
           "name": "GUI",
-          "id": 13
+          "id": 5
         }
       },
       {
@@ -684,7 +644,7 @@
         "target_port": "✗",
         "source": {
           "name": "GUI",
-          "id": 13
+          "id": 5
         }
       },
       {
@@ -693,25 +653,25 @@
         "target_port": "✗",
         "source": {
           "name": "Test",
+          "id": 9
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "width",
+        "target_port": "",
+        "source": {
+          "name": "Get Canvas Size",
           "id": 17
         }
       },
       {
         "dir": 2,
-        "source_port": "",
+        "source_port": "height",
         "target_port": "",
         "source": {
           "name": "Get Canvas Size",
-          "id": 25
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 25
+          "id": 17
         }
       }
     ],
@@ -747,7 +707,7 @@
       {
         "dir": 2,
         "source_port": "",
-        "target_port": "",
+        "target_port": "sent",
         "source": {
           "name": ":$ node send-stdin",
           "id": 7
@@ -766,8 +726,8 @@
     "name": "Get Canvas Size",
     "children": [
       {
-        "name": ":$ node query-client.js",
-        "id": 5
+        "name": "Query Canvas",
+        "id": 6
       }
     ],
     "connections": [
@@ -776,17 +736,17 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": ":$ node query-client.js",
-          "id": 5
+          "name": "Query Canvas",
+          "id": 6
         }
       },
       {
         "dir": 2,
-        "source_port": "",
-        "target_port": "",
+        "source_port": "width",
+        "target_port": "width",
         "source": {
-          "name": ":$ node query-client.js",
-          "id": 5
+          "name": "Query Canvas",
+          "id": 6
         }
       },
       {
@@ -794,8 +754,17 @@
         "source_port": "✗",
         "target_port": "✗",
         "source": {
-          "name": ":$ node query-client.js",
-          "id": 5
+          "name": "Query Canvas",
+          "id": 6
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "height",
+        "target_port": "height",
+        "source": {
+          "name": "Query Canvas",
+          "id": 6
         }
       }
     ],
