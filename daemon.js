@@ -3,6 +3,23 @@
 const WebSocket = require('ws');
 const net = require('net');
 
+// DEFAULTS - Single source of truth
+const DEFAULTS = {
+  canvas: {
+    width: 800,
+    height: 600
+  },
+  paddle: { 
+    width: 20, 
+    height: 100,
+    color: '#4ec9b0'
+  },
+  ball: { 
+    radius: 10,
+    color: '#ffffff'
+  }
+};
+
 // WebSocket server for GUI
 const wss = new WebSocket.Server({ port: 8080 });
 let guiClient = null;
@@ -14,11 +31,16 @@ wss.on('connection', (ws) => {
   console.log('[Daemon] GUI connected');
   guiClient = ws;
   
+  // Send DEFAULTS to GUI on connection
+  ws.send(JSON.stringify({ 
+    type: 'init',
+    defaults: DEFAULTS 
+  }));
+  
   ws.on('message', (data) => {
     // Handle responses from GUI
     try {
       const response = JSON.parse(data.toString());
-      // console.log('[Daemon] Received response from GUI:', response);
       
       if (response.id && pendingRequests.has(response.id)) {
         const socket = pendingRequests.get(response.id);
@@ -35,6 +57,27 @@ wss.on('connection', (ws) => {
     guiClient = null;
   });
 });
+
+// Handle queries that the daemon can answer directly
+function handleDaemonQuery(msg, socket) {
+  const response = { id: msg.id };
+  
+  switch (msg.query) {
+    case 'canvas_size':
+      response.result = DEFAULTS.canvas;
+      break;
+    
+    case 'defaults':
+      response.result = DEFAULTS;
+      break;
+    
+    default:
+      return false; // Not a daemon query, should forward to GUI
+  }
+  
+  socket.write(JSON.stringify(response) + '\n');
+  return true; // Handled
+}
 
 // TCP server for command injection
 const cmdServer = net.createServer((socket) => {
@@ -53,13 +96,17 @@ const cmdServer = net.createServer((socket) => {
       const cmd = line.trim();
       if (!cmd) continue;
       
-      // console.log('[Daemon] Received command:', cmd);
-      
-      if (guiClient && guiClient.readyState === WebSocket.OPEN) {
-        try {
-          const parsed = JSON.parse(cmd);
-          
-          // If this has an ID (query or tracked command), register for response
+      try {
+        const parsed = JSON.parse(cmd);
+        
+        // Check if this is a query the daemon can handle
+        if (parsed.query && handleDaemonQuery(parsed, socket)) {
+          continue; // Daemon handled it
+        }
+        
+        // Otherwise, forward to GUI
+        if (guiClient && guiClient.readyState === WebSocket.OPEN) {
+          // If this has an ID (query for GUI), register for response
           if (parsed.id) {
             pendingRequests.set(parsed.id, socket);
           }
@@ -70,11 +117,11 @@ const cmdServer = net.createServer((socket) => {
           if (!parsed.id) {
             socket.write('OK\n');
           }
-        } catch (e) {
-          socket.write(`ERROR: Invalid JSON - ${e.message}\n`);
+        } else {
+          socket.write('ERROR: No GUI connected\n');
         }
-      } else {
-        socket.write('ERROR: No GUI connected\n');
+      } catch (e) {
+        socket.write(`ERROR: Invalid JSON - ${e.message}\n`);
       }
     }
   });
@@ -94,4 +141,5 @@ cmdServer.listen(8081, 'localhost', () => {
   console.log('[Daemon] Command server listening on localhost:8081');
   console.log('[Daemon] WebSocket server listening on localhost:8080');
   console.log('[Daemon] Ready for GUI connection and commands');
+  console.log('[Daemon] DEFAULTS:', JSON.stringify(DEFAULTS, null, 2));
 });

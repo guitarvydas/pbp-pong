@@ -34,26 +34,10 @@
   <div id="log"></div>
 
   <script>
-    // Centralized default dimensions
-    const DEFAULTS = {
-      canvas: {
-        width: 800,
-        height: 600
-      },
-      paddle: { 
-        width: 20, 
-        height: 100,
-        color: '#4ec9b0'
-      },
-      ball: { 
-        radius: 10,
-        color: '#ffffff'
-      }
-    };
+    // Will be initialized from daemon
+    let DEFAULTS = null;
     
     const canvas = document.getElementById('canvas');
-    canvas.width = DEFAULTS.canvas.width;
-    canvas.height = DEFAULTS.canvas.height;
     const ctx = canvas.getContext('2d');
     const logDiv = document.getElementById('log');
     
@@ -72,6 +56,8 @@
     }
     
     function render() {
+      if (!DEFAULTS) return; // Wait for initialization
+      
       // Clear canvas
       ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -106,17 +92,6 @@
       const response = { id: msg.id };
       
       switch (msg.query) {
-        case 'canvas_size':
-          response.result = {
-            width: canvas.width,
-            height: canvas.height
-          };
-          break;
-        
-        case 'defaults':
-          response.result = DEFAULTS;
-          break;
-        
         case 'objects':
           response.result = objects;
           break;
@@ -138,7 +113,16 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        log(`Received: ${JSON.stringify(data)}`);
+        
+        // Handle initialization from daemon
+        if (data.type === 'init' && data.defaults) {
+          DEFAULTS = data.defaults;
+          canvas.width = DEFAULTS.canvas.width;
+          canvas.height = DEFAULTS.canvas.height;
+          log(`Initialized with canvas size: ${DEFAULTS.canvas.width}x${DEFAULTS.canvas.height}`);
+          render();
+          return;
+        }
         
         // Check if this is a query
         if (data.query) {
@@ -175,9 +159,6 @@
     ws.onerror = (error) => {
       log(`WebSocket error: ${error.message}`);
     };
-    
-    // Initial render
-    render();
   </script>
 </body>
 </html>
