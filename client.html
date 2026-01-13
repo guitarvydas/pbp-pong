@@ -113,7 +113,8 @@
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+        log (data);
+
         // Handle initialization from daemon
         if (data.type === 'init' && data.defaults) {
           DEFAULTS = data.defaults;

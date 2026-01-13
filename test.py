@@ -1,14 +1,15 @@
 import sys
+import time
 sys.path.insert(0, './pbp/kernel')
 import kernel0d as zd
 
 def handler (eh,mev):
     try:
         if '' == mev.datum.v:
-            zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ff00ff"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
+            zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ffff00"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
         else:
             x = int(mev.datum.v) * 10
-            zd.send (eh, "", "{" + f'"type":"ball","x":"{x}","y":"310","color":"#ff00ff"' + "}" , mev)
+            zd.send (eh, "", "{" + f'"type":"ball","x":"{x}","y":"310","color":"#00ff00"' + "}" , mev)
     except (testerr):
         zd.send (eh, "✗", f"*** error in Test.py *** {testerr}", mev)
         

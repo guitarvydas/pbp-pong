@@ -20,12 +20,12 @@ const DEFAULTS = {
   }
 };
 
-// WebSocket server for GUI
+// WebSocket server for GUI (port 8080)
 const wss = new WebSocket.Server({ port: 8080 });
 let guiClient = null;
 
-// Track pending requests: requestId -> TCP socket
-const pendingRequests = new Map();
+// Track pending GUI queries: requestId -> query WebSocket client
+const pendingGuiQueries = new Map();
 
 wss.on('connection', (ws) => {
   console.log('[Daemon] GUI connected');
@@ -42,10 +42,10 @@ wss.on('connection', (ws) => {
     try {
       const response = JSON.parse(data.toString());
       
-      if (response.id && pendingRequests.has(response.id)) {
-        const socket = pendingRequests.get(response.id);
-        socket.write(JSON.stringify(response) + '\n');
-        pendingRequests.delete(response.id);
+      if (response.id && pendingGuiQueries.has(response.id)) {
+        const queryClient = pendingGuiQueries.get(response.id);
+        queryClient.send(JSON.stringify(response));
+        pendingGuiQueries.delete(response.id);
       }
     } catch (e) {
       console.error('[Daemon] Error handling GUI response:', e.message);
@@ -58,28 +58,55 @@ wss.on('connection', (ws) => {
   });
 });
 
-// Handle queries that the daemon can answer directly
-function handleDaemonQuery(msg, socket) {
-  const response = { id: msg.id };
-  
-  switch (msg.query) {
-    case 'canvas_size':
-      response.result = DEFAULTS.canvas;
-      break;
-    
-    case 'defaults':
-      response.result = DEFAULTS;
-      break;
-    
-    default:
-      return false; // Not a daemon query, should forward to GUI
-  }
-  
-  socket.write(JSON.stringify(response) + '\n');
-  return true; // Handled
-}
+// WebSocket server for queries (port 8082)
+const queryWss = new WebSocket.Server({ port: 8082 });
 
-// TCP server for command injection
+queryWss.on('connection', (ws) => {
+  console.log('[Daemon] Query client connected');
+  
+  ws.on('message', (data) => {
+    try {
+      const msg = JSON.parse(data.toString());
+      const response = { id: msg.id };
+      
+      // Handle queries the daemon can answer directly
+      switch (msg.query) {
+        case 'canvas_size':
+          response.result = DEFAULTS.canvas;
+          ws.send(JSON.stringify(response));
+          break;
+        
+        case 'defaults':
+          response.result = DEFAULTS;
+          ws.send(JSON.stringify(response));
+          break;
+        
+        case 'objects':
+          // Forward to GUI
+          if (guiClient && guiClient.readyState === WebSocket.OPEN) {
+            pendingGuiQueries.set(msg.id, ws);
+            guiClient.send(JSON.stringify(msg));
+          } else {
+            response.error = 'No GUI connected';
+            ws.send(JSON.stringify(response));
+          }
+          break;
+        
+        default:
+          response.error = `Unknown query: ${msg.query}`;
+          ws.send(JSON.stringify(response));
+      }
+    } catch (e) {
+      console.error('[Daemon] Error handling query:', e.message);
+    }
+  });
+  
+  ws.on('close', () => {
+    console.log('[Daemon] Query client disconnected');
+  });
+});
+
+// TCP server for command injection (port 8081)
 const cmdServer = net.createServer((socket) => {
   console.log('[Daemon] Command client connected');
   
@@ -96,50 +123,26 @@ const cmdServer = net.createServer((socket) => {
       const cmd = line.trim();
       if (!cmd) continue;
       
-      try {
-        const parsed = JSON.parse(cmd);
-        
-        // Check if this is a query the daemon can handle
-        if (parsed.query && handleDaemonQuery(parsed, socket)) {
-          continue; // Daemon handled it
-        }
-        
-        // Otherwise, forward to GUI
-        if (guiClient && guiClient.readyState === WebSocket.OPEN) {
-          // If this has an ID (query for GUI), register for response
-          if (parsed.id) {
-            pendingRequests.set(parsed.id, socket);
-          }
-          
-          guiClient.send(cmd);
-          
-          // Only send OK for commands without ID (fire-and-forget)
-          if (!parsed.id) {
-            socket.write('OK\n');
-          }
-        } else {
-          socket.write('ERROR: No GUI connected\n');
-        }
-      } catch (e) {
-        socket.write(`ERROR: Invalid JSON - ${e.message}\n`);
+      // console.log('[Daemon] Received command:', cmd);
+      
+      if (guiClient && guiClient.readyState === WebSocket.OPEN) {
+        guiClient.send(cmd);
+        socket.write('OK\n');
+      } else {
+        socket.write('ERROR: No GUI connected\n');
       }
     }
   });
   
   socket.on('end', () => {
     console.log('[Daemon] Command client disconnected');
-    // Clean up any pending requests from this socket
-    for (const [id, sock] of pendingRequests.entries()) {
-      if (sock === socket) {
-        pendingRequests.delete(id);
-      }
-    }
   });
 });
 
 cmdServer.listen(8081, 'localhost', () => {
   console.log('[Daemon] Command server listening on localhost:8081');
-  console.log('[Daemon] WebSocket server listening on localhost:8080');
-  console.log('[Daemon] Ready for GUI connection and commands');
+  console.log('[Daemon] WebSocket server (GUI) listening on localhost:8080');
+  console.log('[Daemon] WebSocket server (queries) listening on localhost:8082');
+  console.log('[Daemon] Ready for GUI connection, commands, and queries');
   console.log('[Daemon] DEFAULTS:', JSON.stringify(DEFAULTS, null, 2));
 });

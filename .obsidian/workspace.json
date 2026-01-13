@@ -298,6 +298,8 @@
   },
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
+    "query-daemon.py",
+    "query-daemon.js",
     "prompt.md",
     "#prompt.md#",
     "canvas.js",
@@ -308,7 +310,6 @@
     "query-client.js",
     "#client.html#",
     "__pycache__/tentimes.cpython-312.pyc",
-    "#test.py#",
     "node_modules/readline/README.md",
     "node_modules/ohm-js/README.md",
     "node_modules/yargs/README.md",
@@ -333,7 +334,6 @@
     "node_modules/wrap-ansi/node_modules/strip-ansi/readme.md",
     "node_modules/string-width/node_modules/strip-ansi/readme.md",
     "node_modules/cliui/node_modules/ansi-regex/readme.md",
-    "node_modules/cliui/node_modules/strip-ansi/readme.md",
     "design-sketches/pong-brainstorming-2025-12-29.drawio.png"
   ]
 }
