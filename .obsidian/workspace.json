@@ -298,6 +298,8 @@
   },
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
+    "prompt.md",
+    "#prompt.md#",
     "canvas.js",
     "__pycache__/query_canvas.cpython-312.pyc",
     "query_canvas.py~",
@@ -307,8 +309,6 @@
     "#client.html#",
     "__pycache__/tentimes.cpython-312.pyc",
     "#test.py#",
-    "tentimes.py~",
-    "#tentimes.py#",
     "node_modules/readline/README.md",
     "node_modules/ohm-js/README.md",
     "node_modules/yargs/README.md",
