@@ -555,20 +555,12 @@
     "name": "GUItest",
     "children": [
       {
-        "name": "GUI",
+        "name": "Test",
         "id": 5
       },
       {
-        "name": "Test",
-        "id": 9
-      },
-      {
-        "name": "TenTimes",
-        "id": 13
-      },
-      {
-        "name": "Get Canvas Size",
-        "id": 17
+        "name": "GUI",
+        "id": 10
       }
     ],
     "connections": [
@@ -578,7 +570,7 @@
         "target_port": "",
         "target": {
           "name": "Test",
-          "id": 9
+          "id": 5
         }
       },
       {
@@ -587,46 +579,24 @@
         "target_port": "",
         "source": {
           "name": "Test",
-          "id": 9
+          "id": 5
         },
         "target": {
           "name": "GUI",
-          "id": 5
+          "id": 10
         }
       },
       {
         "dir": 1,
-        "source_port": "sent",
-        "target_port": "",
+        "source_port": "size",
+        "target_port": "size",
         "source": {
           "name": "GUI",
-          "id": 5
-        },
-        "target": {
-          "name": "TenTimes",
-          "id": 13
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "TenTimes",
-          "id": 13
+          "id": 10
         },
         "target": {
           "name": "Test",
-          "id": 9
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "TenTimes",
-          "id": 13
+          "id": 5
         }
       },
       {
@@ -635,7 +605,7 @@
         "target_port": "",
         "source": {
           "name": "GUI",
-          "id": 5
+          "id": 10
         }
       },
       {
@@ -644,7 +614,7 @@
         "target_port": "✗",
         "source": {
           "name": "GUI",
-          "id": 5
+          "id": 10
         }
       },
       {
@@ -653,25 +623,7 @@
         "target_port": "✗",
         "source": {
           "name": "Test",
-          "id": 9
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "width",
-        "target_port": "",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 17
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "height",
-        "target_port": "",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 17
+          "id": 5
         }
       }
     ],
