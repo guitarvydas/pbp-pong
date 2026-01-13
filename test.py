@@ -5,8 +5,10 @@ import kernel0d as zd
 
 def handler (eh,mev):
     try:
-        if '' == mev.datum.v:
+        if '' == mev.port:
             zd.send (eh, "", '[{"type":"ball","x":150,"y":310,"color":"#ffff00"},{"type":"paddle","id":"left","x":50,"y":250}]', mev)
+        elif 'size' == mev.port:
+            print (f'size={mev.datum.v}', file=sys.stderr)
         else:
             x = int(mev.datum.v) * 10
             zd.send (eh, "", "{" + f'"type":"ball","x":"{x}","y":"310","color":"#00ff00"' + "}" , mev)

@@ -564,7 +564,11 @@
       },
       {
         "name": "TenTimes",
-        "id": 15
+        "id": 16
+      },
+      {
+        "name": "Get Canvas Size",
+        "id": 20
       }
     ],
     "connections": [
@@ -572,6 +576,32 @@
         "dir": 0,
         "source_port": "",
         "target_port": "",
+        "target": {
+          "name": "Get Canvas Size",
+          "id": 20
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test",
+          "id": 5
+        },
+        "target": {
+          "name": "GUI",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "TenTimes",
+          "id": 16
+        },
         "target": {
           "name": "Test",
           "id": 5
@@ -584,6 +614,19 @@
         "source": {
           "name": "Test",
           "id": 5
+        },
+        "target": {
+          "name": "TenTimes",
+          "id": 16
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "getsize",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 20
         },
         "target": {
           "name": "GUI",
@@ -601,32 +644,6 @@
         "target": {
           "name": "Test",
           "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "TenTimes",
-          "id": 15
-        },
-        "target": {
-          "name": "Test",
-          "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test",
-          "id": 5
-        },
-        "target": {
-          "name": "TenTimes",
-          "id": 15
         }
       },
       {
@@ -662,7 +679,16 @@
         "target_port": "✗",
         "source": {
           "name": "TenTimes",
-          "id": 15
+          "id": 16
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 20
         }
       }
     ],
@@ -673,7 +699,11 @@
     "children": [
       {
         "name": ":$ node send-stdin",
-        "id": 7
+        "id": 9
+      },
+      {
+        "name": ":$ python query-daemon.py",
+        "id": 13
       }
     ],
     "connections": [
@@ -683,7 +713,16 @@
         "target_port": "",
         "target": {
           "name": ":$ node send-stdin",
-          "id": 7
+          "id": 9
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "getsize",
+        "target_port": "",
+        "target": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
         }
       },
       {
@@ -692,7 +731,7 @@
         "target_port": "✗",
         "source": {
           "name": ":$ node send-stdin",
-          "id": 7
+          "id": 9
         }
       },
       {
@@ -701,7 +740,25 @@
         "target_port": "sent",
         "source": {
           "name": ":$ node send-stdin",
-          "id": 7
+          "id": 9
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "size",
+        "source": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
         }
       }
     ],
@@ -711,54 +768,6 @@
     "name": "Ball Stepper",
     "children": [],
     "connections": [],
-    "file": "pong.drawio"
-  },
-  {
-    "name": "Get Canvas Size",
-    "children": [
-      {
-        "name": "Query Canvas",
-        "id": 6
-      }
-    ],
-    "connections": [
-      {
-        "dir": 0,
-        "source_port": "",
-        "target_port": "",
-        "target": {
-          "name": "Query Canvas",
-          "id": 6
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "width",
-        "target_port": "width",
-        "source": {
-          "name": "Query Canvas",
-          "id": 6
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Query Canvas",
-          "id": 6
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "height",
-        "target_port": "height",
-        "source": {
-          "name": "Query Canvas",
-          "id": 6
-        }
-      }
-    ],
     "file": "pong.drawio"
   }
 ]
