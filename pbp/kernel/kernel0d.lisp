@@ -971,7 +971,7 @@ x))))
             (setf (slot-value  inst 'state)  "idle")        #|line 57|#
             )
           (t                                                #|line 58|#
-            (funcall (quote runtime_error)   (concatenate 'string  "bad mev.port (case B) for deracer " (slot-value  mev 'port))  #|line 59|#) #|line 60|#
+            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for ;1' but got '" (funcall (quote strcons)  (slot-value  mev 'port)  "' (case B)" ))  #|line 59|#) #|line 60|#
             ))
         )
       (( equal   (slot-value  inst 'state)  "waitingForSecondmev") #|line 61|#
@@ -982,7 +982,7 @@ x))))
             (setf (slot-value  inst 'state)  "idle")        #|line 65|#
             )
           (t                                                #|line 66|#
-            (funcall (quote runtime_error)   (concatenate 'string  "bad mev.port (case C) for deracer " (slot-value  mev 'port))  #|line 67|#) #|line 68|#
+            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for '2' but got '" (funcall (quote strcons)  (slot-value  mev 'port)  "' (case C)" ))  #|line 67|#) #|line 68|#
             ))
         )
       (t                                                    #|line 69|#
@@ -1148,7 +1148,7 @@ x))))
 (defun fakepipename_handler (&optional  eh  mev)
   (declare (ignorable  eh  mev))                            #|line 193|# #|line 194|#
   (setf  rand (+  rand  1))
-  #|  not very random, but good enough _ ;rand' must be unique within a single run |# #|line 195|#
+  #|  not very random, but good enough _ 'rand' must be unique within a single run |# #|line 195|#
   (funcall (quote send)   eh  ""  (concatenate 'string  "/tmp/fakepipe"  rand)  mev  #|line 196|#) #|line 197|#
   )                                                         #|line 199|#
 (defclass Switch1star_Instance_Data ()                      #|line 200|#
