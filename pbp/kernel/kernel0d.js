@@ -799,7 +799,7 @@ function deracer_handler (eh,mev) {                    /* line 41 */
         inst.state =  "idle";                          /* line 57 */
       }
       else {                                           /* line 58 */
-        runtime_error ( ( "deracer: waiting for 2 but got [".toString ()+  ( mev.port.toString ()+  "] (case B)".toString ()) .toString ()) )/* line 59 *//* line 60 */
+        runtime_error ( ( "deracer: waiting for 1 but got [".toString ()+  ( mev.port.toString ()+  "] (case B)".toString ()) .toString ()) )/* line 59 *//* line 60 */
       }
     }
     else if ( inst.state ==  "waitingForSecondmev") {  /* line 61 */
@@ -809,7 +809,7 @@ function deracer_handler (eh,mev) {                    /* line 41 */
         inst.state =  "idle";                          /* line 65 */
       }
       else {                                           /* line 66 */
-        runtime_error ( ( "deracer: waiting for 1 but got [".toString ()+  ( mev.port.toString ()+  "] (case C)".toString ()) .toString ()) )/* line 67 *//* line 68 */
+        runtime_error ( ( "deracer: waiting for 2 but got [".toString ()+  ( mev.port.toString ()+  "] (case C)".toString ()) .toString ()) )/* line 67 *//* line 68 */
       }
     }
     else {                                             /* line 69 */
