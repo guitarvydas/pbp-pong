@@ -496,6 +496,12 @@
     "file": "pong.drawio"
   },
   {
+    "name": "Ball Stepper",
+    "children": [],
+    "connections": [],
+    "file": "pong.drawio"
+  },
+  {
     "name": "Hit Either Paddle",
     "children": [
       {
@@ -555,7 +561,7 @@
     "name": "GUItest",
     "children": [
       {
-        "name": "Test",
+        "name": "Test Loop",
         "id": 5
       },
       {
@@ -563,12 +569,16 @@
         "id": 10
       },
       {
-        "name": "TenTimes",
+        "name": "Get Canvas Size",
         "id": 16
       },
       {
-        "name": "Get Canvas Size",
+        "name": "Width Height",
         "id": 20
+      },
+      {
+        "name": "🗑️",
+        "id": 25
       }
     ],
     "connections": [
@@ -578,45 +588,6 @@
         "target_port": "",
         "target": {
           "name": "Get Canvas Size",
-          "id": 20
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test",
-          "id": 5
-        },
-        "target": {
-          "name": "GUI",
-          "id": 10
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "TenTimes",
-          "id": 16
-        },
-        "target": {
-          "name": "Test",
-          "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test",
-          "id": 5
-        },
-        "target": {
-          "name": "TenTimes",
           "id": 16
         }
       },
@@ -626,7 +597,7 @@
         "target_port": "getsize",
         "source": {
           "name": "Get Canvas Size",
-          "id": 20
+          "id": 16
         },
         "target": {
           "name": "GUI",
@@ -642,17 +613,60 @@
           "id": 10
         },
         "target": {
-          "name": "Test",
+          "name": "Width Height",
+          "id": 20
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": "GUI",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "width",
+        "target_port": "width",
+        "source": {
+          "name": "Width Height",
+          "id": 20
+        },
+        "target": {
+          "name": "Test Loop",
           "id": 5
         }
       },
       {
-        "dir": 2,
+        "dir": 1,
+        "source_port": "height",
+        "target_port": "height",
+        "source": {
+          "name": "Width Height",
+          "id": 20
+        },
+        "target": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
         "source_port": "sent",
         "target_port": "",
         "source": {
           "name": "GUI",
           "id": 10
+        },
+        "target": {
+          "name": "🗑️",
+          "id": 25
         }
       },
       {
@@ -662,24 +676,6 @@
         "source": {
           "name": "GUI",
           "id": 10
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Test",
-          "id": 5
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "TenTimes",
-          "id": 16
         }
       },
       {
@@ -688,6 +684,33 @@
         "target_port": "✗",
         "source": {
           "name": "Get Canvas Size",
+          "id": 16
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Width Height",
           "id": 20
         }
       }
@@ -765,9 +788,163 @@
     "file": "pong.drawio"
   },
   {
-    "name": "Ball Stepper",
-    "children": [],
-    "connections": [],
+    "name": "Test Loop",
+    "children": [
+      {
+        "name": "Test",
+        "id": 6
+      },
+      {
+        "name": "Loop Test",
+        "id": 13
+      },
+      {
+        "name": "1→2",
+        "id": 19
+      },
+      {
+        "name": "1→2",
+        "id": 24
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "width",
+        "target_port": "1",
+        "target": {
+          "name": "1→2",
+          "id": 19
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "height",
+        "target_port": "2",
+        "target": {
+          "name": "1→2",
+          "id": 19
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "width",
+        "target_port": "width",
+        "target": {
+          "name": "Loop Test",
+          "id": 13
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Loop Test",
+          "id": 13
+        },
+        "target": {
+          "name": "Test",
+          "id": 6
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "x",
+        "target_port": "",
+        "source": {
+          "name": "Test",
+          "id": 6
+        },
+        "target": {
+          "name": "Loop Test",
+          "id": 13
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "width",
+        "source": {
+          "name": "1→2",
+          "id": 19
+        },
+        "target": {
+          "name": "Test",
+          "id": 6
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "height",
+        "source": {
+          "name": "1→2",
+          "id": 24
+        },
+        "target": {
+          "name": "Test",
+          "id": 6
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 24
+        },
+        "target": {
+          "name": "Test",
+          "id": 6
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "1",
+        "source": {
+          "name": "1→2",
+          "id": 19
+        },
+        "target": {
+          "name": "1→2",
+          "id": 24
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "2",
+        "source": {
+          "name": "1→2",
+          "id": 19
+        },
+        "target": {
+          "name": "1→2",
+          "id": 24
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test",
+          "id": 6
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Test",
+          "id": 6
+        }
+      }
+    ],
     "file": "pong.drawio"
   }
 ]
