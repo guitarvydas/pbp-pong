@@ -971,7 +971,7 @@ x))))
             (setf (slot-value  inst 'state)  "idle")        #|line 57|#
             )
           (t                                                #|line 58|#
-            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for 2 but got [" (funcall (quote strcons)  (slot-value  mev 'port)  "] (case B)" ))  #|line 59|#) #|line 60|#
+            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for 2 but got ["  (concatenate 'string (slot-value  mev 'port)  "] (case B)"))  #|line 59|#) #|line 60|#
             ))
         )
       (( equal   (slot-value  inst 'state)  "waitingForSecondmev") #|line 61|#
@@ -982,7 +982,7 @@ x))))
             (setf (slot-value  inst 'state)  "idle")        #|line 65|#
             )
           (t                                                #|line 66|#
-            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for 1 but got [" (funcall (quote strcons)  (slot-value  mev 'port)  "] (case C)" ))  #|line 67|#) #|line 68|#
+            (funcall (quote runtime_error)   (concatenate 'string  "deracer: waiting for 1 but got ["  (concatenate 'string (slot-value  mev 'port)  "] (case C)"))  #|line 67|#) #|line 68|#
             ))
         )
       (t                                                    #|line 69|#
