@@ -16,7 +16,7 @@ def handler (eh,mev):
         if mev.port == 'width':
             self.width = int (mev.datum.v) ## just save the value
         elif mev.port == '':
-            if int (mev.datum.v) < self.x:
+            if int (mev.datum.v) < self.width:
                 zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
         else:
             raise ValueError(f"unrecognized port {mev.port}")
