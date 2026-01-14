@@ -799,7 +799,7 @@ function deracer_handler (eh,mev) {                    /* line 41 */
         inst.state =  "idle";                          /* line 57 */
       }
       else {                                           /* line 58 */
-        runtime_error ( ( "deracer: waiting for 2 but got ;".toString ()+ strcons ( mev.port, "' (case B)").toString ()) )/* line 59 *//* line 60 */
+        runtime_error ( ( "deracer: waiting for 2 but got [".toString ()+ strcons ( mev.port, "] (case B)").toString ()) )/* line 59 *//* line 60 */
       }
     }
     else if ( inst.state ==  "waitingForSecondmev") {  /* line 61 */
@@ -809,7 +809,7 @@ function deracer_handler (eh,mev) {                    /* line 41 */
         inst.state =  "idle";                          /* line 65 */
       }
       else {                                           /* line 66 */
-        runtime_error ( ( "deracer: waiting for 1 but got '".toString ()+ strcons ( mev.port, "' (case C)").toString ()) )/* line 67 *//* line 68 */
+        runtime_error ( ( "deracer: waiting for 1 but got [".toString ()+ strcons ( mev.port, "] (case C)").toString ()) )/* line 67 *//* line 68 */
       }
     }
     else {                                             /* line 69 */
@@ -960,7 +960,7 @@ function fakepipename_instantiate (reg,owner,name,template_data,arg) {/* line 18
 let  rand =  0;                                        /* line 191 *//* line 192 */
 function fakepipename_handler (eh,mev) {               /* line 193 *//* line 194 */
     rand =  rand+ 1;
-    /*  not very random, but good enough _ 'rand' must be unique within a single run *//* line 195 */
+    /*  not very random, but good enough _ ;rand' must be unique within a single run *//* line 195 */
     send ( eh, "", ( "/tmp/fakepipe".toString ()+  rand.toString ()) , mev)/* line 196 *//* line 197 *//* line 198 */
 }
                                                        /* line 199 */
