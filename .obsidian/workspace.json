@@ -298,6 +298,8 @@
   },
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
+    "documentation.drawio",
+    "pong-tester-overview.drawio.png",
     "looptest.sm~",
     "looptest.sm",
     "#looptest.sm#",
@@ -311,7 +313,6 @@
     "bundle/Makefile~",
     "bundle/pong.drawio.json",
     "bundle/Makefile",
-    "bundle/__pycache__/wh.cpython-312.pyc",
     "prompt.md",
     "node_modules/readline/README.md",
     "node_modules/ohm-js/README.md",
