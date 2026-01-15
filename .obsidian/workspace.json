@@ -299,6 +299,7 @@
   "active": "e50cd145af6ccc9a",
   "lastOpenFiles": [
     "#test.py#",
+    "pbp/kernel/#kernel0d.py#",
     "__pycache__/looptest.cpython-312.pyc",
     "looptest.py~",
     "looptest.py",
@@ -308,7 +309,6 @@
     "maxout.py",
     "wh.py~",
     "__pycache__/wh.cpython-312.pyc",
-    "wh.py",
     "prompt.md",
     "node_modules/readline/README.md",
     "node_modules/ohm-js/README.md",

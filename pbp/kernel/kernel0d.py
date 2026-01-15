@@ -666,27 +666,29 @@ def deracer_instantiate (reg,owner,name,template_data,arg):#line 26
 def send_firstmev_then_secondmev (eh,inst):            #line 35
     forward ( eh, "1", inst.buffer.firstmev)           #line 36
     forward ( eh, "2", inst.buffer.secondmev)          #line 37
+    print (f'  --> deracer sends {inst.buffer.firstmev.port} {inst.buffer.firstmev.datum.v} {inst.buffer.secondmev.port} {inst.buffer.secondmev.datum.v}')
     reclaim_Buffers_from_heap ( inst)                  #line 38#line 39#line 40
 
 def deracer_handler (eh,mev):                          #line 41
     inst =  eh.instance_data                           #line 42
+    print (f'  <-- deracer {eh.name} gets port={mev.port} state={inst.state} v={mev.datum.v}')
     if  inst.state ==  "idle":                         #line 43
         if  "1" ==  mev.port:                          #line 44
             inst.buffer.firstmev =  mev                #line 45
-            inst.state =  "waitingForSecondmev"        #line 46
+            inst.state =  "waitingFor2"        #line 46
         elif  "2" ==  mev.port:                        #line 47
             inst.buffer.secondmev =  mev               #line 48
-            inst.state =  "waitingForFirstmev"         #line 49
+            inst.state =  "waitingFor1"         #line 49
         else:                                          #line 50
             runtime_error ( str( "bad mev.port (case A) for deracer ") +  mev.port )#line 51#line 52
-    elif  inst.state ==  "waitingForFirstmev":         #line 53
+    elif  inst.state ==  "waitingFor1":         #line 53
         if  "1" ==  mev.port:                          #line 54
             inst.buffer.firstmev =  mev                #line 55
             send_firstmev_then_secondmev ( eh, inst)   #line 56
             inst.state =  "idle"                       #line 57
         else:                                          #line 58
             runtime_error ( str( "deracer: waiting for 1 but got [") +  str( mev.port) +  "] (case B)"  )#line 59#line 60
-    elif  inst.state ==  "waitingForSecondmev":        #line 61
+    elif  inst.state ==  "waitingFor2":        #line 61
         if  "2" ==  mev.port:                          #line 62
             inst.buffer.secondmev =  mev               #line 63
             send_firstmev_then_secondmev ( eh, inst)   #line 64

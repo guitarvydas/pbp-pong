@@ -1,5 +1,568 @@
 [
   {
+    "name": "GUItest",
+    "children": [
+      {
+        "name": "Test Loop",
+        "id": 5
+      },
+      {
+        "name": "GUI",
+        "id": 12
+      },
+      {
+        "name": "Get Canvas Size",
+        "id": 18
+      },
+      {
+        "name": "Width Height",
+        "id": 22
+      },
+      {
+        "name": "🗑️",
+        "id": 27
+      },
+      {
+        "name": ":?A",
+        "id": 30
+      },
+      {
+        "name": ":?B",
+        "id": 32
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": "Get Canvas Size",
+          "id": 18
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "loop",
+        "target_port": "loop",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "getsize",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 18
+        },
+        "target": {
+          "name": "GUI",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "size",
+        "target_port": "size",
+        "source": {
+          "name": "GUI",
+          "id": 12
+        },
+        "target": {
+          "name": "Width Height",
+          "id": 22
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": "GUI",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "width",
+        "target_port": "width",
+        "source": {
+          "name": "Width Height",
+          "id": 22
+        },
+        "target": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "height",
+        "target_port": "height",
+        "source": {
+          "name": "Width Height",
+          "id": 22
+        },
+        "target": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "sent",
+        "target_port": "",
+        "source": {
+          "name": "GUI",
+          "id": 12
+        },
+        "target": {
+          "name": "🗑️",
+          "id": 27
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": ":?A",
+          "id": 30
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "loop",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": ":?B",
+          "id": 32
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "GUI",
+          "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 18
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Width Height",
+          "id": 22
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "GUI",
+    "children": [
+      {
+        "name": ":$ node send-stdin",
+        "id": 9
+      },
+      {
+        "name": ":$ python query-daemon.py",
+        "id": 13
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": ":$ node send-stdin",
+          "id": 9
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "getsize",
+        "target_port": "",
+        "target": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": ":$ node send-stdin",
+          "id": 9
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "sent",
+        "source": {
+          "name": ":$ node send-stdin",
+          "id": 9
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "size",
+        "source": {
+          "name": ":$ python query-daemon.py",
+          "id": 13
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Test Loop",
+    "children": [
+      {
+        "name": "Test",
+        "id": 8
+      },
+      {
+        "name": "Loop Test",
+        "id": 16
+      },
+      {
+        "name": "1→2",
+        "id": 23
+      },
+      {
+        "name": "1→2",
+        "id": 28
+      },
+      {
+        "name": "1→2",
+        "id": 33
+      },
+      {
+        "name": ":?1",
+        "id": 38
+      },
+      {
+        "name": ":?2",
+        "id": 40
+      },
+      {
+        "name": ":?inloop",
+        "id": 42
+      },
+      {
+        "name": ":?stdout",
+        "id": 44
+      },
+      {
+        "name": ":?rev",
+        "id": 46
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "width",
+        "target_port": "1",
+        "target": {
+          "name": "1→2",
+          "id": 23
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "height",
+        "target_port": "2",
+        "target": {
+          "name": "1→2",
+          "id": 23
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "width",
+        "target_port": "width",
+        "target": {
+          "name": "Loop Test",
+          "id": 16
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "loop",
+        "target_port": "",
+        "target": {
+          "name": "Loop Test",
+          "id": 16
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "loop",
+        "target_port": "",
+        "target": {
+          "name": ":?inloop",
+          "id": 42
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Loop Test",
+          "id": 16
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "width",
+        "source": {
+          "name": "1→2",
+          "id": 23
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "height",
+        "source": {
+          "name": "1→2",
+          "id": 28
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 28
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "1",
+        "source": {
+          "name": "1→2",
+          "id": 23
+        },
+        "target": {
+          "name": "1→2",
+          "id": 28
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "2",
+        "source": {
+          "name": "1→2",
+          "id": 23
+        },
+        "target": {
+          "name": "1→2",
+          "id": 28
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rev",
+        "target_port": "rev",
+        "source": {
+          "name": "Loop Test",
+          "id": 16
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "1",
+        "source": {
+          "name": "Test",
+          "id": 8
+        },
+        "target": {
+          "name": "1→2",
+          "id": 33
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "x",
+        "target_port": "2",
+        "source": {
+          "name": "Test",
+          "id": 8
+        },
+        "target": {
+          "name": "1→2",
+          "id": 33
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 33
+        },
+        "target": {
+          "name": ":?1",
+          "id": 38
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 33
+        },
+        "target": {
+          "name": ":?2",
+          "id": 40
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Loop Test",
+          "id": 16
+        },
+        "target": {
+          "name": ":?stdout",
+          "id": 44
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rev",
+        "target_port": "",
+        "source": {
+          "name": "Loop Test",
+          "id": 16
+        },
+        "target": {
+          "name": ":?rev",
+          "id": 46
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "1",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 33
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "2",
+        "target_port": "loop",
+        "source": {
+          "name": "1→2",
+          "id": 33
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Experiments & TODOs",
+    "children": [],
+    "connections": [],
+    "file": "pong.drawio"
+  },
+  {
     "name": "brainstorming-2025-12-29",
     "children": [
       {
@@ -117,6 +680,12 @@
         }
       }
     ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "...",
+    "children": [],
+    "connections": [],
     "file": "pong.drawio"
   },
   {
@@ -552,396 +1121,6 @@
         "source": {
           "name": "Calculate New Trajectory",
           "id": 7
-        }
-      }
-    ],
-    "file": "pong.drawio"
-  },
-  {
-    "name": "GUItest",
-    "children": [
-      {
-        "name": "Test Loop",
-        "id": 5
-      },
-      {
-        "name": "GUI",
-        "id": 10
-      },
-      {
-        "name": "Get Canvas Size",
-        "id": 16
-      },
-      {
-        "name": "Width Height",
-        "id": 20
-      },
-      {
-        "name": "🗑️",
-        "id": 25
-      }
-    ],
-    "connections": [
-      {
-        "dir": 0,
-        "source_port": "",
-        "target_port": "",
-        "target": {
-          "name": "Get Canvas Size",
-          "id": 16
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "getsize",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 16
-        },
-        "target": {
-          "name": "GUI",
-          "id": 10
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "size",
-        "target_port": "size",
-        "source": {
-          "name": "GUI",
-          "id": 10
-        },
-        "target": {
-          "name": "Width Height",
-          "id": 20
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test Loop",
-          "id": 5
-        },
-        "target": {
-          "name": "GUI",
-          "id": 10
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "width",
-        "target_port": "width",
-        "source": {
-          "name": "Width Height",
-          "id": 20
-        },
-        "target": {
-          "name": "Test Loop",
-          "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "height",
-        "target_port": "height",
-        "source": {
-          "name": "Width Height",
-          "id": 20
-        },
-        "target": {
-          "name": "Test Loop",
-          "id": 5
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "sent",
-        "target_port": "",
-        "source": {
-          "name": "GUI",
-          "id": 10
-        },
-        "target": {
-          "name": "🗑️",
-          "id": 25
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "GUI",
-          "id": 10
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 16
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test Loop",
-          "id": 5
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Test Loop",
-          "id": 5
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Width Height",
-          "id": 20
-        }
-      }
-    ],
-    "file": "pong.drawio"
-  },
-  {
-    "name": "GUI",
-    "children": [
-      {
-        "name": ":$ node send-stdin",
-        "id": 9
-      },
-      {
-        "name": ":$ python query-daemon.py",
-        "id": 13
-      }
-    ],
-    "connections": [
-      {
-        "dir": 0,
-        "source_port": "",
-        "target_port": "",
-        "target": {
-          "name": ":$ node send-stdin",
-          "id": 9
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "getsize",
-        "target_port": "",
-        "target": {
-          "name": ":$ python query-daemon.py",
-          "id": 13
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": ":$ node send-stdin",
-          "id": 9
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "",
-        "target_port": "sent",
-        "source": {
-          "name": ":$ node send-stdin",
-          "id": 9
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": ":$ python query-daemon.py",
-          "id": 13
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "",
-        "target_port": "size",
-        "source": {
-          "name": ":$ python query-daemon.py",
-          "id": 13
-        }
-      }
-    ],
-    "file": "pong.drawio"
-  },
-  {
-    "name": "Test Loop",
-    "children": [
-      {
-        "name": "Test",
-        "id": 6
-      },
-      {
-        "name": "Loop Test",
-        "id": 13
-      },
-      {
-        "name": "1→2",
-        "id": 19
-      },
-      {
-        "name": "1→2",
-        "id": 24
-      }
-    ],
-    "connections": [
-      {
-        "dir": 0,
-        "source_port": "width",
-        "target_port": "1",
-        "target": {
-          "name": "1→2",
-          "id": 19
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "height",
-        "target_port": "2",
-        "target": {
-          "name": "1→2",
-          "id": 19
-        }
-      },
-      {
-        "dir": 0,
-        "source_port": "width",
-        "target_port": "width",
-        "target": {
-          "name": "Loop Test",
-          "id": 13
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Loop Test",
-          "id": 13
-        },
-        "target": {
-          "name": "Test",
-          "id": 6
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "x",
-        "target_port": "",
-        "source": {
-          "name": "Test",
-          "id": 6
-        },
-        "target": {
-          "name": "Loop Test",
-          "id": 13
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "1",
-        "target_port": "width",
-        "source": {
-          "name": "1→2",
-          "id": 19
-        },
-        "target": {
-          "name": "Test",
-          "id": 6
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "1",
-        "target_port": "height",
-        "source": {
-          "name": "1→2",
-          "id": 24
-        },
-        "target": {
-          "name": "Test",
-          "id": 6
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "",
-        "source": {
-          "name": "1→2",
-          "id": 24
-        },
-        "target": {
-          "name": "Test",
-          "id": 6
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "1",
-        "source": {
-          "name": "1→2",
-          "id": 19
-        },
-        "target": {
-          "name": "1→2",
-          "id": 24
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "2",
-        "source": {
-          "name": "1→2",
-          "id": 19
-        },
-        "target": {
-          "name": "1→2",
-          "id": 24
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Test",
-          "id": 6
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Test",
-          "id": 6
         }
       }
     ],

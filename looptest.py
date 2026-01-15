@@ -13,11 +13,18 @@ class WH:
 def handler (eh,mev):
     try:
         self = eh.instance_data
+        print (f'wh: port={mev.port} payload={mev.datum.v} int(payload)={int(mev.datum.v)}')
         if mev.port == 'width':
             self.width = int (mev.datum.v) ## just save the value
         elif mev.port == '':
-            if int (mev.datum.v) < self.width:
-                zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+            x = int (mev.datum.v)
+            if x <= 0:
+                zd.send (eh, "rev", "", mev)
+            elif x >= self.width:
+                zd.send (eh, "rev", "", mev)
+            else:
+                pass
+            zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
         else:
             raise ValueError(f"unrecognized port {mev.port}")
     except (e):
