@@ -1,7 +1,6 @@
 import sys
 import os
 import time
-sys.path.insert(0, './pbp/kernel')
 import kernel0d as zd
 
 class WH:

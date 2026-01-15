@@ -1,0 +1,24 @@
+state "idle" {
+  {}
+  {
+    if x > self.width:
+        next "wait for w recrossing"
+    elif x < 0:
+        next "wait for 0 recrossing"
+  }
+  {}
+}
+
+state "wait for w recrossing" {
+  { zd.send (eh, "rev", "", mev) }
+  { if x <= self.width:
+	next "idle" }
+  {}
+}
+
+state "wait for 0 recrossing" {
+  { zd.send (eh, "rev", "", mev) }
+  { if x >= 0:
+	next "idle" }
+  {}
+}
