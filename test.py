@@ -23,9 +23,8 @@ def handler (eh,mev):
             self.height = int (mev.datum.v)
         elif 'rev' == mev.port:
             self.dir = -1 * self.dir
-            #self.x = self.x + (self.dir * int (self.width / 20))
+            self.x = self.x + (self.dir * int (self.width / 20))
             zd.send (eh, "", "{" + f'"type":"ball","x":"{self.x}","y":{self.y},"color":"#ff0000"' + "}" , mev)
-            self.x = self.x + (self.dir * 500)
             zd.send (eh, "x", f'{self.x}' , mev)
         elif '' == mev.port:
             if self.state == 'idle':
@@ -33,8 +32,8 @@ def handler (eh,mev):
                 zd.send (eh, "", '{' + f'"type":"paddle","id":"left","x":{self.x},"y":{self.y}' + '}', mev)
                 zd.send (eh, "x", f'{self.x}' , mev)
                 self.state = 'looping'
+            self.x = self.x + (self.dir * int (self.width / 20))
             zd.send (eh, "", "{" + f'"type":"ball","x":"{self.x}","y":{self.y},"color":"#ff0000"' + "}" , mev)
-            self.x = self.x + (self.dir * 500)
             zd.send (eh, "x", f'{self.x}' , mev)
         else:
              zd.send (eh, "✗", f"unrecognized port '{mev.port}' in test.py", mev)
