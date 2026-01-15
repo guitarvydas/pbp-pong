@@ -185,14 +185,6 @@
       {
         "name": "1→2",
         "id": 33
-      },
-      {
-        "name": ":?go",
-        "id": 38
-      },
-      {
-        "name": ":?rev",
-        "id": 40
       }
     ],
     "connections": [
@@ -347,32 +339,6 @@
         "target": {
           "name": "1→2",
           "id": 33
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "rev",
-        "target_port": "",
-        "source": {
-          "name": "Loop Test",
-          "id": 16
-        },
-        "target": {
-          "name": ":?rev",
-          "id": 40
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Loop Test",
-          "id": 16
-        },
-        "target": {
-          "name": ":?go",
-          "id": 38
         }
       },
       {

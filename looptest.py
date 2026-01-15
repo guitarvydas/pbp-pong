@@ -33,6 +33,7 @@ def handler (eh,mev):
 
             def enter_wait_for_zero_recrossing ():
                 zd.send (eh, "rev", "", mev)
+                zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
                 self.state = "wait for zero re-crossing"
             def action_wait_for_zero_recrossing ():
                 if x >= 0:
@@ -43,6 +44,7 @@ def handler (eh,mev):
 
             def enter_wait_for_w_recrossing ():
                 zd.send (eh, "rev", "", mev)
+                zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
                 self.state = "wait for w re-crossing"
             def action_wait_for_w_recrossing ():
                 if x <= self.width:

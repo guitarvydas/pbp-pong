@@ -7,7 +7,8 @@ import kernel0d as zd
 class WH:
     def __init__(self):
         self.x = 0
-        self.y = 350
+        self.paddle_y = 50
+        self.y = 100
         self.width = None
         self.height = None
         self.state = 'idle'
@@ -26,7 +27,7 @@ def handler (eh,mev):
         elif '' == mev.port:
             if self.state == 'idle':
                 # send paddle image if first time
-                zd.send (eh, "", '{' + f'"type":"paddle","id":"left","x":{self.x},"y":{self.y}' + '}', mev)
+                zd.send (eh, "", '{' + f'"type":"paddle","id":"left","x":{self.x},"y":{self.paddle_y}' + '}', mev)
                 zd.send (eh, "x", f'{self.x}' , mev)
                 self.state = 'looping'
             self.x = self.x + (self.dir * int (self.width / 20))
