@@ -28,29 +28,29 @@ def handler (eh,mev):
                     exit_idle ()
                     enter_wait_for_w_recrossing ()
                 else:
-                    zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+                    zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
             def exit_idle (): pass
 
             def enter_wait_for_zero_recrossing ():
                 zd.send (eh, "rev", "", mev)
-                zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+                zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
                 self.state = "wait for zero re-crossing"
             def action_wait_for_zero_recrossing ():
                 if x >= 0:
                     exit_wait_for_zero_recrossing ()
                     enter_idle ()
-                    zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+                    zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
             def exit_wait_for_zero_recrossing (): pass
 
             def enter_wait_for_w_recrossing ():
                 zd.send (eh, "rev", "", mev)
-                zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+                zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
                 self.state = "wait for w re-crossing"
             def action_wait_for_w_recrossing ():
                 if x <= self.width:
                     exit_wait_for_w_recrossing ()
                     enter_idle ()
-                    zd.send (eh, "", mev.datum.v, mev) ## send a trigger to keep running the loop
+                    zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
             def exit_wait_for_w_recrossing (): pass
 
             if self.state == "idle":

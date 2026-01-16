@@ -13,8 +13,8 @@ def handler (eh,mev):
     try:
         import json
         data = json.loads(mev.datum.v)
-        self.width = data["width"]
-        self.height = data["height"]
+        self.width = data["canvas"]["width"]
+        self.height = data["canvas"]["height"]
         zd.send (eh, "width", f'{self.width}', mev)
         zd.send (eh, "height", f'{self.height}', mev)
     except (testerr):

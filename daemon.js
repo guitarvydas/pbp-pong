@@ -72,7 +72,7 @@ queryWss.on('connection', (ws) => {
       // Handle queries the daemon can answer directly
       switch (msg.query) {
         case 'canvas_size':
-          response.result = DEFAULTS.canvas;
+          response.result = DEFAULTS;
           ws.send(JSON.stringify(response));
           break;
         
