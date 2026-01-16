@@ -1,12 +1,13 @@
 state "idle" {
   {}
   {
-    if x < 0:
+    if x < 0 {
         next "wait for zero recrossing"
-    elif x > self.width:
+    } elif x > self.width {
         next "wait for w recrossing"
-    else:
+    } else {
         zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
+    }
   }
   {}
 }
