@@ -23,7 +23,7 @@ def handler (eh,mev):
 
 ### begin generated                
             def enter_idle (): self.state = "idle"
-            def action_idle ():
+            def step_idle ():
                 if x < 0:
                     exit_idle ()
                     enter_wait_for_zero_recrossing ()
@@ -38,7 +38,7 @@ def handler (eh,mev):
                 zd.send (eh, "rev", "", mev)
                 Loop ()
                 self.state = "wait for zero re-crossing"
-            def action_wait_for_zero_recrossing ():
+            def step_wait_for_zero_recrossing ():
                 if x >= 0:
                     exit_wait_for_zero_recrossing ()
                     enter_idle ()
@@ -49,19 +49,20 @@ def handler (eh,mev):
                 zd.send (eh, "rev", "", mev)
                 Loop ()
                 self.state = "wait for w re-crossing"
-            def action_wait_for_w_recrossing ():
+            def step_wait_for_w_recrossing ():
                 if x <= self.width:
                     exit_wait_for_w_recrossing ()
                     enter_idle ()
                     Loop ()
             def exit_wait_for_w_recrossing (): pass
 
-            if self.state == "idle":
-                action_idle ()
-            elif self.state == "wait for zero re-crossing":
-                action_wait_for_zero_recrossing ()
-            elif self.state == "wait for w re-crossing":
-                action_wait_for_zero_recrossing ()
+            match self.state:
+                case "idle":
+                    step_idle ()
+                case "wait for zero re-crossing":
+                    step_wait_for_zero_recrossing ()
+                case "wait for w re-crossing":
+                    step_wait_for_zero_recrossing ()
 ### end generated                
 
         else:
