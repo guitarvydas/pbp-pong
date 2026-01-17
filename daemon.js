@@ -7,7 +7,7 @@ const net = require('net');
 const DEFAULTS = {
   canvas: {
     width: 800,
-    height: 200
+    height: 600
   },
   paddle: { 
     width: 20, 

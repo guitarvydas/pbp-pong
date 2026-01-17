@@ -13,24 +13,27 @@ class WH:
         self.height = None
         self.state = 'idle'
         self.dir = 1
+        self.step_size = None
 
 def handler (eh,mev):
     self = eh.instance_data
     try:
         if 'width' == mev.port:
             self.width = int (mev.datum.v)
+            self.step_size = 19
+            zd.send (eh, "step size", str (self.step_size), mev)
         elif 'height' == mev.port:
             self.height = int (mev.datum.v)
         elif 'rev' == mev.port:
             self.dir = -1 * self.dir
-            self.x = self.x + (self.dir * int (self.width / 20))
+            self.x = self.x + (self.dir * self.step_size)
         elif '' == mev.port:
             if self.state == 'idle':
                 # send paddle image if first time
                 zd.send (eh, "", '{' + f'"type":"paddle","id":"left","x":{self.x},"y":{self.paddle_y}' + '}', mev)
                 zd.send (eh, "x", f'{self.x}' , mev)
                 self.state = 'looping'
-            self.x = self.x + (self.dir * int (self.width / 20))
+            self.x = self.x + (self.dir * self.step_size)
             zd.send (eh, "", "{" + f'"type":"ball","x":"{self.x}","y":{self.y},"color":"#ff0000"' + "}" , mev)
             zd.send (eh, "x", f'{self.x}' , mev)
         else:

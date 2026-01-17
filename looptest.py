@@ -62,7 +62,7 @@ def handler (eh,mev):
                 case "wait for zero re-crossing":
                     step_wait_for_zero_recrossing ()
                 case "wait for w re-crossing":
-                    step_wait_for_zero_recrossing ()
+                    step_wait_for_w_recrossing ()
 ### end generated                
 
         else:

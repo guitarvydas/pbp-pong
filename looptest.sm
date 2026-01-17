@@ -31,38 +31,93 @@ state "wait for w recrossing" {
   {}
 }
 
+---
 
 <state>
   "idle"
   <enter/>
   <step>
-    if x < 0 {
-        next "wait for zero recrossing"
-    } elif x > self.width {
-        next "wait for w recrossing"
-    } else {
+    if x < 0:
+        <next> "wait for zero recrossing" </next>
+    elif x > self.width:
+        <next> "wait for w recrossing" </next>
+    else:
         Loop ()
-    }
   </step>
   <exit/>
-}
+</state>
 
 <state>
     "wait for zero recrossing"
-    {  zd.send (eh, "rev", "", mev)
-            Loop () }
-    { if x >= 0:
-            Loop ()
-         next "idle" }
-    {}
+    <enter>
+      zd.send (eh, "rev", "", mev)
+      Loop ()
+    </enter>
+    <step>
+    if x >= 0:
+        Loop ()
+        <next> "idle" </next>
+    </step>
+    <exit />
 </state>
 
-state "wait for w recrossing" {
-  { zd.send (eh, "rev", "", mev)
-               Loop () }
-  { if x <= self.width:
-               Loop ()
-	next "idle" }
-  {}
+<state>
+    "wait for w recrossing"
+    <enter>
+        zd.send (eh, "rev", "", mev)
+        Loop ()
+    </enter>
+    <step>
+        if x <= self.width:
+            Loop ()
+	    <next> "idle" </next>
+    </step>
+    <exit/>
+</state>
+
+---
+
+{
+    "idle"
+    {}
+    {
+      if x < 0:
+          %next "wait for zero recrossing" 
+      elif x > self.width:
+          %next "wait for w recrossing" 
+      else:
+          Loop ()
+    }
+    {}
 }
+
+{
+    "wait for zero recrossing"
+    {
+      zd.send (eh, "rev", "", mev)
+      Loop ()
+    }
+    {
+    if x >= 0:
+        Loop ()
+        %next "idle" 
+    }
+    {}
+}
+
+{
+    "wait for w recrossing"
+    {
+        zd.send (eh, "rev", "", mev)
+        Loop ()
+    }
+    {
+        if x <= self.width:
+            Loop ()
+	    %next "idle" 
+    }
+    {}
+}
+
+
 
