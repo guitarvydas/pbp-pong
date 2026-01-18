@@ -21,6 +21,10 @@
       {
         "name": "🗑️",
         "id": 27
+      },
+      {
+        "name": "kill",
+        "id": 30
       }
     ],
     "connections": [
@@ -35,15 +39,28 @@
       },
       {
         "dir": 1,
-        "source_port": "loop",
-        "target_port": "loop",
+        "source_port": "✗",
+        "target_port": "",
         "source": {
-          "name": "Test Loop",
-          "id": 5
+          "name": "GUI",
+          "id": 12
         },
         "target": {
-          "name": "Test Loop",
-          "id": 5
+          "name": "kill",
+          "id": 30
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Get Canvas Size",
+          "id": 18
+        },
+        "target": {
+          "name": "kill",
+          "id": 30
         }
       },
       {
@@ -113,6 +130,32 @@
       },
       {
         "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": "kill",
+          "id": 30
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Width Height",
+          "id": 22
+        },
+        "target": {
+          "name": "kill",
+          "id": 30
+        }
+      },
+      {
+        "dir": 1,
         "source_port": "sent",
         "target_port": "",
         "source": {
@@ -125,39 +168,38 @@
         }
       },
       {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
+        "dir": 1,
+        "source_port": "out",
+        "target_port": "loop",
         "source": {
-          "name": "GUI",
-          "id": 12
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
-          "name": "Get Canvas Size",
-          "id": 18
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "✗",
-        "target_port": "✗",
-        "source": {
+          "name": "kill",
+          "id": 30
+        },
+        "target": {
           "name": "Test Loop",
           "id": 5
         }
       },
       {
+        "dir": 1,
+        "source_port": "loop",
+        "target_port": "in",
+        "source": {
+          "name": "Test Loop",
+          "id": 5
+        },
+        "target": {
+          "name": "kill",
+          "id": 30
+        }
+      },
+      {
         "dir": 2,
-        "source_port": "✗",
+        "source_port": "",
         "target_port": "✗",
         "source": {
-          "name": "Width Height",
-          "id": 22
+          "name": "kill",
+          "id": 30
         }
       }
     ],
@@ -187,7 +229,7 @@
         "id": 34
       },
       {
-        "name": ":?A",
+        "name": ":?B",
         "id": 39
       }
     ],
@@ -354,7 +396,7 @@
           "id": 8
         },
         "target": {
-          "name": ":?A",
+          "name": ":?B",
           "id": 39
         }
       },
@@ -383,6 +425,15 @@
         "source": {
           "name": "1→2",
           "id": 34
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "Loop Test",
+          "id": 17
         }
       }
     ],

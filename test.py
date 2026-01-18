@@ -38,7 +38,7 @@ def handler (eh,mev):
             zd.send (eh, "x", f'{self.x}' , mev)
         else:
              zd.send (eh, "✗", f"unrecognized port '{mev.port}' in test.py", mev)
-    except (err):
+    except Exception as err:
         zd.send (eh, "✗", f"*** error in test.py *** {err}", mev)
         
 def instantiate (reg,owner,name, arg, template_data):

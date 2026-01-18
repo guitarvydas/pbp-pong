@@ -17,7 +17,7 @@ def handler (eh,mev):
         self.height = data["canvas"]["height"]
         zd.send (eh, "width", f'{self.width}', mev)
         zd.send (eh, "height", f'{self.height}', mev)
-    except (testerr):
+    except Exception as testerr:
         zd.send (eh, "✗", f"*** error in wh.py *** {testerr}", mev)
         
 def instantiate (reg,owner,name, arg, template_data):
