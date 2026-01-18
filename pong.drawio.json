@@ -221,35 +221,31 @@
         "id": 24
       },
       {
-        "name": "1→2",
+        "name": ":?B",
         "id": 29
       },
       {
-        "name": "1→2",
-        "id": 34
-      },
-      {
-        "name": ":?B",
-        "id": 39
+        "name": "baton",
+        "id": 31
       }
     ],
     "connections": [
       {
         "dir": 0,
         "source_port": "width",
-        "target_port": "1",
+        "target_port": "a",
         "target": {
-          "name": "1→2",
-          "id": 24
+          "name": "baton",
+          "id": 31
         }
       },
       {
         "dir": 0,
         "source_port": "height",
-        "target_port": "2",
+        "target_port": "b",
         "target": {
-          "name": "1→2",
-          "id": 24
+          "name": "baton",
+          "id": 31
         }
       },
       {
@@ -285,11 +281,11 @@
       },
       {
         "dir": 1,
-        "source_port": "1",
+        "source_port": "d",
         "target_port": "width",
         "source": {
-          "name": "1→2",
-          "id": 24
+          "name": "baton",
+          "id": 31
         },
         "target": {
           "name": "Test",
@@ -298,11 +294,11 @@
       },
       {
         "dir": 1,
-        "source_port": "1",
+        "source_port": "c",
         "target_port": "height",
         "source": {
-          "name": "1→2",
-          "id": 29
+          "name": "baton",
+          "id": 31
         },
         "target": {
           "name": "Test",
@@ -311,41 +307,15 @@
       },
       {
         "dir": 1,
-        "source_port": "2",
+        "source_port": "done",
         "target_port": "",
         "source": {
-          "name": "1→2",
-          "id": 29
+          "name": "baton",
+          "id": 31
         },
         "target": {
           "name": "Test",
           "id": 8
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "1",
-        "source": {
-          "name": "1→2",
-          "id": 24
-        },
-        "target": {
-          "name": "1→2",
-          "id": 29
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "2",
-        "source": {
-          "name": "1→2",
-          "id": 24
-        },
-        "target": {
-          "name": "1→2",
-          "id": 29
         }
       },
       {
@@ -371,7 +341,7 @@
         },
         "target": {
           "name": "1→2",
-          "id": 34
+          "id": 24
         }
       },
       {
@@ -384,7 +354,7 @@
         },
         "target": {
           "name": "1→2",
-          "id": 34
+          "id": 24
         }
       },
       {
@@ -397,7 +367,7 @@
         },
         "target": {
           "name": ":?B",
-          "id": 39
+          "id": 29
         }
       },
       {
@@ -415,7 +385,7 @@
         "target_port": "",
         "source": {
           "name": "1→2",
-          "id": 34
+          "id": 24
         }
       },
       {
@@ -424,7 +394,7 @@
         "target_port": "loop",
         "source": {
           "name": "1→2",
-          "id": 34
+          "id": 24
         }
       },
       {
@@ -504,6 +474,93 @@
         "source": {
           "name": ":$ python query-daemon.py",
           "id": 13
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "baton",
+    "children": [
+      {
+        "name": "1→2",
+        "id": 7
+      },
+      {
+        "name": "1→2",
+        "id": 12
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "b",
+        "target_port": "2",
+        "target": {
+          "name": "1→2",
+          "id": 7
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "a",
+        "target_port": "1",
+        "target": {
+          "name": "1→2",
+          "id": 7
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "1",
+        "source": {
+          "name": "1→2",
+          "id": 7
+        },
+        "target": {
+          "name": "1→2",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "2",
+        "source": {
+          "name": "1→2",
+          "id": 7
+        },
+        "target": {
+          "name": "1→2",
+          "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "2",
+        "target_port": "done",
+        "source": {
+          "name": "1→2",
+          "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "1",
+        "target_port": "d",
+        "source": {
+          "name": "1→2",
+          "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "1",
+        "target_port": "c",
+        "source": {
+          "name": "1→2",
+          "id": 7
         }
       }
     ],
