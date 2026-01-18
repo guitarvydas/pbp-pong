@@ -214,19 +214,19 @@
       },
       {
         "name": "Loop Test",
-        "id": 17
+        "id": 16
       },
       {
         "name": "1→2",
-        "id": 24
+        "id": 23
       },
       {
         "name": ":?B",
-        "id": 29
+        "id": 28
       },
       {
-        "name": "baton",
-        "id": 31
+        "name": "EchoEchoAck",
+        "id": 30
       }
     ],
     "connections": [
@@ -235,8 +235,8 @@
         "source_port": "width",
         "target_port": "a",
         "target": {
-          "name": "baton",
-          "id": 31
+          "name": "EchoEchoAck",
+          "id": 30
         }
       },
       {
@@ -244,8 +244,8 @@
         "source_port": "height",
         "target_port": "b",
         "target": {
-          "name": "baton",
-          "id": 31
+          "name": "EchoEchoAck",
+          "id": 30
         }
       },
       {
@@ -254,7 +254,7 @@
         "target_port": "width",
         "target": {
           "name": "Loop Test",
-          "id": 17
+          "id": 16
         }
       },
       {
@@ -263,7 +263,7 @@
         "target_port": "",
         "target": {
           "name": "Loop Test",
-          "id": 17
+          "id": 16
         }
       },
       {
@@ -272,46 +272,7 @@
         "target_port": "",
         "source": {
           "name": "Loop Test",
-          "id": 17
-        },
-        "target": {
-          "name": "Test",
-          "id": 8
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "d",
-        "target_port": "width",
-        "source": {
-          "name": "baton",
-          "id": 31
-        },
-        "target": {
-          "name": "Test",
-          "id": 8
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "c",
-        "target_port": "height",
-        "source": {
-          "name": "baton",
-          "id": 31
-        },
-        "target": {
-          "name": "Test",
-          "id": 8
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "done",
-        "target_port": "",
-        "source": {
-          "name": "baton",
-          "id": 31
+          "id": 16
         },
         "target": {
           "name": "Test",
@@ -324,7 +285,7 @@
         "target_port": "rev",
         "source": {
           "name": "Loop Test",
-          "id": 17
+          "id": 16
         },
         "target": {
           "name": "Test",
@@ -341,7 +302,7 @@
         },
         "target": {
           "name": "1→2",
-          "id": 24
+          "id": 23
         }
       },
       {
@@ -354,7 +315,7 @@
         },
         "target": {
           "name": "1→2",
-          "id": 24
+          "id": 23
         }
       },
       {
@@ -367,7 +328,33 @@
         },
         "target": {
           "name": ":?B",
-          "id": 29
+          "id": 28
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "a",
+        "target_port": "width",
+        "source": {
+          "name": "EchoEchoAck",
+          "id": 30
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "ack",
+        "target_port": "",
+        "source": {
+          "name": "EchoEchoAck",
+          "id": 30
+        },
+        "target": {
+          "name": "Test",
+          "id": 8
         }
       },
       {
@@ -385,7 +372,7 @@
         "target_port": "",
         "source": {
           "name": "1→2",
-          "id": 24
+          "id": 23
         }
       },
       {
@@ -394,7 +381,7 @@
         "target_port": "loop",
         "source": {
           "name": "1→2",
-          "id": 24
+          "id": 23
         }
       },
       {
@@ -403,7 +390,7 @@
         "target_port": "✗",
         "source": {
           "name": "Loop Test",
-          "id": 17
+          "id": 16
         }
       }
     ],
@@ -561,6 +548,131 @@
         "source": {
           "name": "1→2",
           "id": 7
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "EchoEchoAck",
+    "children": [
+      {
+        "name": "EchoAck",
+        "id": 7
+      },
+      {
+        "name": "EchoAck",
+        "id": 11
+      },
+      {
+        "name": "Both",
+        "id": 15
+      },
+      {
+        "name": ":?ack1",
+        "id": 19
+      },
+      {
+        "name": ":?ack2",
+        "id": 21
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "a",
+        "target_port": "",
+        "target": {
+          "name": "EchoAck",
+          "id": 7
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "b",
+        "target_port": "",
+        "target": {
+          "name": "EchoAck",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "ack",
+        "target_port": "2",
+        "source": {
+          "name": "EchoAck",
+          "id": 11
+        },
+        "target": {
+          "name": "Both",
+          "id": 15
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "ack",
+        "target_port": "1",
+        "source": {
+          "name": "EchoAck",
+          "id": 7
+        },
+        "target": {
+          "name": "Both",
+          "id": 15
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "ack",
+        "target_port": "",
+        "source": {
+          "name": "EchoAck",
+          "id": 7
+        },
+        "target": {
+          "name": ":?ack1",
+          "id": 19
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "EchoAck",
+          "id": 11
+        },
+        "target": {
+          "name": ":?ack2",
+          "id": 21
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "ack",
+        "source": {
+          "name": "Both",
+          "id": 15
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "a",
+        "source": {
+          "name": "EchoAck",
+          "id": 7
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "b",
+        "source": {
+          "name": "EchoAck",
+          "id": 11
         }
       }
     ],
