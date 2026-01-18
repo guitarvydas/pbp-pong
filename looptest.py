@@ -13,9 +13,12 @@ class WH:
 def handler (eh,mev):
     try:
         self = eh.instance_data
+
         def Loop ():
             zd.send (eh, '', '', mev) ## send a trigger to keep running the loop
-            
+        def Reverse ():
+            zd.send (eh, "rev", "", mev)
+
         if mev.port == 'width':
             self.width = int (mev.datum.v) ## just save the value
         elif mev.port == '':
