@@ -1,0 +1,13 @@
+def choose (self):
+            {
+                "idle" : step_idle,
+                "wait for zero re-crossing": step_wait_for_zero_recrossing
+                "wait for w re-crossing": step_wait_for_w_recrossing
+            } [self.state] ()
+    {
+        "idle" : step_idle,
+        "wait for zero re-crossing": step_wait_for_zero_recrossing
+        "wait for w re-crossing": step_wait_for_w_recrossing
+    } [self.state] ()
+
+    

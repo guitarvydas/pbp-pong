@@ -56,13 +56,11 @@ def handler (eh,mev):
                     enter_idle ()
             def exit_wait_for_w_recrossing (): pass
 
-            match self.state:
-                case "idle":
-                    step_idle ()
-                case "wait for zero re-crossing":
-                    step_wait_for_zero_recrossing ()
-                case "wait for w re-crossing":
-                    step_wait_for_w_recrossing ()
+            {
+                "idle" : step_idle,
+                "wait for zero re-crossing": step_wait_for_zero_recrossing,
+                "wait for w re-crossing": step_wait_for_w_recrossing
+            } [self.state] ()
 
 ### end generated                
 
