@@ -16,9 +16,9 @@
                 self.state = "wait for zero re-crossing"
             def step_wait_for_zero_recrossing ():
                 if x >= 0:
+                    Loop ()
                     exit_wait_for_zero_recrossing ()
                     enter_idle ()
-                    Loop ()
             def exit_wait_for_zero_recrossing (): pass
 
             def enter_wait_for_w_recrossing ():
@@ -27,9 +27,9 @@
                 self.state = "wait for w re-crossing"
             def step_wait_for_w_recrossing ():
                 if x <= self.width:
+                    Loop ()
                     exit_wait_for_w_recrossing ()
                     enter_idle ()
-                    Loop ()
             def exit_wait_for_w_recrossing (): pass
 
             match self.state:
