@@ -12,7 +12,7 @@ def handler (eh,mev):
     self = eh.instance_data
     def MaybeAck ():
         if self.a and self.b:
-            zd.send (eh, "ack", "", mev)
+            zd.send (eh, "", "", mev)
             self.a = False
             self.b = False
     match mev.port:
