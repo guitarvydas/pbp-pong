@@ -368,7 +368,7 @@ def lnet2internal_from_file (pathname,container_xml):  #line 414
         routings = json.loads(json_data)
         fil.close ()
         return routings
-    except Exception as FileNotFoundError:
+    except FileNotFoundError:
         print (f"File not found: '{filename}'")
         return None
     except json.JSONDecodeError as e:
