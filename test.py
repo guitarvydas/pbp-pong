@@ -54,7 +54,7 @@ def handler (eh,mev):
 def instantiate (reg,owner,name, arg, template_data):
     name_with_id = zd.gensymbol ( "Test")
     self = WH ()
-    ball1 = Ball (0, 100, "#ffff00", 1)
+    ball1 = Ball (0, 100, "#ff0000", 1)
     self.balls = [ ball1 ]
     return zd.make_leaf ( name_with_id, owner, self, arg, handler)
 
