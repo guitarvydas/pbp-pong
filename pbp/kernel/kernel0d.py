@@ -372,7 +372,7 @@ def lnet2internal_from_file (pathname,container_xml):  #line 414
         print (f"File not found: '{filename}'")
         return None
     except json.JSONDecodeError as e:
-        print ("Error decoding JSON in file: '{e}'")
+        print (f"Error decoding JSON in path /{pathname}/: '{e}'")
         return None
                                                        #line 416#line 417#line 418
 
