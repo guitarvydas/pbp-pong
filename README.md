@@ -2,14 +2,7 @@ Implementing Pong using PBP.
 
 Experimental and WIP at this time, but the test jig is usable...
 
-# Current exploration: building a test jig.
-
-See `./code/Building a Visual Test Jig Using Tools You Already Have.md` for an explanation of the current avenue for exploration - designing a test jig to help visually debug the ball part. (More to come, like debugging the paddle stuff). I will be further tweaking this article and expect to add a diagram.
-
-To run the test jig, see `./code/README.md`.
-
-# Pong Design Progress
-See `./design-sketches` for the latest status updates.
-# Repository
-https://github.com/guitarvydas/pbp-pong
-
+# Usage
+1. open a terminal window and run './daemon.js'
+2. open a browser on file './client.html'
+3. open a second terminal window, run 'make'
