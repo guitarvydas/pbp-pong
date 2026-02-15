@@ -1,0 +1,10 @@
+Implementing Pong using PBP. 
+
+Experimental and WIP at this time, but the test jig is usable...
+
+# Usage
+1. open a terminal window and run './daemon.js'
+2. open a browser on file './client.html'
+3. open a second terminal window, run 'make'
+
+# Architecture 2026-02-15

@@ -1,3 +1,1 @@
-The daemon should receive queries on a separate websocket.
-
-I need a command-line command that queries for canvas size and prints it as JSON to stdout.
+I need a Python daemon that reacts to every up arrow and down arrow keypress by sending an "update-paddle" command to daemon.js which then changes the Y parameter associated with the displayed panel and sends an update to the GUI slave to redisplay the paddle at the new position.
