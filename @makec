@@ -1,0 +1,11 @@
+#!/bin/bash
+######### commands specific to this project #############
+
+~/projects/pbp-dev/import-minimal.bash
+das2json pong.drawio
+python main.py "" testkbd pong.drawio.json | splitoutputs
+rm -f ${SELF}*
+echo -n 'fini '
+
+
+############################
