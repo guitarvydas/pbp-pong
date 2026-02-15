@@ -3,6 +3,48 @@
     "name": "testkbd",
     "children": [
       {
+        "name": "keyboard receiver",
+        "id": 3
+      },
+      {
+        "name": ":?key",
+        "id": 5
+      },
+      {
+        "name": "🗑️",
+        "id": 7
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": "🗑️",
+          "id": 7
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 3
+        },
+        "target": {
+          "name": ":?key",
+          "id": 5
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Copy of testkbd",
+    "children": [
+      {
         "name": "keyboard<div>receiver</div>",
         "id": 3
       },
