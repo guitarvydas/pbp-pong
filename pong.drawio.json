@@ -11,7 +11,7 @@
         "id": 8
       },
       {
-        "name": "1→2",
+        "name": "seq",
         "id": 10
       }
     ],
@@ -28,26 +28,13 @@
       {
         "dir": 1,
         "source_port": "",
-        "target_port": "1",
+        "target_port": "",
         "source": {
           "name": "keyboard receiver",
           "id": 4
         },
         "target": {
-          "name": "1→2",
-          "id": 10
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "2",
-        "source": {
-          "name": "keyboard receiver",
-          "id": 4
-        },
-        "target": {
-          "name": "1→2",
+          "name": "seq",
           "id": 10
         }
       },
@@ -56,7 +43,7 @@
         "source_port": "1",
         "target_port": "",
         "source": {
-          "name": "1→2",
+          "name": "seq",
           "id": 10
         },
         "target": {
@@ -69,7 +56,7 @@
         "source_port": "2",
         "target_port": "",
         "source": {
-          "name": "1→2",
+          "name": "seq",
           "id": 10
         },
         "target": {
@@ -90,106 +77,48 @@
     "file": "pong.drawio"
   },
   {
-    "name": "Copy of testkbd",
+    "name": "seq",
     "children": [
       {
-        "name": "keyboard<div>receiver</div>",
-        "id": 3
-      },
-      {
-        "name": "Key Decoder",
+        "name": "1→2",
         "id": 5
-      },
-      {
-        "name": ":?ready",
-        "id": 12
-      },
-      {
-        "name": ":?up",
-        "id": 14
-      },
-      {
-        "name": ":?down",
-        "id": 16
-      },
-      {
-        "name": ":?error",
-        "id": 18
       }
     ],
     "connections": [
       {
         "dir": 0,
         "source_port": "",
-        "target_port": "init",
+        "target_port": "2",
         "target": {
-          "name": "Key Decoder",
+          "name": "1→2",
           "id": 5
         }
       },
       {
-        "dir": 1,
+        "dir": 0,
         "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "keyboard<div>receiver</div>",
-          "id": 3
-        },
+        "target_port": "1",
         "target": {
-          "name": "Key Decoder",
+          "name": "1→2",
           "id": 5
         }
       },
       {
-        "dir": 1,
-        "source_port": "ready",
-        "target_port": "",
+        "dir": 2,
+        "source_port": "1",
+        "target_port": "1",
         "source": {
-          "name": "Key Decoder",
+          "name": "1→2",
           "id": 5
-        },
-        "target": {
-          "name": ":?ready",
-          "id": 12
         }
       },
       {
-        "dir": 1,
-        "source_port": "up",
-        "target_port": "",
+        "dir": 2,
+        "source_port": "2",
+        "target_port": "2",
         "source": {
-          "name": "Key Decoder",
+          "name": "1→2",
           "id": 5
-        },
-        "target": {
-          "name": ":?up",
-          "id": 14
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "down",
-        "target_port": "",
-        "source": {
-          "name": "Key Decoder",
-          "id": 5
-        },
-        "target": {
-          "name": ":?down",
-          "id": 16
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "✗",
-        "target_port": "",
-        "source": {
-          "name": "Key Decoder",
-          "id": 5
-        },
-        "target": {
-          "name": ":?error",
-          "id": 18
         }
       }
     ],
