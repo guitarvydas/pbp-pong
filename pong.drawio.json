@@ -67,7 +67,7 @@
       {
         "dir": 2,
         "source_port": "quit",
-        "target_port": "",
+        "target_port": "md",
         "source": {
           "name": "keyboard receiver",
           "id": 4

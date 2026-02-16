@@ -17,7 +17,7 @@ def handler (eh,mev):
         ch = read_single_character ()
         if ch:
             if ch == b'\x03':
-                zd.send (eh, "quit", str (ch), mev)
+                zd.send (eh, "quit", "done", mev)
                 zd.set_idle (eh)
             else:
                 zd.send (eh, "", str (ch), mev)
