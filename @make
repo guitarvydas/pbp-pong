@@ -58,9 +58,6 @@ then
     echo
     echo ">> ERROR <<"
     cat out.✗
-else
-    echo
-    cat ${fname}.sm
 fi
 
 

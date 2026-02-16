@@ -13,10 +13,8 @@ def read_single_character ():
     return ch
 
 def handler (eh,mev):
-    print ("<<>>", file=sys.stderr)
     if mev.port == '':
         ch = read_single_character ()
-        print (f'ch: /{str(ch)}/', file=sys.stderr)
         if ch:
             if ch == b'\x03':
                 zd.send (eh, "quit", str (ch), mev)

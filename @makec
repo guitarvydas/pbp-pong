@@ -4,6 +4,7 @@
 das2json pong.drawio
 python main.py "" testkbd pong.drawio.json | splitoutputs
 rm -f ${SELF}*
+stty sane
 echo -n 'fini '
 
 
