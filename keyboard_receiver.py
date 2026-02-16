@@ -4,27 +4,30 @@ import kernel0d as zd
 import tty
 import termios
 
-def handler (eh,mev):
-    print (f'handler: /{mev.port}/ /{mev.datum.v}/', file=sys.stderr)
-    try:
-        if mev.port == '':
-            ch = sys.stdin.buffer.read(1)
-            print (f'ch: /{str(ch)}/', file=sys.stderr)
-            if ch:
-                if ch == b'\x03':
-                    sys.exit (0)
-                zd.send (eh, "", str (ch), mev)
-    except (e):
-        zd.send (eh, "✗", f"*** error in input_io.py *** {e}", mev)
+def read_single_character ():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    tty.setraw(fd)
+    ch = sys.stdin.buffer.read(1)
+    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
 
+def handler (eh,mev):
+    print ("<<>>", file=sys.stderr)
+    if mev.port == '':
+        ch = read_single_character ()
+        print (f'ch: /{str(ch)}/', file=sys.stderr)
+        if ch:
+            if ch == b'\x03':
+                zd.send (eh, "quit", str (ch), mev)
+                zd.set_idle (eh)
+            else:
+                zd.send (eh, "", str (ch), mev)
         
 def reset_handler (eh):
-    fd = sys.stdin.fileno()
-    tty.setraw(fd)
+    pass
 
 def instantiate (reg,owner,name, arg, template_data):
-    fd = sys.stdin.fileno()
-    tty.setraw(fd)
     name_with_id = zd.gensymbol ( "keyboard receiver")
     self = None
     eh = zd.make_leaf ( name_with_id, owner, self, arg, handler, reset_handler)

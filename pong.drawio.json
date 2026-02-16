@@ -4,15 +4,15 @@
     "children": [
       {
         "name": "keyboard receiver",
-        "id": 3
+        "id": 4
       },
       {
         "name": ":?key",
-        "id": 5
+        "id": 8
       },
       {
-        "name": "🗑️",
-        "id": 7
+        "name": "1→2",
+        "id": 10
       }
     ],
     "connections": [
@@ -21,21 +21,69 @@
         "source_port": "",
         "target_port": "",
         "target": {
-          "name": "🗑️",
-          "id": 7
+          "name": "keyboard receiver",
+          "id": 4
         }
       },
       {
         "dir": 1,
         "source_port": "",
-        "target_port": "",
+        "target_port": "1",
         "source": {
           "name": "keyboard receiver",
-          "id": 3
+          "id": 4
+        },
+        "target": {
+          "name": "1→2",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "2",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 4
+        },
+        "target": {
+          "name": "1→2",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "1",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 10
         },
         "target": {
           "name": ":?key",
-          "id": 5
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "2",
+        "target_port": "",
+        "source": {
+          "name": "1→2",
+          "id": 10
+        },
+        "target": {
+          "name": "keyboard receiver",
+          "id": 4
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "quit",
+        "target_port": "",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 4
         }
       }
     ],
