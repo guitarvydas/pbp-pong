@@ -1,24 +1,7 @@
-I include `main.py` and `keyboard_handler.py` below. It appears to accep characters `q`, `w` and `^C`, but doesn't reset the keyboard when done. Why?
+I want a glsl program that displays a Pong court with 2 movable paddles and one movable ball.
 
-```
-$ ./@make
-refreshing ./pbp
-begin
-install
-init kbd
-try
-inject
-<<>>
-ch: /b'q'/
-"Info" : "  @4  probe testkbd▹testkbd▹:?key₁: b'q'"
-<<>>
-ch: /b'w'/
-"Info" : "  @7  probe testkbd▹testkbd▹:?key₁: b'w'"
-<<>>
-ch: /b'\x03'/
-finalize
-keyboard reset
-fini 
-     cat: example.sm: No such file or directory
-                                               %                                $ 
-```
+I want to send the glsl program to the viewer.html.
+
+I want to send short messages to the viewer to move the ball and either paddle.
+
+Can the viewer run the main glsl, then adjust the position of the ball and paddles as the main glsl is running?
