@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLSL Viewer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: monospace;
+  }
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    cursor: crosshair;
+  }
+  #status {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #1ba56d;
+    font-size: 13px;
+    pointer-events: none;
+    text-align: center;
+    text-shadow: 0 0 8px #1ba56d88;
+    z-index: 10;
+    transition: opacity 0.5s;
+  }
+  #status.fade { opacity: 0; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="status">waiting for shader...</div>
+
+<script>
+// ============================================================
+// Configuration
+// ============================================================
+const WS_URL = `ws://${location.hostname || 'localhost'}:8765?role=viewer`;
+const statusEl = document.getElementById('status');
+
+function showStatus(msg, fadeMs) {
+  statusEl.textContent = msg;
+  statusEl.classList.remove('fade');
+  if (fadeMs) setTimeout(() => statusEl.classList.add('fade'), fadeMs);
+}
+
+// ============================================================
+// WebGL2 setup
+// ============================================================
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl2', { antialias: false });
+if (!gl) { document.body.innerHTML = '<h1 style="color:#f00">WebGL 2 required</h1>'; throw 'no gl'; }
+gl.getExtension('EXT_color_buffer_float');
+
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', () => { resize(); if (pipeline) initFBOs(); });
+resize();
+
+// Fullscreen quad
+const quadBuf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+const VS = `#version 300 es
+precision highp float;
+in vec2 aPos;
+void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+
+function bindQuad(prog) {
+  const loc = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(loc);
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+}
+
+// ============================================================
+// Shader compilation
+// ============================================================
+function compileShader(src, type) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    const err = gl.getShaderInfoLog(s);
+    console.error(err, '\n', src);
+    showStatus('shader compile error — see console');
+    gl.deleteShader(s);
+    return null;
+  }
+  return s;
+}
+
+function createProgram(fsSrc) {
+  const vs = compileShader(VS, gl.VERTEX_SHADER);
+  const fs = compileShader(fsSrc, gl.FRAGMENT_SHADER);
+  if (!vs || !fs) return null;
+  const p = gl.createProgram();
+  gl.attachShader(p, vs);
+  gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(p));
+    showStatus('shader link error — see console');
+    return null;
+  }
+  return p;
+}
+
+// ============================================================
+// FBO helpers
+// ============================================================
+function makeFBO(w, h) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, w, h, 0, gl.RGBA, gl.FLOAT, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return { fb, tex };
+}
+
+function makeNoiseTex(w, h) {
+  const data = new Float32Array(w * h * 4);
+  for (let i = 0; i < w * h; i++) {
+    const alive = Math.random() > 0.6 ? 1.0 : 0.0;
+    data[i*4] = alive;
+    data[i*4+1] = alive * Math.random() * 100.0;
+    data[i*4+2] = 0;
+    data[i*4+3] = 1;
+  }
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, w, h, 0, gl.RGBA, gl.FLOAT, data);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  return tex;
+}
+
+// ============================================================
+// Pipeline state
+// ============================================================
+let pipeline = null;   // { progA, progB, progMain }
+let bufA = [null, null], bufB = null, noiseTex = null;
+let frameCount = 0, pingpong = 0;
+const startTime = performance.now();
+
+function initFBOs() {
+  const w = canvas.width, h = canvas.height;
+  bufA[0] = makeFBO(w, h);
+  bufA[1] = makeFBO(w, h);
+  bufB    = makeFBO(w, h);
+  noiseTex = makeNoiseTex(w, h);
+  frameCount = 0;
+  pingpong = 0;
+}
+
+// Mouse
+let mouse = { x: 0, y: 0, down: false };
+canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = canvas.height - e.clientY; });
+canvas.addEventListener('mousedown', () => mouse.down = true);
+canvas.addEventListener('mouseup',   () => mouse.down = false);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); mouse.down = true; const t = e.touches[0]; mouse.x = t.clientX; mouse.y = canvas.height - t.clientY; }, {passive:false});
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); const t = e.touches[0]; mouse.x = t.clientX; mouse.y = canvas.height - t.clientY; }, {passive:false});
+canvas.addEventListener('touchend',   () => mouse.down = false);
+
+// ============================================================
+// Parse GLSL source into sections
+// ============================================================
+// Expects markers like:  // --- COMMON ---
+//                        // --- BUFFER_A ---
+//                        // --- BUFFER_B ---
+//                        // --- MAIN ---
+// Shadertoy-style mainImage(out vec4, in vec2) is rewritten to void main().
+
+function parseGLSL(src) {
+  const sections = { COMMON: '', BUFFER_A: '', BUFFER_B: '', MAIN: '' };
+  let current = null;
+
+  for (const line of src.split('\n')) {
+    const m = line.match(/^\/\/\s*---\s*(\w+)\s*---/);
+    if (m) {
+      current = m[1];
+      continue;
+    }
+    if (current && current in sections) {
+      sections[current] += line + '\n';
+    }
+  }
+  return sections;
+}
+
+// Simple rewrite: replace mainImage(out vec4 X, in vec2 Y){
+// with:  void main(){ vec2 Y = gl_FragCoord.xy;
+// and replace all occurrences of X with fragColor.
+// The function body and closing brace stay untouched.
+
+function rewriteMainImage(body) {
+  const m = body.match(
+    /void\s+mainImage\s*\(\s*out\s+vec4\s+(\w+)\s*,\s*in\s+vec2\s+(\w+)\s*\)/
+  );
+  if (!m) return null;
+  const colorVar = m[1];
+  const coordVar = m[2];
+
+  // Replace the signature
+  let code = body.replace(m[0],
+    `void main()`
+  );
+
+  // Insert coord declaration right after the opening brace of main
+  code = code.replace(
+    /void main\(\)\s*\{/,
+    `void main() {\n  vec2 ${coordVar} = gl_FragCoord.xy;`
+  );
+
+  // Rename the out color variable to fragColor
+  if (colorVar !== 'fragColor') {
+    // Use word-boundary replacement to avoid partial matches
+    code = code.replace(new RegExp('\\b' + colorVar + '\\b', 'g'), 'fragColor');
+  }
+
+  return code;
+}
+
+function wrapSection(common, body, uniforms) {
+  const rewritten = rewriteMainImage(body);
+  if (!rewritten) return null;
+
+  return `#version 300 es
+precision highp float;
+${common}
+${uniforms}
+out vec4 fragColor;
+
+${rewritten}
+`;
+}
+
+// ============================================================
+// Build pipeline from raw GLSL source
+// ============================================================
+function buildPipeline(src) {
+  const sec = parseGLSL(src);
+
+  const hasBuffers = sec.BUFFER_A.trim().length > 0 && sec.BUFFER_B.trim().length > 0;
+
+  const uniformsMain = `uniform sampler2D iChannel0;
+uniform vec3  iResolution;
+uniform vec4  iMouse;
+uniform float iTime;
+uniform int   iFrame;`;
+
+  // Clean up old programs
+  if (pipeline) {
+    if (pipeline.progA) gl.deleteProgram(pipeline.progA);
+    if (pipeline.progB) gl.deleteProgram(pipeline.progB);
+    gl.deleteProgram(pipeline.progMain);
+  }
+
+  if (hasBuffers) {
+    // Multi-pass mode
+    const uniformsA = `uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
+uniform vec3  iResolution;
+uniform vec4  iMouse;
+uniform float iTime;
+uniform int   iFrame;`;
+
+    const uniformsB = `uniform sampler2D iChannel0;
+uniform vec3  iResolution;
+uniform float iTime;
+uniform int   iFrame;`;
+
+    const fsA = wrapSection(sec.COMMON, sec.BUFFER_A, uniformsA);
+    const fsB = wrapSection(sec.COMMON, sec.BUFFER_B, uniformsB);
+    const fsM = wrapSection(sec.COMMON, sec.MAIN, uniformsMain);
+
+    if (!fsA || !fsB || !fsM) {
+      showStatus('parse error — check section markers');
+      console.error('Failed to parse sections. Got:', sec);
+      return;
+    }
+
+    console.log('--- Buffer A shader ---\n', fsA);
+    console.log('--- Buffer B shader ---\n', fsB);
+    console.log('--- Main shader ---\n', fsM);
+
+    const progA    = createProgram(fsA);
+    const progB    = createProgram(fsB);
+    const progMain = createProgram(fsM);
+    if (!progA || !progB || !progMain) return;
+
+    pipeline = { mode: 'multi', progA, progB, progMain };
+    initFBOs();
+
+  } else {
+    // Single-pass mode — just MAIN
+    const fsM = wrapSection(sec.COMMON, sec.MAIN, uniformsMain);
+    if (!fsM) {
+      showStatus('parse error — check MAIN section');
+      console.error('Failed to parse MAIN. Got:', sec);
+      return;
+    }
+
+    console.log('--- Main shader (single-pass) ---\n', fsM);
+
+    const progMain = createProgram(fsM);
+    if (!progMain) return;
+
+    pipeline = { mode: 'single', progA: null, progB: null, progMain };
+  }
+
+  showStatus('shader loaded', 2000);
+}
+
+// ============================================================
+// Render loop
+// ============================================================
+function render() {
+  requestAnimationFrame(render);
+  if (!pipeline) return;
+
+  const W = canvas.width, H = canvas.height;
+  const time = (performance.now() - startTime) / 1000.0;
+  const mx = mouse.down ? mouse.x : -9999;
+  const my = mouse.down ? mouse.y : -9999;
+
+  const { progMain } = pipeline;
+
+  if (pipeline.mode === 'multi') {
+    const { progA, progB } = pipeline;
+
+    // ---- Pass 1: Buffer A ----
+    const readA  = bufA[pingpong];
+    const writeA = bufA[1 - pingpong];
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, writeA.fb);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(progA);
+    bindQuad(progA);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, noiseTex);
+    gl.uniform1i(gl.getUniformLocation(progA, 'iChannel0'), 0);
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, readA.tex);
+    gl.uniform1i(gl.getUniformLocation(progA, 'iChannel1'), 1);
+
+    gl.uniform3f(gl.getUniformLocation(progA, 'iResolution'), W, H, 1);
+    gl.uniform4f(gl.getUniformLocation(progA, 'iMouse'), mx, my, 0, 0);
+    gl.uniform1f(gl.getUniformLocation(progA, 'iTime'), time);
+    gl.uniform1i(gl.getUniformLocation(progA, 'iFrame'), frameCount);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    pingpong = 1 - pingpong;
+
+    // ---- Pass 2: Buffer B ----
+    gl.bindFramebuffer(gl.FRAMEBUFFER, bufB.fb);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(progB);
+    bindQuad(progB);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, writeA.tex);
+    gl.uniform1i(gl.getUniformLocation(progB, 'iChannel0'), 0);
+
+    gl.uniform3f(gl.getUniformLocation(progB, 'iResolution'), W, H, 1);
+    gl.uniform1f(gl.getUniformLocation(progB, 'iTime'), time);
+    gl.uniform1i(gl.getUniformLocation(progB, 'iFrame'), frameCount);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    // ---- Pass 3: Main → screen ----
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(progMain);
+    bindQuad(progMain);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, bufB.tex);
+    gl.uniform1i(gl.getUniformLocation(progMain, 'iChannel0'), 0);
+
+    gl.uniform3f(gl.getUniformLocation(progMain, 'iResolution'), W, H, 1);
+    gl.uniform1f(gl.getUniformLocation(progMain, 'iTime'), time);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  } else {
+    // ---- Single pass: Main → screen ----
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(progMain);
+    bindQuad(progMain);
+
+    gl.uniform3f(gl.getUniformLocation(progMain, 'iResolution'), W, H, 1);
+    gl.uniform4f(gl.getUniformLocation(progMain, 'iMouse'), mx, my, 0, 0);
+    gl.uniform1f(gl.getUniformLocation(progMain, 'iTime'), time);
+    gl.uniform1i(gl.getUniformLocation(progMain, 'iFrame'), frameCount);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  frameCount++;
+}
+requestAnimationFrame(render);
+
+// ============================================================
+// WebSocket connection
+// ============================================================
+function connect() {
+  showStatus('connecting...');
+  const ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => showStatus('connected — waiting for shader...');
+
+  ws.onmessage = (ev) => {
+    console.log(`received ${ev.data.length} bytes of GLSL`);
+    buildPipeline(ev.data);
+  };
+
+  ws.onclose = () => {
+    showStatus('disconnected — reconnecting...');
+    setTimeout(connect, 2000);
+  };
+
+  ws.onerror = () => {
+    showStatus('connection error — retrying...');
+    ws.close();
+  };
+}
+
+connect();
+</script>
+</body>
+</html>
