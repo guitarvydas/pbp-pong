@@ -181,6 +181,33 @@ canvas.addEventListener('touchmove',  e => { e.preventDefault(); const t = e.tou
 canvas.addEventListener('touchend',   () => mouse.down = false);
 
 // ============================================================
+// Pong game state (updated via WebSocket JSON messages)
+// All positions in normalized [0,1] coordinates
+// ============================================================
+let pong = {
+  ball_x: 0.5,
+  ball_y: 0.5,
+  paddle_left_y: 0.5,
+  paddle_right_y: 0.5,
+};
+
+function handlePongMessage(data) {
+  try {
+    const msg = JSON.parse(data);
+    if (msg.type === 'ball') {
+      if (msg.x !== undefined) pong.ball_x = msg.x;
+      if (msg.y !== undefined) pong.ball_y = msg.y;
+    } else if (msg.type === 'paddle') {
+      if (msg.id === 'left'  && msg.y !== undefined) pong.paddle_left_y  = msg.y;
+      if (msg.id === 'right' && msg.y !== undefined) pong.paddle_right_y = msg.y;
+    }
+    return true;
+  } catch (e) {
+    return false; // not JSON — treat as GLSL source
+  }
+}
+
+// ============================================================
 // Parse GLSL source into sections
 // ============================================================
 // Expects markers like:  // --- COMMON ---
@@ -261,11 +288,16 @@ function buildPipeline(src) {
 
   const hasBuffers = sec.BUFFER_A.trim().length > 0 && sec.BUFFER_B.trim().length > 0;
 
-  const uniformsMain = `uniform sampler2D iChannel0;
+  const pongUniforms = `uniform vec2  u_ball_pos;
+uniform float u_paddle_left_y;
+uniform float u_paddle_right_y;`;
+
+    const uniformsMain = `uniform sampler2D iChannel0;
 uniform vec3  iResolution;
 uniform vec4  iMouse;
 uniform float iTime;
-uniform int   iFrame;`;
+uniform int   iFrame;
+${pongUniforms}`;
 
   // Clean up old programs
   if (pipeline) {
@@ -281,12 +313,14 @@ uniform sampler2D iChannel1;
 uniform vec3  iResolution;
 uniform vec4  iMouse;
 uniform float iTime;
-uniform int   iFrame;`;
+uniform int   iFrame;
+${pongUniforms}`;
 
     const uniformsB = `uniform sampler2D iChannel0;
 uniform vec3  iResolution;
 uniform float iTime;
-uniform int   iFrame;`;
+uniform int   iFrame;
+${pongUniforms}`;
 
     const fsA = wrapSection(sec.COMMON, sec.BUFFER_A, uniformsA);
     const fsB = wrapSection(sec.COMMON, sec.BUFFER_B, uniformsB);
@@ -331,6 +365,15 @@ uniform int   iFrame;`;
 }
 
 // ============================================================
+// Set Pong uniforms on a program
+// ============================================================
+function setPongUniforms(prog) {
+  gl.uniform2f(gl.getUniformLocation(prog, 'u_ball_pos'), pong.ball_x, pong.ball_y);
+  gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_left_y'), pong.paddle_left_y);
+  gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_right_y'), pong.paddle_right_y);
+}
+
+// ============================================================
 // Render loop
 // ============================================================
 function render() {
@@ -368,6 +411,7 @@ function render() {
     gl.uniform4f(gl.getUniformLocation(progA, 'iMouse'), mx, my, 0, 0);
     gl.uniform1f(gl.getUniformLocation(progA, 'iTime'), time);
     gl.uniform1i(gl.getUniformLocation(progA, 'iFrame'), frameCount);
+    setPongUniforms(progA);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     pingpong = 1 - pingpong;
@@ -385,6 +429,7 @@ function render() {
     gl.uniform3f(gl.getUniformLocation(progB, 'iResolution'), W, H, 1);
     gl.uniform1f(gl.getUniformLocation(progB, 'iTime'), time);
     gl.uniform1i(gl.getUniformLocation(progB, 'iFrame'), frameCount);
+    setPongUniforms(progB);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     // ---- Pass 3: Main → screen ----
@@ -399,6 +444,7 @@ function render() {
 
     gl.uniform3f(gl.getUniformLocation(progMain, 'iResolution'), W, H, 1);
     gl.uniform1f(gl.getUniformLocation(progMain, 'iTime'), time);
+    setPongUniforms(progMain);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
   } else {
@@ -412,6 +458,7 @@ function render() {
     gl.uniform4f(gl.getUniformLocation(progMain, 'iMouse'), mx, my, 0, 0);
     gl.uniform1f(gl.getUniformLocation(progMain, 'iTime'), time);
     gl.uniform1i(gl.getUniformLocation(progMain, 'iFrame'), frameCount);
+    setPongUniforms(progMain);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -429,6 +476,9 @@ function connect() {
   ws.onopen = () => showStatus('connected — waiting for shader...');
 
   ws.onmessage = (ev) => {
+    // Try JSON first (Pong position updates)
+    if (handlePongMessage(ev.data)) return;
+    // Otherwise treat as GLSL source
     console.log(`received ${ev.data.length} bytes of GLSL`);
     buildPipeline(ev.data);
   };
