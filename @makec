@@ -2,7 +2,7 @@
 ######### commands specific to this project #############
 
 das2json pong.drawio
-python main.py "" testkbd pong.drawio.json
+python main.py "life.glsl" testkbd pong.drawio.json
 rm -f ${SELF}*
 stty sane
 echo -n 'fini '
