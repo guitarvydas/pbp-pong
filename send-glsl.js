@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // send-glsl.js — send a file's contents to the relay server
 //
-// Usage: node send-glsl.js [filename] [ws://host:port]
-//   If no filename is given, reads from stdin.
+// Usage: node send-glsl.js <filename|-&gt; [ws://host:port]
+//   Use '-' as filename to read from stdin.
 //   default server: ws://localhost:8765
 
 const fs = require('fs');
 const { WebSocket } = require('ws');
 
-const file = process.argv[2];
+const file = process.argv[2] || null;
 const server = process.argv[3] || 'ws://localhost:8765';
 
 function sendToWs(src) {
@@ -26,7 +26,7 @@ function sendToWs(src) {
   });
 }
 
-if (file) {
+if (file && file !== '-') {
   sendToWs(fs.readFileSync(file, 'utf-8'));
 } else {
   // Read all of stdin, then send
