@@ -4,11 +4,19 @@
     "children": [
       {
         "name": "keyboard receiver",
-        "id": 3
+        "id": 4
       },
       {
         "name": ":?key",
-        "id": 6
+        "id": 7
+      },
+      {
+        "name": "Send File to GUI",
+        "id": 9
+      },
+      {
+        "name": "🚫",
+        "id": 12
       }
     ],
     "connections": [
@@ -18,7 +26,16 @@
         "target_port": "",
         "target": {
           "name": "keyboard receiver",
-          "id": 3
+          "id": 4
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": "Send File to GUI",
+          "id": 9
         }
       },
       {
@@ -27,11 +44,127 @@
         "target_port": "",
         "source": {
           "name": "keyboard receiver",
-          "id": 3
+          "id": 4
         },
         "target": {
           "name": ":?key",
-          "id": 6
+          "id": 7
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send File to GUI",
+          "id": 9
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "✗",
+        "source": {
+          "name": "🚫",
+          "id": 12
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Send File to GUI",
+    "children": [
+      {
+        "name": "Read Text File",
+        "id": 4
+      },
+      {
+        "name": ":$ ./send-glsl.js",
+        "id": 8
+      },
+      {
+        "name": "🗑️",
+        "id": 12
+      },
+      {
+        "name": "🚫",
+        "id": 14
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": "Read Text File",
+          "id": 4
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "Read Text File",
+          "id": 4
+        },
+        "target": {
+          "name": ":$ ./send-glsl.js",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ ./send-glsl.js",
+          "id": 8
+        },
+        "target": {
+          "name": "🗑️",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": ":$ ./send-glsl.js",
+          "id": 8
+        },
+        "target": {
+          "name": "🚫",
+          "id": 14
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Read Text File",
+          "id": 4
+        },
+        "target": {
+          "name": "🚫",
+          "id": 14
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "✗",
+        "source": {
+          "name": "🚫",
+          "id": 14
         }
       }
     ],
