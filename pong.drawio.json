@@ -20,11 +20,11 @@
       },
       {
         "name": "Send String to GUI",
-        "id": 18
+        "id": 19
       },
       {
-        "name": "not quit",
-        "id": 21
+        "name": "cdecode",
+        "id": 22
       }
     ],
     "connections": [
@@ -82,7 +82,7 @@
         },
         "target": {
           "name": "Send String to GUI",
-          "id": 18
+          "id": 19
         }
       },
       {
@@ -91,7 +91,7 @@
         "target_port": "",
         "source": {
           "name": "Send String to GUI",
-          "id": 18
+          "id": 19
         },
         "target": {
           "name": "🚫",
@@ -107,17 +107,17 @@
           "id": 4
         },
         "target": {
-          "name": "not quit",
-          "id": 21
+          "name": "cdecode",
+          "id": 22
         }
       },
       {
         "dir": 1,
-        "source_port": "",
+        "source_port": "leftup",
         "target_port": "lpup",
         "source": {
-          "name": "not quit",
-          "id": 21
+          "name": "cdecode",
+          "id": 22
         },
         "target": {
           "name": "pong",
@@ -142,12 +142,25 @@
         "source_port": "quit",
         "target_port": "quit",
         "source": {
-          "name": "not quit",
-          "id": 21
+          "name": "cdecode",
+          "id": 22
         },
         "target": {
           "name": "keyboard receiver",
           "id": 4
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "leftdown",
+        "target_port": "lpdown",
+        "source": {
+          "name": "cdecode",
+          "id": 22
+        },
+        "target": {
+          "name": "pong",
+          "id": 14
         }
       },
       {
