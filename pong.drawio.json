@@ -20,11 +20,11 @@
       },
       {
         "name": "Send String to GUI",
-        "id": 19
+        "id": 21
       },
       {
-        "name": "cdecode",
-        "id": 22
+        "name": "character decoder",
+        "id": 24
       }
     ],
     "connections": [
@@ -82,7 +82,7 @@
         },
         "target": {
           "name": "Send String to GUI",
-          "id": 19
+          "id": 21
         }
       },
       {
@@ -91,7 +91,7 @@
         "target_port": "",
         "source": {
           "name": "Send String to GUI",
-          "id": 19
+          "id": 21
         },
         "target": {
           "name": "🚫",
@@ -107,8 +107,8 @@
           "id": 4
         },
         "target": {
-          "name": "cdecode",
-          "id": 22
+          "name": "character decoder",
+          "id": 24
         }
       },
       {
@@ -116,8 +116,8 @@
         "source_port": "leftup",
         "target_port": "lpup",
         "source": {
-          "name": "cdecode",
-          "id": 22
+          "name": "character decoder",
+          "id": 24
         },
         "target": {
           "name": "pong",
@@ -126,7 +126,7 @@
       },
       {
         "dir": 1,
-        "source_port": "",
+        "source_port": "more",
         "target_port": "",
         "source": {
           "name": "pong",
@@ -142,8 +142,8 @@
         "source_port": "quit",
         "target_port": "quit",
         "source": {
-          "name": "cdecode",
-          "id": 22
+          "name": "character decoder",
+          "id": 24
         },
         "target": {
           "name": "keyboard receiver",
@@ -155,8 +155,21 @@
         "source_port": "leftdown",
         "target_port": "lpdown",
         "source": {
-          "name": "cdecode",
-          "id": 22
+          "name": "character decoder",
+          "id": 24
+        },
+        "target": {
+          "name": "pong",
+          "id": 14
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "other",
+        "target_port": "other",
+        "source": {
+          "name": "character decoder",
+          "id": 24
         },
         "target": {
           "name": "pong",

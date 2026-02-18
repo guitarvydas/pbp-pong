@@ -10,19 +10,19 @@ def handler (eh,mev):
     elif mev.datum.v == 'a':
         zd.send (eh, "leftdown", "", mev)
     else:
-        pass
+        zd.send (eh, "other", mev.datum.v, mev)
     
 def reset_handler (eh):
     pass
 
 def instantiate (reg,owner,name, arg, template_data):
-    name_with_id = zd.gensymbol ( "cdecode")
+    name_with_id = zd.gensymbol ( "character decoder")
     self = None
     eh = zd.make_leaf ( name_with_id, owner, self, arg, handler, reset_handler)
     return eh
 
 # define template
 def install (reg):
-    zd.register_component (reg, zd.mkTemplate ("cdecode", None, instantiate))
+    zd.register_component (reg, zd.mkTemplate ("character decoder", None, instantiate))
 
 

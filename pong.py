@@ -18,6 +18,7 @@ def handler (eh,mev):
         zd.send (eh, "", cmd, mev)
     else:
         pass
+    zd.send (eh, "more", "", mev)
     
 def reset_handler (eh):
     pass
