@@ -3,10 +3,11 @@ import sys
 import kernel0d as zd
 
 def handler (eh,mev):
-    if mev.datum.v != b'x':
-        zd.forward (eh, "", mev)
-    else:
+    print (f'mev.datum.v /{mev.datum.v}/', file=sys.stderr)
+    if mev.datum.v == 'x':
         pass
+    else:
+        zd.forward (eh, "", mev)
     
 def reset_handler (eh):
     pass
