@@ -8,10 +8,17 @@ right_paddle_y = 0.5
 
 def handler (eh,mev):
     global paddle_inc, left_paddle_y, right_paddle_y
-    if mev.port == '':
-        if ch:
-            zd.send (eh, "", str (ch), mev)
-        
+    if mev.port == 'lpup':
+        left_paddle_y += paddle_inc
+        cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
+        zd.send (eh, "", cmd, mev)
+    elif mev.port == 'lpdown':
+        left_paddle_y -= paddle_inc
+        cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
+        zd.send (eh, "", cmd, mev)
+    else:
+        pass
+    
 def reset_handler (eh):
     pass
 
