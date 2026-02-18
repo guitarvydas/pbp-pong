@@ -27,12 +27,12 @@
         "id": 20
       },
       {
-        "name": "1→2",
+        "name": ":?A",
         "id": 23
       },
       {
-        "name": "🗑️",
-        "id": 28
+        "name": ":?B",
+        "id": 25
       }
     ],
     "connections": [
@@ -69,28 +69,67 @@
       },
       {
         "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 13
+        },
+        "target": {
+          "name": "🚫",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 13
+        },
+        "target": {
+          "name": "Send String to GUI",
+          "id": 17
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send String to GUI",
+          "id": 17
+        },
+        "target": {
+          "name": "🚫",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 4
+        },
+        "target": {
+          "name": "not quit",
+          "id": 20
+        }
+      },
+      {
+        "dir": 1,
         "source_port": "",
         "target_port": "lpup",
         "source": {
-          "name": "keyboard receiver",
-          "id": 4
+          "name": "not quit",
+          "id": 20
         },
         "target": {
           "name": "pong",
           "id": 13
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "✗",
-        "target_port": "",
-        "source": {
-          "name": "pong",
-          "id": 13
-        },
-        "target": {
-          "name": "🚫",
-          "id": 10
         }
       },
       {
@@ -102,33 +141,20 @@
           "id": 13
         },
         "target": {
-          "name": "Send String to GUI",
-          "id": 17
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "✗",
-        "target_port": "",
-        "source": {
-          "name": "Send String to GUI",
-          "id": 17
-        },
-        "target": {
-          "name": "🚫",
-          "id": 10
+          "name": "keyboard receiver",
+          "id": 4
         }
       },
       {
         "dir": 1,
         "source_port": "",
-        "target_port": "2",
+        "target_port": "",
         "source": {
           "name": "keyboard receiver",
           "id": 4
         },
         "target": {
-          "name": "1→2",
+          "name": ":?A",
           "id": 23
         }
       },
@@ -141,47 +167,8 @@
           "id": 20
         },
         "target": {
-          "name": "keyboard receiver",
-          "id": 4
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "1",
-        "source": {
-          "name": "pong",
-          "id": 13
-        },
-        "target": {
-          "name": "1→2",
-          "id": 23
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "2",
-        "target_port": "",
-        "source": {
-          "name": "1→2",
-          "id": 23
-        },
-        "target": {
-          "name": "not quit",
-          "id": 20
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "1",
-        "target_port": "",
-        "source": {
-          "name": "1→2",
-          "id": 23
-        },
-        "target": {
-          "name": "🗑️",
-          "id": 28
+          "name": ":?B",
+          "id": 25
         }
       },
       {
