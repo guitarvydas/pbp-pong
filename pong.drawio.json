@@ -4,11 +4,7 @@
     "children": [
       {
         "name": "keyboard receiver",
-        "id": 4
-      },
-      {
-        "name": ":?key",
-        "id": 7
+        "id": 5
       },
       {
         "name": "Send File to GUI",
@@ -17,6 +13,18 @@
       {
         "name": "🚫",
         "id": 12
+      },
+      {
+        "name": "pong",
+        "id": 15
+      },
+      {
+        "name": "Send String to GUI",
+        "id": 19
+      },
+      {
+        "name": "not quit",
+        "id": 22
       }
     ],
     "connections": [
@@ -26,7 +34,7 @@
         "target_port": "",
         "target": {
           "name": "keyboard receiver",
-          "id": 4
+          "id": 5
         }
       },
       {
@@ -36,19 +44,6 @@
         "target": {
           "name": "Send File to GUI",
           "id": 9
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "keyboard receiver",
-          "id": 4
-        },
-        "target": {
-          "name": ":?key",
-          "id": 7
         }
       },
       {
@@ -65,12 +60,112 @@
         }
       },
       {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 15
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 15
+        },
+        "target": {
+          "name": "Send String to GUI",
+          "id": 19
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send String to GUI",
+          "id": 19
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 5
+        },
+        "target": {
+          "name": "not quit",
+          "id": 22
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "lpup",
+        "source": {
+          "name": "not quit",
+          "id": 22
+        },
+        "target": {
+          "name": "pong",
+          "id": 15
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 15
+        },
+        "target": {
+          "name": "keyboard receiver",
+          "id": 5
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "done",
+        "target_port": "done",
+        "source": {
+          "name": "not quit",
+          "id": 22
+        },
+        "target": {
+          "name": "keyboard receiver",
+          "id": 5
+        }
+      },
+      {
         "dir": 2,
         "source_port": "",
         "target_port": "✗",
         "source": {
           "name": "🚫",
           "id": 12
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "done",
+        "target_port": "",
+        "source": {
+          "name": "not quit",
+          "id": 22
         }
       }
     ],
@@ -88,12 +183,8 @@
         "id": 8
       },
       {
-        "name": "🗑️",
-        "id": 12
-      },
-      {
         "name": "🚫",
-        "id": 14
+        "id": 11
       }
     ],
     "connections": [
@@ -121,19 +212,6 @@
       },
       {
         "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "Send String to GUI",
-          "id": 8
-        },
-        "target": {
-          "name": "🗑️",
-          "id": 12
-        }
-      },
-      {
-        "dir": 1,
         "source_port": "✗",
         "target_port": "",
         "source": {
@@ -142,7 +220,7 @@
         },
         "target": {
           "name": "🚫",
-          "id": 14
+          "id": 11
         }
       },
       {
@@ -155,7 +233,7 @@
         },
         "target": {
           "name": "🚫",
-          "id": 14
+          "id": 11
         }
       },
       {
@@ -164,7 +242,7 @@
         "target_port": "✗",
         "source": {
           "name": "🚫",
-          "id": 14
+          "id": 11
         }
       }
     ],
@@ -175,11 +253,15 @@
     "children": [
       {
         "name": ":$ ./send-glsl.js",
-        "id": 5
+        "id": 4
       },
       {
         "name": "🚫",
-        "id": 9
+        "id": 8
+      },
+      {
+        "name": "🗑️",
+        "id": 11
       }
     ],
     "connections": [
@@ -189,7 +271,7 @@
         "target_port": "",
         "target": {
           "name": ":$ ./send-glsl.js",
-          "id": 5
+          "id": 4
         }
       },
       {
@@ -198,11 +280,24 @@
         "target_port": "",
         "source": {
           "name": ":$ ./send-glsl.js",
-          "id": 5
+          "id": 4
         },
         "target": {
           "name": "🚫",
-          "id": 9
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ ./send-glsl.js",
+          "id": 4
+        },
+        "target": {
+          "name": "🗑️",
+          "id": 11
         }
       },
       {
@@ -211,16 +306,7 @@
         "target_port": "✗",
         "source": {
           "name": "🚫",
-          "id": 9
-        }
-      },
-      {
-        "dir": 2,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": ":$ ./send-glsl.js",
-          "id": 5
+          "id": 8
         }
       }
     ],

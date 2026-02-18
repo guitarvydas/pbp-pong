@@ -5,6 +5,8 @@ import io
 import termios
 
 import keyboard_receiver
+import pong
+import notquit
 
 ###
 fd = None
@@ -24,6 +26,8 @@ def keyboard_reset ():
 keyboard_init ()
 [palette, env] = zd.initialize_from_files (sys.argv[3:])
 keyboard_receiver.install (palette)
+pong.install (palette)
+notquit.install (palette)
 top = zd.start_bare (part_name=sys.argv[2], palette=palette, env=env)
 zd.inject (top, "", sys.argv[1])
 zd.finalize (top)
