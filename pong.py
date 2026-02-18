@@ -26,7 +26,6 @@ def instantiate (reg,owner,name, arg, template_data):
     name_with_id = zd.gensymbol ( "pong")
     self = None
     eh = zd.make_leaf ( name_with_id, owner, self, arg, handler, reset_handler)
-    zd.set_active (eh)
     return eh
 
 # define template

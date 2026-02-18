@@ -3,9 +3,8 @@ import sys
 import kernel0d as zd
 
 def handler (eh,mev):
-    print (f'mev.datum.v /{mev.datum.v}/', file=sys.stderr)
     if mev.datum.v == 'x':
-        pass
+        zd.send (eh, "done", "", mev)
     else:
         zd.forward (eh, "", mev)
     

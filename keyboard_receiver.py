@@ -17,6 +17,8 @@ def handler (eh,mev):
         ch = read_single_character ()
         if ch:
             zd.send (eh, "", ch.decode (), mev)
+    elif mev.port == 'done':
+        zd.set_idle (eh)    
         
 def reset_handler (eh):
     pass
