@@ -15,16 +15,24 @@
         "id": 11
       },
       {
-        "name": "pong",
+        "name": "Game Logic",
         "id": 14
       },
       {
         "name": "Send String to GUI",
+        "id": 20
+      },
+      {
+        "name": ":?key",
         "id": 23
       },
       {
-        "name": "character decoder",
-        "id": 26
+        "name": ":?quit",
+        "id": 25
+      },
+      {
+        "name": ":?more",
+        "id": 27
       }
     ],
     "connections": [
@@ -64,7 +72,7 @@
         "source_port": "✗",
         "target_port": "",
         "source": {
-          "name": "pong",
+          "name": "Game Logic",
           "id": 14
         },
         "target": {
@@ -77,12 +85,12 @@
         "source_port": "",
         "target_port": "",
         "source": {
-          "name": "pong",
+          "name": "Game Logic",
           "id": 14
         },
         "target": {
           "name": "Send String to GUI",
-          "id": 23
+          "id": 20
         }
       },
       {
@@ -91,7 +99,7 @@
         "target_port": "",
         "source": {
           "name": "Send String to GUI",
-          "id": 23
+          "id": 20
         },
         "target": {
           "name": "🚫",
@@ -107,21 +115,34 @@
           "id": 4
         },
         "target": {
-          "name": "character decoder",
-          "id": 26
+          "name": "Game Logic",
+          "id": 14
         }
       },
       {
         "dir": 1,
-        "source_port": "leftup",
-        "target_port": "lup",
+        "source_port": "",
+        "target_port": "",
         "source": {
-          "name": "character decoder",
-          "id": 26
+          "name": "keyboard receiver",
+          "id": 4
         },
         "target": {
-          "name": "pong",
+          "name": ":?key",
+          "id": 23
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "quit",
+        "target_port": "",
+        "source": {
+          "name": "Game Logic",
           "id": 14
+        },
+        "target": {
+          "name": ":?quit",
+          "id": 25
         }
       },
       {
@@ -129,12 +150,12 @@
         "source_port": "more",
         "target_port": "",
         "source": {
-          "name": "pong",
+          "name": "Game Logic",
           "id": 14
         },
         "target": {
-          "name": "keyboard receiver",
-          "id": 4
+          "name": ":?more",
+          "id": 27
         }
       },
       {
@@ -142,8 +163,8 @@
         "source_port": "quit",
         "target_port": "quit",
         "source": {
-          "name": "character decoder",
-          "id": 26
+          "name": "Game Logic",
+          "id": 14
         },
         "target": {
           "name": "keyboard receiver",
@@ -152,54 +173,15 @@
       },
       {
         "dir": 1,
-        "source_port": "leftdown",
-        "target_port": "ldown",
+        "source_port": "more",
+        "target_port": "",
         "source": {
-          "name": "character decoder",
-          "id": 26
+          "name": "Game Logic",
+          "id": 14
         },
         "target": {
-          "name": "pong",
-          "id": 14
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "other",
-        "target_port": "other",
-        "source": {
-          "name": "character decoder",
-          "id": 26
-        },
-        "target": {
-          "name": "pong",
-          "id": 14
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "rightdown",
-        "target_port": "rdown",
-        "source": {
-          "name": "character decoder",
-          "id": 26
-        },
-        "target": {
-          "name": "pong",
-          "id": 14
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "rightup",
-        "target_port": "rup",
-        "source": {
-          "name": "character decoder",
-          "id": 26
-        },
-        "target": {
-          "name": "pong",
-          "id": 14
+          "name": "keyboard receiver",
+          "id": 4
         }
       },
       {
@@ -215,19 +197,372 @@
     "file": "pong.drawio"
   },
   {
-    "name": "Send File to GUI",
+    "name": "testgame",
     "children": [
       {
-        "name": "Read Text File",
+        "name": "keyboard receiver",
         "id": 4
       },
       {
-        "name": "Send String to GUI",
+        "name": "Send File to GUI",
         "id": 8
       },
       {
         "name": "🚫",
+        "id": 12
+      },
+      {
+        "name": "Game Logic",
+        "id": 15
+      },
+      {
+        "name": "Send String to GUI",
+        "id": 22
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": "Send File to GUI",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send File to GUI",
+          "id": 8
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Game Logic",
+          "id": 15
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "gui",
+        "target_port": "",
+        "source": {
+          "name": "Game Logic",
+          "id": 15
+        },
+        "target": {
+          "name": "Send String to GUI",
+          "id": 22
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send String to GUI",
+          "id": 22
+        },
+        "target": {
+          "name": "🚫",
+          "id": 12
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "key",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 4
+        },
+        "target": {
+          "name": "Game Logic",
+          "id": 15
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "ok",
+        "target_port": "init",
+        "source": {
+          "name": "Send File to GUI",
+          "id": 8
+        },
+        "target": {
+          "name": "Game Logic",
+          "id": 15
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "quit",
+        "target_port": "quit",
+        "source": {
+          "name": "Game Logic",
+          "id": 15
+        },
+        "target": {
+          "name": "keyboard receiver",
+          "id": 4
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "more",
+        "target_port": "",
+        "source": {
+          "name": "Game Logic",
+          "id": 15
+        },
+        "target": {
+          "name": "keyboard receiver",
+          "id": 4
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "✗",
+        "source": {
+          "name": "🚫",
+          "id": 12
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Game Logic",
+    "children": [
+      {
+        "name": "🚫",
+        "id": 8
+      },
+      {
+        "name": "pong",
         "id": 11
+      },
+      {
+        "name": "character decoder",
+        "id": 23
+      },
+      {
+        "name": ":?x",
+        "id": 31
+      },
+      {
+        "name": ":?y",
+        "id": 33
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "key",
+        "target_port": "",
+        "target": {
+          "name": "character decoder",
+          "id": 23
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "init",
+        "target_port": "init",
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "leftup",
+        "target_port": "lup",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "leftdown",
+        "target_port": "ldown",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "other",
+        "target_port": "other",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rightdown",
+        "target_port": "rdown",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rightup",
+        "target_port": "rup",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "quit",
+        "target_port": "quit",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 11
+        },
+        "target": {
+          "name": "🚫",
+          "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "quit",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 11
+        },
+        "target": {
+          "name": ":?y",
+          "id": 33
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "quit",
+        "target_port": "",
+        "source": {
+          "name": "character decoder",
+          "id": 23
+        },
+        "target": {
+          "name": ":?x",
+          "id": 31
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "✗",
+        "source": {
+          "name": "🚫",
+          "id": 8
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "quit",
+        "target_port": "quit",
+        "source": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "more",
+        "target_port": "more",
+        "source": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "gui",
+        "target_port": "gui",
+        "source": {
+          "name": "pong",
+          "id": 11
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  },
+  {
+    "name": "Send File to GUI",
+    "children": [
+      {
+        "name": "Read Text File",
+        "id": 5
+      },
+      {
+        "name": "Send String to GUI",
+        "id": 9
+      },
+      {
+        "name": "🚫",
+        "id": 12
+      },
+      {
+        "name": ":?r",
+        "id": 15
       }
     ],
     "connections": [
@@ -237,7 +572,16 @@
         "target_port": "",
         "target": {
           "name": "Read Text File",
-          "id": 4
+          "id": 5
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "",
+        "target_port": "",
+        "target": {
+          "name": ":?r",
+          "id": 15
         }
       },
       {
@@ -246,11 +590,11 @@
         "target_port": "",
         "source": {
           "name": "Read Text File",
-          "id": 4
+          "id": 5
         },
         "target": {
           "name": "Send String to GUI",
-          "id": 8
+          "id": 9
         }
       },
       {
@@ -259,11 +603,11 @@
         "target_port": "",
         "source": {
           "name": "Send String to GUI",
-          "id": 8
+          "id": 9
         },
         "target": {
           "name": "🚫",
-          "id": 11
+          "id": 12
         }
       },
       {
@@ -272,11 +616,11 @@
         "target_port": "",
         "source": {
           "name": "Read Text File",
-          "id": 4
+          "id": 5
         },
         "target": {
           "name": "🚫",
-          "id": 11
+          "id": 12
         }
       },
       {
@@ -285,8 +629,13 @@
         "target_port": "✗",
         "source": {
           "name": "🚫",
-          "id": 11
+          "id": 12
         }
+      },
+      {
+        "dir": 3,
+        "source_port": "",
+        "target_port": "ok"
       }
     ],
     "file": "pong.drawio"
@@ -305,6 +654,10 @@
       {
         "name": "🗑️",
         "id": 11
+      },
+      {
+        "name": ":?q",
+        "id": 13
       }
     ],
     "connections": [
@@ -341,6 +694,19 @@
         "target": {
           "name": "🗑️",
           "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": ":$ ./send-glsl.js",
+          "id": 4
+        },
+        "target": {
+          "name": ":?q",
+          "id": 13
         }
       },
       {

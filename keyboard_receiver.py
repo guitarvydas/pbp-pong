@@ -3,6 +3,8 @@ import sys
 import kernel0d as zd
 import tty
 import termios
+import traceback
+
 
 def read_single_character ():
     fd = sys.stdin.fileno()
@@ -13,13 +15,15 @@ def read_single_character ():
     return ch
 
 def handler (eh,mev):
+    print (f'>>> kbd /{mev.port}/ inq#{len(eh.inq)}', file = sys.stderr)
     if mev.port == '':
         ch = read_single_character ()
         if ch:
             zd.send (eh, "", ch.decode (), mev)
     elif mev.port == 'quit':
+        print (f'quitting', file=sys.stderr)
         zd.set_idle (eh)    
-        
+
 def reset_handler (eh):
     pass
 

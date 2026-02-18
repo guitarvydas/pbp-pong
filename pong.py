@@ -11,22 +11,33 @@ def handler (eh,mev):
     if mev.port == 'lup':
         left_paddle_y += paddle_inc
         cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
-        zd.send (eh, "", cmd, mev)
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
     elif mev.port == 'ldown':
         left_paddle_y -= paddle_inc
         cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
-        zd.send (eh, "", cmd, mev)
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
     elif mev.port == 'rup':
         right_paddle_y += paddle_inc
         cmd = f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}'
-        zd.send (eh, "", cmd, mev)
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
     elif mev.port == 'rdown':
         right_paddle_y -= paddle_inc
         cmd = f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}'
-        zd.send (eh, "", cmd, mev)
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
+    elif mev.port == 'other':
+        zd.send (eh, "more", "", mev)
+    elif mev.port == 'quit':
+        zd.send (eh, "quit", "", mev)
+    elif mev.port == "init":
+        zd.send (eh, "gui", f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}', mev)
+        zd.send (eh, "gui", f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}', mev)
+        zd.send (eh, "more", "", mev)
     else:
         pass
-    zd.send (eh, "more", "", mev)
     
 def reset_handler (eh):
     pass
