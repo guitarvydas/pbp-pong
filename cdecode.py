@@ -9,6 +9,10 @@ def handler (eh,mev):
         zd.send (eh, "leftup", "", mev)
     elif mev.datum.v == 'a':
         zd.send (eh, "leftdown", "", mev)
+    elif mev.datum.v == 'o':
+        zd.send (eh, "rightup", "", mev)
+    elif mev.datum.v == 'l':
+        zd.send (eh, "rightdown", "", mev)
     else:
         zd.send (eh, "other", mev.datum.v, mev)
     

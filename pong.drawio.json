@@ -20,11 +20,11 @@
       },
       {
         "name": "Send String to GUI",
-        "id": 21
+        "id": 23
       },
       {
         "name": "character decoder",
-        "id": 24
+        "id": 26
       }
     ],
     "connections": [
@@ -82,7 +82,7 @@
         },
         "target": {
           "name": "Send String to GUI",
-          "id": 21
+          "id": 23
         }
       },
       {
@@ -91,7 +91,7 @@
         "target_port": "",
         "source": {
           "name": "Send String to GUI",
-          "id": 21
+          "id": 23
         },
         "target": {
           "name": "🚫",
@@ -108,16 +108,16 @@
         },
         "target": {
           "name": "character decoder",
-          "id": 24
+          "id": 26
         }
       },
       {
         "dir": 1,
         "source_port": "leftup",
-        "target_port": "lpup",
+        "target_port": "lup",
         "source": {
           "name": "character decoder",
-          "id": 24
+          "id": 26
         },
         "target": {
           "name": "pong",
@@ -143,7 +143,7 @@
         "target_port": "quit",
         "source": {
           "name": "character decoder",
-          "id": 24
+          "id": 26
         },
         "target": {
           "name": "keyboard receiver",
@@ -153,10 +153,10 @@
       {
         "dir": 1,
         "source_port": "leftdown",
-        "target_port": "lpdown",
+        "target_port": "ldown",
         "source": {
           "name": "character decoder",
-          "id": 24
+          "id": 26
         },
         "target": {
           "name": "pong",
@@ -169,7 +169,33 @@
         "target_port": "other",
         "source": {
           "name": "character decoder",
-          "id": 24
+          "id": 26
+        },
+        "target": {
+          "name": "pong",
+          "id": 14
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rightdown",
+        "target_port": "rdown",
+        "source": {
+          "name": "character decoder",
+          "id": 26
+        },
+        "target": {
+          "name": "pong",
+          "id": 14
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "rightup",
+        "target_port": "rup",
+        "source": {
+          "name": "character decoder",
+          "id": 26
         },
         "target": {
           "name": "pong",

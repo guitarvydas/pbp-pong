@@ -8,13 +8,21 @@ right_paddle_y = 0.5
 
 def handler (eh,mev):
     global paddle_inc, left_paddle_y, right_paddle_y
-    if mev.port == 'lpup':
+    if mev.port == 'lup':
         left_paddle_y += paddle_inc
         cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
         zd.send (eh, "", cmd, mev)
-    elif mev.port == 'lpdown':
+    elif mev.port == 'ldown':
         left_paddle_y -= paddle_inc
         cmd = f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}'
+        zd.send (eh, "", cmd, mev)
+    elif mev.port == 'rup':
+        right_paddle_y += paddle_inc
+        cmd = f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}'
+        zd.send (eh, "", cmd, mev)
+    elif mev.port == 'rdown':
+        right_paddle_y -= paddle_inc
+        cmd = f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}'
         zd.send (eh, "", cmd, mev)
     else:
         pass
