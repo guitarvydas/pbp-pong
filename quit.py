@@ -3,8 +3,8 @@ import sys
 import kernel0d as zd
 
 def handler (eh,mev):
-    if mev.datum.v == 'x':
-        zd.send (eh, "done", "", mev)
+    if mev.datum.v == '\x03':
+        zd.send (eh, "quit", "", mev)
     else:
         zd.forward (eh, "", mev)
     
