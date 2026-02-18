@@ -15,7 +15,6 @@ def read_single_character ():
     return ch
 
 def handler (eh,mev):
-    print (f'>>> kbd /{mev.port}/ inq#{len(eh.inq)}', file = sys.stderr)
     if mev.port == '':
         ch = read_single_character ()
         if ch:
