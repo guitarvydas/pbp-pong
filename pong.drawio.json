@@ -7,16 +7,20 @@
         "id": 4
       },
       {
-        "name": ":?key",
+        "name": "Send File to GUI",
         "id": 7
       },
       {
-        "name": "Send File to GUI",
-        "id": 9
+        "name": "🚫",
+        "id": 10
       },
       {
-        "name": "🚫",
-        "id": 12
+        "name": "pong",
+        "id": 13
+      },
+      {
+        "name": "Send String to GUI",
+        "id": 17
       }
     ],
     "connections": [
@@ -35,19 +39,6 @@
         "target_port": "",
         "target": {
           "name": "Send File to GUI",
-          "id": 9
-        }
-      },
-      {
-        "dir": 1,
-        "source_port": "",
-        "target_port": "",
-        "source": {
-          "name": "keyboard receiver",
-          "id": 4
-        },
-        "target": {
-          "name": ":?key",
           "id": 7
         }
       },
@@ -57,11 +48,63 @@
         "target_port": "",
         "source": {
           "name": "Send File to GUI",
-          "id": 9
+          "id": 7
         },
         "target": {
           "name": "🚫",
-          "id": 12
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "lpup",
+        "source": {
+          "name": "keyboard receiver",
+          "id": 4
+        },
+        "target": {
+          "name": "pong",
+          "id": 13
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 13
+        },
+        "target": {
+          "name": "🚫",
+          "id": 10
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "pong",
+          "id": 13
+        },
+        "target": {
+          "name": "Send String to GUI",
+          "id": 17
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "✗",
+        "target_port": "",
+        "source": {
+          "name": "Send String to GUI",
+          "id": 17
+        },
+        "target": {
+          "name": "🚫",
+          "id": 10
         }
       },
       {
@@ -70,7 +113,7 @@
         "target_port": "✗",
         "source": {
           "name": "🚫",
-          "id": 12
+          "id": 10
         }
       }
     ],
