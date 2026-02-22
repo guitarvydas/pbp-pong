@@ -12,7 +12,7 @@
         <mxCell id="SAOmVbz_yC1hsSZaV9Qr-3" parent="SAOmVbz_yC1hsSZaV9Qr-2" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;points=[[0,0.5,0,0,0],[1,0.5,0,0,0]];fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;arcSize=50;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=none;" value="" vertex="1">
           <mxGeometry height="25" width="36" x="80" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="SAOmVbz_yC1hsSZaV9Qr-4" parent="SAOmVbz_yC1hsSZaV9Qr-2" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;points=[[0,0.5,0,0,0],[1,0.5,0,0,0]];arcSize=50;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" value="" vertex="1">
+        <mxCell id="SAOmVbz_yC1hsSZaV9Qr-4" parent="SAOmVbz_yC1hsSZaV9Qr-2" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;points=[[0,0.5,0,0,0],[1,0.5,0,0,0]];arcSize=50;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" value="getc" vertex="1">
           <mxGeometry height="25" width="36.75" x="-15" y="62.5" as="geometry" />
         </mxCell>
         <mxCell id="SAOmVbz_yC1hsSZaV9Qr-5" parent="SAOmVbz_yC1hsSZaV9Qr-2" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;points=[[0,0.5,0,0,0],[1,0.5,0,0,0]];arcSize=50;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;rotation=0;" value="quit" vertex="1">

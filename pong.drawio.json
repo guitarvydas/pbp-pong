@@ -87,7 +87,7 @@
       },
       {
         "dir": 1,
-        "source_port": "",
+        "source_port": "key",
         "target_port": "key",
         "source": {
           "name": "keyboard receiver",
@@ -127,7 +127,7 @@
       {
         "dir": 1,
         "source_port": "more",
-        "target_port": "",
+        "target_port": "getc",
         "source": {
           "name": "Game Logic",
           "id": 15

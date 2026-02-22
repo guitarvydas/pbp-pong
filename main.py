@@ -3,6 +3,7 @@ import kernel0d as zd
 
 import io
 import termios
+import tty
 
 import keyboard_receiver
 import pong
@@ -16,6 +17,7 @@ def keyboard_init ():
     global fd, old_settings
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
+    tty.setraw(fd)
 
 def keyboard_reset ():
     global fd, old_settings
@@ -30,8 +32,8 @@ pong.install (palette)
 cdecode.install (palette)
 top = zd.start_bare (part_name=sys.argv[2], palette=palette, env=env)
 zd.inject (top, "", sys.argv[1])
-zd.finalize (top)
 keyboard_reset ()
+zd.finalize (top)
 
 
 

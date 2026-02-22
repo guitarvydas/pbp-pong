@@ -10,7 +10,7 @@ def read_single_character ():
     ch = sys.stdin.buffer.read(1)
     if ch == '\x1b':
         ch2 = sys.stdin.buffer.read (1)
-        ch
+        ch 
     return ch
 
 def handler (eh,mev):
