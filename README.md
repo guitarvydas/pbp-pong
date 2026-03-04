@@ -13,6 +13,7 @@ Experimental and WIP at this time, but the test jig is usable...
 
 1. open a terminal and run `./relay.js`
 2. open a browser and open `viewer.html` in this directory
-3. open another terminal and run `./send-glsl.js life.glsl`
+3. open another terminal and run `./@make`
 
-4. (further: `./send-glsl.js pong.glsl`)
+the source code is in `pong.drawio` tabs `testgame`, `Game Logic`, `Send File to GUI`, `Send String to GUI`
+
