@@ -15,3 +15,4 @@ Experimental and WIP at this time, but the test jig is usable...
 2. open a browser and open `viewer.html` in this directory
 3. open another terminal and run `./send-glsl.js life.glsl`
 
+4. (further: `./send-glsl.js pong.glsl`)
