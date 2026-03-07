@@ -160,9 +160,9 @@ vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flip
 
     if (localY >= 0.0 && localY <= 1.0) {
         // Bat profile widths
-        float handleWidth = pw * 0.3;
-        float barrelWidth = pw * 2.2;
-        float knobWidth = pw * 0.8;
+        float handleWidth = pw * 0.4;
+        float barrelWidth = pw * 3.5;
+        float knobWidth = pw * 1.0;
 
         float width;
         if (localY < 0.05) {
@@ -183,7 +183,7 @@ vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flip
         float concaveDepth = 0.0;
         if (localY > 0.4) {
             float barrelT = (localY - 0.4) / 0.6;
-            concaveDepth = sin(barrelT * 3.14159) * barrelWidth * 0.35;
+            concaveDepth = sin(barrelT * 3.14159) * barrelWidth * 0.5;
         }
 
         float dx = uv.x - cx;

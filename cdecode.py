@@ -14,6 +14,11 @@ def handler (eh,mev):
     elif mev.datum.v == ';':
         zd.send (eh, "rightdown", "", mev)
 
+    elif mev.datum.v == 'z':
+        zd.send (eh, "ltoggle", "", mev)
+    elif mev.datum.v == '/':
+        zd.send (eh, "rtoggle", "", mev)
+
     elif mev.datum.v == 'h':
         zd.send (eh, "bleft", "", mev)
     elif mev.datum.v == 'j':

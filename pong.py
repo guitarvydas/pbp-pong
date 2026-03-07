@@ -5,13 +5,15 @@ import kernel0d as zd
 paddle_inc = 0.03
 left_paddle_y = 0.5
 right_paddle_y = 0.5
+left_paddle_style = 0
+right_paddle_style = 1
 
 ballx = 0.5
 bally = 0.7
 ball_inc = 0.03
 
 def handler (eh,mev):
-    global paddle_inc, left_paddle_y, right_paddle_y
+    global paddle_inc, left_paddle_y, right_paddle_y, left_paddle_style, right_paddle_style
     global ballx, bally, ball_inc
     if mev.port == 'lup':
         left_paddle_y += paddle_inc
@@ -31,6 +33,17 @@ def handler (eh,mev):
     elif mev.port == 'rdown':
         right_paddle_y -= paddle_inc
         cmd = f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}'
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
+
+    elif mev.port == 'rtoggle':
+        right_paddle_style = (right_paddle_style + 1) % 2
+        cmd = f'{{"type":"paddle_style","id":"right","style":{right_paddle_style}}}'
+        zd.send (eh, "gui", cmd, mev)
+        zd.send (eh, "more", "", mev)
+    elif mev.port == 'ltoggle':
+        left_paddle_style = (left_paddle_style + 1) % 2
+        cmd = f'{{"type":"paddle_style","id":"left","style":{left_paddle_style}}}'
         zd.send (eh, "gui", cmd, mev)
         zd.send (eh, "more", "", mev)
 
@@ -61,8 +74,9 @@ def handler (eh,mev):
         zd.send (eh, "quit", "", mev)
     elif mev.port == "init":
         zd.send (eh, "gui", f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}', mev)
-        zd.send (eh, "gui", f'{{"type":"paddle_style","id":"left","style":1}}', mev)
+        zd.send (eh, "gui", f'{{"type":"paddle_style","id":"left","style":{left_paddle_style}}}', mev)
         zd.send (eh, "gui", f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}', mev)
+        zd.send (eh, "gui", f'{{"type":"paddle_style","id":"right","style":{right_paddle_style}}}', mev)
         zd.send (eh, "gui", f'{{"type":"ball","x":{ballx},"y":{bally}}}', mev)
         zd.send (eh, "more", "", mev)
     else:
