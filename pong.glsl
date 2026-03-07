@@ -7,7 +7,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float centerLineWidth = 0.002;
     float paddleWidth = 0.015;
     float paddleHeight = 0.15;
-    float ballRadius = 0.025;
+    float ballRadius = 0.05;
     float lineThickness = 0.003;
 
     // Colors
@@ -56,10 +56,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
         vec3 normal = vec3((uv - ballPos) / ballRadius, z);
 
-        // Light from upper-right
-        vec3 lightDir = normalize(vec3(0.5, 0.7, 1.0));
+        // Light at the player's eye: centered on screen, far in front
+        // The light direction changes per-fragment relative to the ball's
+        // world position, so the specular glint shifts as the ball moves.
+        vec3 eyePos = vec3(0.5, 0.5, 3.0);
+        vec3 fragPos3D = vec3(ballPos, 0.0) + vec3((uv - ballPos), z * ballRadius);
+        vec3 lightDir = normalize(eyePos - fragPos3D);
+        vec3 viewDir = normalize(eyePos - fragPos3D);
         float diffuse = max(dot(normal, lightDir), 0.0);
-        float specular = pow(max(dot(reflect(-lightDir, normal), vec3(0.0, 0.0, 1.0)), 0.0), 32.0);
+        vec3 halfVec = normalize(lightDir + viewDir);
+        float specular = pow(max(dot(normal, halfVec), 0.0), 48.0);
 
         // Tennis ball felt colors
         vec3 ballBase = vec3(0.8, 0.82, 0.1);    // tennis yellow-green
