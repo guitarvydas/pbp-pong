@@ -265,7 +265,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float centerLineWidth = 0.002;
     float paddleWidth = 0.015;
     float paddleHeight = 0.15;
-    float ballRadius = 0.05;
+    float ballRadius = 0.015;
     float lineThickness = 0.003;
 
     // Colors
@@ -297,7 +297,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float rpy = u_paddle_right_y;
     col = drawPaddle(col, uv, rpx, rpy, paddleWidth, paddleHeight, u_paddle_right_style, true);
 
-    // --- Ball (3D basketball) ---
+    // --- Ball (3D tennis ball) ---
     vec2 ballPos = u_ball_pos;
     float d = length(uv - ballPos);
     if (d < ballRadius) {
@@ -314,53 +314,30 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 viewDir = normalize(eyePos - fragPos3D);
         float diffuse = max(dot(normal, lightDir), 0.0);
         vec3 halfVec = normalize(lightDir + viewDir);
-        float specular = pow(max(dot(normal, halfVec), 0.0), 24.0);
+        float specular = pow(max(dot(normal, halfVec), 0.0), 48.0);
 
-        // Basketball leather colors
-        vec3 orangeBase = vec3(0.76, 0.35, 0.07);   // classic basketball orange
-        vec3 orangeDark = vec3(0.45, 0.18, 0.03);   // shadow tone
+        // Tennis ball felt colors
+        vec3 ballBase = vec3(0.8, 0.82, 0.1);    // tennis yellow-green
+        vec3 ballShadow = vec3(0.45, 0.48, 0.05); // darker felt
 
-        // Pebble grain texture (leather bumps)
-        float grain1 = sin(uv.x * 1200.0 + uv.y * 400.0) * sin(uv.y * 1100.0 + uv.x * 300.0);
-        float grain2 = sin(uv.x * 700.0 - uv.y * 900.0) * sin(uv.y * 800.0 - uv.x * 600.0);
-        float grain = (grain1 + grain2) * 0.02;
+        // Felt fuzz noise (procedural)
+        float fuzz = sin(uv.x * 800.0) * sin(uv.y * 800.0) * 0.03;
 
-        // Spherical coordinates for seam pattern
-        float theta = atan(normal.y, normal.x);  // longitude
-        float phi = asin(clamp(normal.z, -1.0, 1.0));  // latitude
+        // Tennis ball seam curve
+        // Map point onto sphere surface for seam calculation
+        float theta = atan(normal.y, normal.x);
+        float phi = asin(clamp(normal.z, -1.0, 1.0));
+        float seam = abs(sin(2.0 * theta) * cos(phi) + cos(2.0 * theta) * sin(phi));
+        float seamLine = smoothstep(0.03, 0.0, abs(seam - 0.5) - 0.47);
 
-        // Basketball seam pattern: 1 equator + 2 meridians at 90 degrees
-        float seamWidth = 0.06;
+        vec3 feltColor = mix(ballBase, ballShadow, 0.3 - 0.3 * diffuse) + fuzz;
 
-        // Horizontal seam (equator)
-        float equator = smoothstep(seamWidth, seamWidth * 0.3, abs(phi));
+        // White seam with slight indent shadow
+        vec3 seamColor = vec3(0.95, 0.95, 0.9);
+        feltColor = mix(feltColor, seamColor, seamLine * 0.7);
 
-        // Two vertical seams (perpendicular great circles)
-        float meridian1 = smoothstep(seamWidth, seamWidth * 0.3, abs(sin(theta)));
-        float meridian2 = smoothstep(seamWidth, seamWidth * 0.3, abs(cos(theta)));
-
-        // Curved side seams: two arcs connecting the poles through the panels
-        float arc1 = sin(theta * 2.0) * 0.5;
-        float curvedSeam1 = smoothstep(seamWidth, seamWidth * 0.3,
-            abs(phi - arc1 * 0.8));
-        float arc2 = cos(theta * 2.0) * 0.5;
-        float curvedSeam2 = smoothstep(seamWidth, seamWidth * 0.3,
-            abs(phi - arc2 * 0.8));
-
-        float seams = max(max(equator, max(meridian1, meridian2)),
-                         max(curvedSeam1, curvedSeam2));
-
-        // Seam channel is dark and slightly indented
-        vec3 seamColor = vec3(0.05, 0.02, 0.0);
-
-        // Build leather color with lighting
-        vec3 leather = mix(orangeBase, orangeDark, 0.3 - 0.3 * diffuse) + grain;
-
-        // Mix in seams
-        vec3 ballCol = mix(leather, seamColor, seams * 0.85);
-
-        // Ambient + diffuse + specular (leather has a softer sheen than felt)
-        ballCol = ballCol * (0.3 + 0.7 * diffuse) + vec3(1.0, 0.9, 0.8) * specular * 0.3;
+        // Ambient + diffuse + specular
+        vec3 ballCol = feltColor * (0.35 + 0.65 * diffuse) + vec3(1.0) * specular * 0.4;
 
         // Soft edge falloff
         float edgeFade = smoothstep(1.0, 0.85, nd);
