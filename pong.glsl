@@ -172,17 +172,17 @@ vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flip
         } else if (localY < 0.55) {
             float t = (localY - 0.35) / 0.2;
             width = mix(handleWidth, barrelWidth, t * t);
-        } else if (localY < 0.92) {
-            width = barrelWidth;
         } else {
-            float t = (localY - 0.92) / 0.08;
-            width = barrelWidth * (1.0 - t * t);
+            // Barrel with gentle taper toward tip
+            float t = (localY - 0.55) / 0.45;
+            float taper = 1.0 - t * t * t * 0.3;  // subtle narrowing
+            width = barrelWidth * taper;
         }
 
-        // Concave scoop on the court-facing edge (barrel region only)
+        // Concave scoop on the court-facing edge (barrel region)
         float concaveDepth = 0.0;
-        if (localY > 0.4 && localY < 0.92) {
-            float barrelT = (localY - 0.4) / 0.52;
+        if (localY > 0.4) {
+            float barrelT = (localY - 0.4) / 0.6;
             concaveDepth = sin(barrelT * 3.14159) * barrelWidth * 0.35;
         }
 
