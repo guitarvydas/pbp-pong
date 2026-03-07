@@ -149,7 +149,7 @@ vec3 drawHoop(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool fli
     return col;
 }
 
-// ---- Baseball bat (3D cylinder with position-dependent lighting) ----
+// ---- Baseball bat (3D, concave on court-facing edge) ----
 vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flipX) {
     vec3 col = bg;
     float dir = flipX ? -1.0 : 1.0;
@@ -159,72 +159,88 @@ vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flip
     float localY = (uv.y - (cy - batLength * 0.35)) / batLength;
 
     if (localY >= 0.0 && localY <= 1.0) {
-        // Bat profile: thin handle at bottom, widens to barrel at top
+        // Bat profile widths
         float handleWidth = pw * 0.3;
         float barrelWidth = pw * 2.2;
         float knobWidth = pw * 0.8;
 
         float width;
         if (localY < 0.05) {
-            // Knob at very bottom
             width = mix(knobWidth, handleWidth * 0.7, localY / 0.05);
         } else if (localY < 0.35) {
-            // Handle: thin grip
             width = handleWidth;
         } else if (localY < 0.55) {
-            // Taper: handle to barrel
             float t = (localY - 0.35) / 0.2;
             width = mix(handleWidth, barrelWidth, t * t);
         } else if (localY < 0.92) {
-            // Barrel: fat part
             width = barrelWidth;
         } else {
-            // Cap: rounds off
             float t = (localY - 0.92) / 0.08;
             width = barrelWidth * (1.0 - t * t);
         }
 
+        // Concave scoop on the court-facing edge (barrel region only)
+        float concaveDepth = 0.0;
+        if (localY > 0.4 && localY < 0.92) {
+            float barrelT = (localY - 0.4) / 0.52;
+            concaveDepth = sin(barrelT * 3.14159) * barrelWidth * 0.35;
+        }
+
         float dx = uv.x - cx;
-        float absDx = abs(dx);
-        if (absDx < width * 0.5) {
-            // --- 3D cylinder normal ---
-            float normDx = dx / (width * 0.5);  // -1 to 1 across the bat
-            float cylZ = sqrt(max(0.0, 1.0 - normDx * normDx));
+        bool courtSide = (dx * dir) > 0.0;
 
-            // Surface normal: horizontal cylinder (bat is vertical)
-            vec3 normal = normalize(vec3(normDx, 0.0, cylZ));
+        // Court-facing edge is scooped inward; back edge stays convex
+        float halfW_court = width * 0.5 - concaveDepth;
+        float halfW_back = width * 0.5;
+        float edgeLimit = courtSide ? halfW_court : halfW_back;
 
-            // 3D position on cylinder surface
+        if (abs(dx) < edgeLimit) {
+            // Normalized position across the bat for this side
+            float sideDx = courtSide ? (dx * dir) : (-dx * dir);
+            float sideMax = courtSide ? halfW_court : halfW_back;
+            float sideNorm = sideDx / max(sideMax, 0.001);  // 0 at center, 1 at edge
+
+            // 3D surface: convex back, concave court-facing scoop
+            float cylZ;
+            vec3 normal;
+
+            if (courtSide && concaveDepth > 0.001) {
+                // Concave: Z dips inward, normal points back toward court
+                cylZ = 0.3 + 0.7 * (1.0 - sideNorm * sideNorm);
+                normal = normalize(vec3(-dir * sideNorm * 0.8, 0.0, cylZ));
+            } else {
+                // Convex: standard cylinder
+                float normDx = dx / (halfW_back);
+                cylZ = sqrt(max(0.0, 1.0 - normDx * normDx));
+                normal = normalize(vec3(normDx, 0.0, cylZ));
+            }
+
+            // Lighting
             vec3 fragPos3D = vec3(uv.x, uv.y, cylZ * width * 0.25);
             vec3 eyePos = LIGHT_POS;
             vec3 lightDir = normalize(eyePos - fragPos3D);
             vec3 viewDir = normalize(eyePos - fragPos3D);
-
             float diffuse = max(dot(normal, lightDir), 0.0);
             vec3 halfVec = normalize(lightDir + viewDir);
-            // Lacquered wood has a tight specular
             float specular = pow(max(dot(normal, halfVec), 0.0), 50.0);
 
-            // Wood grain color
+            // Wood grain
             float grain = sin(uv.y * 600.0 + sin(uv.x * 200.0) * 2.0) * 0.03;
             float grain2 = sin(uv.y * 150.0 + uv.x * 80.0) * 0.02;
-
-            vec3 woodLight = vec3(0.72, 0.52, 0.28);  // ash wood
+            vec3 woodLight = vec3(0.72, 0.52, 0.28);
             vec3 woodDark = vec3(0.55, 0.38, 0.18);
-
             vec3 woodCol = mix(woodDark, woodLight, 0.5 + 0.5 * cylZ) + grain + grain2;
 
-            // Handle wrap (grip tape) region
+            // Grip tape on handle
             if (localY > 0.08 && localY < 0.33) {
                 float tape = sin(uv.y * 400.0 - uv.x * 100.0 * dir);
                 vec3 tapeCol = tape > 0.0 ? vec3(0.15, 0.15, 0.15) : vec3(0.25, 0.25, 0.25);
                 woodCol = mix(tapeCol, woodCol, 0.1);
-                // Tape has duller specular
                 specular *= 0.3;
             }
 
-            // Brand logo region on barrel
-            if (localY > 0.65 && localY < 0.75 && absDx < width * 0.3) {
+            // Brand logo on barrel back
+            if (localY > 0.65 && localY < 0.75 && !courtSide && abs(dx) < width * 0.3) {
                 float logoD = length(vec2((uv.x - cx) / (width * 0.3), (localY - 0.7) / 0.04));
                 if (logoD < 1.0) {
                     woodCol = mix(woodCol, vec3(0.4, 0.25, 0.1), 0.3);
@@ -233,11 +249,7 @@ vec3 drawBat(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flip
 
             // Apply lighting
             vec3 litCol = woodCol * (0.2 + 0.8 * diffuse);
-
-            // Specular: warm highlight for lacquered wood
             litCol += vec3(1.0, 0.9, 0.7) * specular * 0.6;
-
-            // Rim darkening at cylinder edges
             litCol *= (0.6 + 0.4 * cylZ);
 
             col = litCol;
