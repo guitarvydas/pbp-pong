@@ -1,70 +1,104 @@
 // --- MAIN ---
 
-// ---- Basketball hoop (backboard + rim + net) ----
+// ---- Basketball hoop (sideways — backboard at wall, rim+net toward center) ----
 vec3 drawHoop(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flipX) {
     vec3 col = bg;
+    // dir: +1 = right side faces center (left paddle), -1 = left side faces center (right paddle)
     float dir = flipX ? -1.0 : 1.0;
 
-    // Backboard: white rectangle behind the rim
-    float bbW = pw * 1.8;
-    float bbH = ph * 0.55;
-    float bbX = cx - dir * pw * 0.3;
-    if (abs(uv.x - bbX) < bbW * 0.5 && abs(uv.y - (cy + ph * 0.15)) < bbH * 0.5) {
-        // White backboard with slight transparency feel
-        vec3 boardCol = vec3(0.9, 0.92, 0.95);
-        // Red square target on backboard
-        float sqH = bbH * 0.45;
-        float sqW = bbW * 0.4;
-        if (abs(uv.x - bbX) < sqW * 0.5 && abs(uv.y - (cy + ph * 0.15)) < sqH * 0.5) {
-            // Red outline only
-            float inner = step(sqW * 0.35, abs(uv.x - bbX)) + step(sqH * 0.35, abs(uv.y - (cy + ph * 0.15)));
-            if (inner < 1.0) {
-                boardCol = vec3(0.85, 0.88, 0.92);
-            } else {
-                boardCol = vec3(0.85, 0.15, 0.1);
+    // Scale factors
+    float scale = ph * 0.9;
+
+    // Backboard: tall vertical rectangle flush against the wall side
+    float bbX = cx - dir * scale * 0.35;  // backboard position (wall side)
+    float bbW = scale * 0.06;             // thin (horizontal)
+    float bbH = scale * 0.75;             // tall (vertical)
+    if (abs(uv.x - bbX) < bbW * 0.5 && abs(uv.y - cy) < bbH * 0.5) {
+        vec3 boardCol = vec3(0.88, 0.9, 0.93);
+        // Board edge highlight
+        float edgeDist = min(abs(abs(uv.x - bbX) - bbW * 0.5), abs(abs(uv.y - cy) - bbH * 0.5));
+        if (edgeDist < 0.002) {
+            boardCol = vec3(0.4, 0.4, 0.45);
+        }
+        // Red rectangle target
+        float sqW = bbW * 0.8;
+        float sqH = bbH * 0.35;
+        float sqDX = abs(uv.x - bbX);
+        float sqDY = abs(uv.y - (cy + bbH * 0.05));
+        if (sqDX < sqW * 0.5 && sqDY < sqH * 0.5) {
+            if (sqDX > sqW * 0.35 || sqDY > sqH * 0.35) {
+                boardCol = vec3(0.85, 0.12, 0.08);
             }
         }
         col = boardCol;
     }
 
-    // Rim: orange ring extending from backboard
-    float rimCX = cx + dir * pw * 0.6;
-    float rimCY = cy - ph * 0.05;
-    float rimRadius = pw * 1.2;
-    float rimThick = 0.004;
-    float dRim = abs(length(vec2(uv.x - rimCX, (uv.y - rimCY) * 1.8)) - rimRadius);
-    if (dRim < rimThick) {
-        col = vec3(0.85, 0.35, 0.05); // orange rim
+    // Support pole behind backboard
+    float poleX = bbX - dir * scale * 0.04;
+    if (abs(uv.x - poleX) < scale * 0.015 && abs(uv.y - cy) < bbH * 0.55) {
+        col = vec3(0.35, 0.35, 0.4);
     }
 
-    // Rim connector bracket
-    float bracketY = rimCY;
-    float bracketX1 = cx;
-    float bracketX2 = rimCX - dir * rimRadius * 0.5;
-    float bMinX = min(bracketX1, bracketX2);
-    float bMaxX = max(bracketX1, bracketX2);
-    if (uv.x > bMinX && uv.x < bMaxX && abs(uv.y - bracketY) < 0.003) {
-        col = vec3(0.5, 0.5, 0.55); // metal bracket
+    // Rim: horizontal oval extending from backboard toward center court
+    float rimAttachX = bbX + dir * bbW * 0.5;
+    float rimEndX = rimAttachX + dir * scale * 0.4;
+    float rimMidX = (rimAttachX + rimEndX) * 0.5;
+    float rimCY = cy - scale * 0.02;
+    float rimHalfW = abs(rimEndX - rimAttachX) * 0.5;
+    float rimHalfH = scale * 0.12;
+
+    // Rim as ellipse outline
+    float rimDX = (uv.x - rimMidX) / rimHalfW;
+    float rimDY = (uv.y - rimCY) / rimHalfH;
+    float rimDist = length(vec2(rimDX, rimDY));
+    float rimThick = 0.15;
+    if (abs(rimDist - 1.0) < rimThick) {
+        // Orange painted metal with highlight
+        float highlight = pow(max(0.0, 1.0 - abs(rimDY)), 3.0) * 0.2;
+        col = vec3(0.9, 0.38, 0.05) + highlight;
     }
 
-    // Net: hanging strings below rim
-    float netTop = rimCY - 0.005;
-    float netBottom = rimCY - ph * 0.45;
-    float netLeft = rimCX - rimRadius * 0.85;
-    float netRight = rimCX + rimRadius * 0.85;
-    if (uv.y < netTop && uv.y > netBottom && uv.x > netLeft && uv.x < netRight) {
-        float netLocalY = (netTop - uv.y) / (netTop - netBottom);
-        // Net narrows toward bottom
-        float narrowing = 1.0 - netLocalY * 0.5;
-        float netMidX = rimCX;
-        if (abs(uv.x - netMidX) < rimRadius * 0.85 * narrowing) {
-            // Vertical strings
-            float vString = sin((uv.x - netLeft) * 350.0);
-            // Horizontal strings (wider spacing toward bottom)
-            float hSpacing = 80.0 - netLocalY * 30.0;
-            float hString = sin(uv.y * hSpacing);
-            if (vString > 0.85 || hString > 0.9) {
-                col = vec3(0.95, 0.95, 0.95); // white net
+    // Rim bracket: two small arms connecting backboard to rim
+    float bracketW = abs(rimMidX - rimAttachX) * 0.6;
+    float bStartX = rimAttachX;
+    float bEndX = rimAttachX + dir * bracketW;
+    float bMinX = min(bStartX, bEndX);
+    float bMaxX = max(bStartX, bEndX);
+    // Upper bracket
+    if (uv.x > bMinX && uv.x < bMaxX && abs(uv.y - (rimCY + rimHalfH * 0.5)) < 0.0025) {
+        col = vec3(0.5, 0.5, 0.55);
+    }
+    // Lower bracket
+    if (uv.x > bMinX && uv.x < bMaxX && abs(uv.y - (rimCY - rimHalfH * 0.5)) < 0.0025) {
+        col = vec3(0.5, 0.5, 0.55);
+    }
+
+    // Net: hangs below the rim, narrows downward
+    float netTop = rimCY - rimHalfH * 0.7;
+    float netBottom = rimCY - scale * 0.55;
+    float netMinX = min(rimAttachX, rimEndX) + abs(rimEndX - rimAttachX) * 0.05;
+    float netMaxX = max(rimAttachX, rimEndX) - abs(rimEndX - rimAttachX) * 0.05;
+
+    if (uv.y < netTop && uv.y > netBottom && uv.x > netMinX && uv.x < netMaxX) {
+        float netLocalY = (netTop - uv.y) / (netTop - netBottom);  // 0 at top, 1 at bottom
+
+        // Net narrows toward bottom and toward the open end
+        float narrowX = 1.0 - netLocalY * 0.55;
+        float netCX = (netMinX + netMaxX) * 0.5;
+        float netW = (netMaxX - netMinX) * 0.5 * narrowX;
+
+        if (abs(uv.x - netCX) < netW) {
+            // Diamond mesh pattern
+            float meshScaleX = 220.0;
+            float meshScaleY = 180.0;
+            float mx = sin(uv.x * meshScaleX + uv.y * meshScaleY * 0.5);
+            float my = sin(uv.y * meshScaleY + uv.x * meshScaleX * 0.5);
+            float mesh = max(abs(mx), abs(my));
+
+            if (mesh > 0.82) {
+                // White net cords with slight depth shading
+                float depth = 0.8 + 0.2 * (1.0 - netLocalY);
+                col = vec3(0.95, 0.95, 0.92) * depth;
             }
         }
     }
