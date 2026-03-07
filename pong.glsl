@@ -1,105 +1,83 @@
 // --- MAIN ---
 
-// ---- Basketball hoop (sideways — backboard at wall, rim+net toward center) ----
+// ---- Basketball net receptacle (open hoop, no backboard) ----
 vec3 drawHoop(vec3 bg, vec2 uv, float cx, float cy, float pw, float ph, bool flipX) {
     vec3 col = bg;
-    // dir: +1 = right side faces center (left paddle), -1 = left side faces center (right paddle)
     float dir = flipX ? -1.0 : 1.0;
 
-    // Scale factors
-    float scale = ph * 0.9;
+    float scale = ph;
 
-    // Backboard: tall vertical rectangle flush against the wall side
-    float bbX = cx - dir * scale * 0.35;  // backboard position (wall side)
-    float bbW = scale * 0.06;             // thin (horizontal)
-    float bbH = scale * 0.75;             // tall (vertical)
-    if (abs(uv.x - bbX) < bbW * 0.5 && abs(uv.y - cy) < bbH * 0.5) {
-        vec3 boardCol = vec3(0.88, 0.9, 0.93);
-        // Board edge highlight
-        float edgeDist = min(abs(abs(uv.x - bbX) - bbW * 0.5), abs(abs(uv.y - cy) - bbH * 0.5));
-        if (edgeDist < 0.002) {
-            boardCol = vec3(0.4, 0.4, 0.45);
-        }
-        // Red rectangle target
-        float sqW = bbW * 0.8;
-        float sqH = bbH * 0.35;
-        float sqDX = abs(uv.x - bbX);
-        float sqDY = abs(uv.y - (cy + bbH * 0.05));
-        if (sqDX < sqW * 0.5 && sqDY < sqH * 0.5) {
-            if (sqDX > sqW * 0.35 || sqDY > sqH * 0.35) {
-                boardCol = vec3(0.85, 0.12, 0.08);
+    // Receptacle shape: a trapezoid/bucket lying on its side
+    // Open end faces center court, closed end near wall
+    // Top rim is an ellipse, body tapers toward the closed end
+
+    float openX = cx + dir * scale * 0.35;   // open end (toward center)
+    float closedX = cx - dir * scale * 0.15; // closed end (near wall)
+    float bodyMinX = min(openX, closedX);
+    float bodyMaxX = max(openX, closedX);
+    float bodyLen = bodyMaxX - bodyMinX;
+
+    if (uv.x >= bodyMinX && uv.x <= bodyMaxX) {
+        // How far along the body: 0 at closed end, 1 at open end
+        float t = (flipX)
+            ? (bodyMaxX - uv.x) / bodyLen
+            : (uv.x - bodyMinX) / bodyLen;
+
+        // Half-height tapers: wider at open end, narrower at closed
+        float openHalf = scale * 0.42;
+        float closedHalf = scale * 0.22;
+        float halfH = mix(closedHalf, openHalf, t);
+
+        float dy = abs(uv.y - cy);
+
+        if (dy < halfH) {
+            // --- Rim ring at the open end ---
+            float rimZone = abs(uv.x - openX);
+            float rimWidth = scale * 0.025;
+            if (rimZone < rimWidth && dy < halfH) {
+                // Orange metal rim
+                float rimShade = 1.0 - (dy / halfH) * 0.3;
+                col = vec3(0.9, 0.4, 0.05) * rimShade;
+                return col;
             }
-        }
-        col = boardCol;
-    }
 
-    // Support pole behind backboard
-    float poleX = bbX - dir * scale * 0.04;
-    if (abs(uv.x - poleX) < scale * 0.015 && abs(uv.y - cy) < bbH * 0.55) {
-        col = vec3(0.35, 0.35, 0.4);
-    }
-
-    // Rim: horizontal oval extending from backboard toward center court
-    float rimAttachX = bbX + dir * bbW * 0.5;
-    float rimEndX = rimAttachX + dir * scale * 0.4;
-    float rimMidX = (rimAttachX + rimEndX) * 0.5;
-    float rimCY = cy - scale * 0.02;
-    float rimHalfW = abs(rimEndX - rimAttachX) * 0.5;
-    float rimHalfH = scale * 0.12;
-
-    // Rim as ellipse outline
-    float rimDX = (uv.x - rimMidX) / rimHalfW;
-    float rimDY = (uv.y - rimCY) / rimHalfH;
-    float rimDist = length(vec2(rimDX, rimDY));
-    float rimThick = 0.15;
-    if (abs(rimDist - 1.0) < rimThick) {
-        // Orange painted metal with highlight
-        float highlight = pow(max(0.0, 1.0 - abs(rimDY)), 3.0) * 0.2;
-        col = vec3(0.9, 0.38, 0.05) + highlight;
-    }
-
-    // Rim bracket: two small arms connecting backboard to rim
-    float bracketW = abs(rimMidX - rimAttachX) * 0.6;
-    float bStartX = rimAttachX;
-    float bEndX = rimAttachX + dir * bracketW;
-    float bMinX = min(bStartX, bEndX);
-    float bMaxX = max(bStartX, bEndX);
-    // Upper bracket
-    if (uv.x > bMinX && uv.x < bMaxX && abs(uv.y - (rimCY + rimHalfH * 0.5)) < 0.0025) {
-        col = vec3(0.5, 0.5, 0.55);
-    }
-    // Lower bracket
-    if (uv.x > bMinX && uv.x < bMaxX && abs(uv.y - (rimCY - rimHalfH * 0.5)) < 0.0025) {
-        col = vec3(0.5, 0.5, 0.55);
-    }
-
-    // Net: hangs below the rim, narrows downward
-    float netTop = rimCY - rimHalfH * 0.7;
-    float netBottom = rimCY - scale * 0.55;
-    float netMinX = min(rimAttachX, rimEndX) + abs(rimEndX - rimAttachX) * 0.05;
-    float netMaxX = max(rimAttachX, rimEndX) - abs(rimEndX - rimAttachX) * 0.05;
-
-    if (uv.y < netTop && uv.y > netBottom && uv.x > netMinX && uv.x < netMaxX) {
-        float netLocalY = (netTop - uv.y) / (netTop - netBottom);  // 0 at top, 1 at bottom
-
-        // Net narrows toward bottom and toward the open end
-        float narrowX = 1.0 - netLocalY * 0.55;
-        float netCX = (netMinX + netMaxX) * 0.5;
-        float netW = (netMaxX - netMinX) * 0.5 * narrowX;
-
-        if (abs(uv.x - netCX) < netW) {
-            // Diamond mesh pattern
-            float meshScaleX = 220.0;
-            float meshScaleY = 180.0;
-            float mx = sin(uv.x * meshScaleX + uv.y * meshScaleY * 0.5);
-            float my = sin(uv.y * meshScaleY + uv.x * meshScaleX * 0.5);
-            float mesh = max(abs(mx), abs(my));
-
-            if (mesh > 0.82) {
-                // White net cords with slight depth shading
-                float depth = 0.8 + 0.2 * (1.0 - netLocalY);
-                col = vec3(0.95, 0.95, 0.92) * depth;
+            // --- Metal rim at closed end ---
+            float closedZone = abs(uv.x - closedX);
+            if (closedZone < rimWidth * 0.7 && dy < halfH) {
+                col = vec3(0.45, 0.45, 0.5);
+                return col;
             }
+
+            // --- Top and bottom edges (rim wire running along the sides) ---
+            float edgeDist = abs(dy - halfH);
+            if (edgeDist < scale * 0.008) {
+                float wireShade = 0.7 + 0.3 * sin(uv.x * 500.0);
+                col = vec3(0.85, 0.37, 0.05) * wireShade;
+                return col;
+            }
+
+            // --- Net mesh body ---
+            // Diamond pattern that follows the taper
+            float localY = (uv.y - (cy - halfH)) / (halfH * 2.0); // 0 to 1 vertically
+
+            // Stretch mesh coords so diamonds stay roughly square
+            float meshX = uv.x * 180.0;
+            float meshY = uv.y * 180.0;
+
+            // Two diagonal wave sets create diamond holes
+            float d1 = sin(meshX + meshY);
+            float d2 = sin(meshX - meshY);
+
+            // Cord thickness varies: thinner toward closed end (tighter weave)
+            float cordThresh = mix(0.75, 0.65, t);
+
+            if (abs(d1) > cordThresh || abs(d2) > cordThresh) {
+                // White nylon cord
+                float depth = 0.75 + 0.25 * t;  // brighter at open end
+                float cordHighlight = pow(max(abs(d1), abs(d2)), 4.0) * 0.15;
+                col = vec3(0.92, 0.92, 0.88) * depth + cordHighlight;
+            }
+            // else: hole in net, show background (col stays as bg)
         }
     }
 
