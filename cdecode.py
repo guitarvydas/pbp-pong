@@ -9,10 +9,20 @@ def handler (eh,mev):
         zd.send (eh, "leftup", "", mev)
     elif mev.datum.v == 'a':
         zd.send (eh, "leftdown", "", mev)
-    elif mev.datum.v == 'o':
+    elif mev.datum.v == 'p':
         zd.send (eh, "rightup", "", mev)
-    elif mev.datum.v == 'l':
+    elif mev.datum.v == ';':
         zd.send (eh, "rightdown", "", mev)
+
+    elif mev.datum.v == 'h':
+        zd.send (eh, "bleft", "", mev)
+    elif mev.datum.v == 'j':
+        zd.send (eh, "bdown", "", mev)
+    elif mev.datum.v == 'k':
+        zd.send (eh, "bup", "", mev)
+    elif mev.datum.v == 'l':
+        zd.send (eh, "bright", "", mev)
+
     else:
         zd.send (eh, "other", mev.datum.v, mev)
     

@@ -162,23 +162,36 @@
       },
       {
         "name": "character decoder",
-        "id": 23
+        "id": 27
       }
     ],
     "connections": [
+      {
+        "dir": 0,
+        "source_port": "init",
+        "target_port": "init",
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
       {
         "dir": 0,
         "source_port": "key",
         "target_port": "",
         "target": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         }
       },
       {
-        "dir": 0,
+        "dir": 1,
         "source_port": "init",
         "target_port": "init",
+        "source": {
+          "name": "pong",
+          "id": 11
+        },
         "target": {
           "name": "pong",
           "id": 11
@@ -190,7 +203,7 @@
         "target_port": "lup",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -203,7 +216,7 @@
         "target_port": "ldown",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -216,7 +229,7 @@
         "target_port": "other",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -229,7 +242,7 @@
         "target_port": "rdown",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -242,7 +255,7 @@
         "target_port": "rup",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -255,7 +268,7 @@
         "target_port": "quit",
         "source": {
           "name": "character decoder",
-          "id": 23
+          "id": 27
         },
         "target": {
           "name": "pong",
@@ -273,6 +286,58 @@
         "target": {
           "name": "🚫",
           "id": 8
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "bup",
+        "target_port": "bup",
+        "source": {
+          "name": "character decoder",
+          "id": 27
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "bdown",
+        "target_port": "bdown",
+        "source": {
+          "name": "character decoder",
+          "id": 27
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "bright",
+        "target_port": "bright",
+        "source": {
+          "name": "character decoder",
+          "id": 27
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "bleft",
+        "target_port": "bleft",
+        "source": {
+          "name": "character decoder",
+          "id": 27
+        },
+        "target": {
+          "name": "pong",
+          "id": 11
         }
       },
       {
