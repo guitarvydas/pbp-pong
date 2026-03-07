@@ -287,17 +287,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         col = lineColor;
     }
 
-    // --- Left paddle ---
-    float lpx = courtMargin + 0.03;
-    float lpy = u_paddle_left_y;
-    col = drawPaddle(col, uv, lpx, lpy, paddleWidth, paddleHeight, u_paddle_left_style, false);
-
-    // --- Right paddle ---
-    float rpx = 1.0 - courtMargin - 0.03;
-    float rpy = u_paddle_right_y;
-    col = drawPaddle(col, uv, rpx, rpy, paddleWidth, paddleHeight, u_paddle_right_style, true);
-
-    // --- Ball (3D tennis ball) ---
+    // --- Ball (3D tennis ball) — drawn first so paddles render on top ---
     vec2 ballPos = u_ball_pos;
     float d = length(uv - ballPos);
     if (d < ballRadius) {
@@ -343,6 +333,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float edgeFade = smoothstep(1.0, 0.85, nd);
         col = mix(col, ballCol, edgeFade);
     }
+
+    // --- Left paddle ---
+    float lpx = courtMargin + 0.03;
+    float lpy = u_paddle_left_y;
+    col = drawPaddle(col, uv, lpx, lpy, paddleWidth, paddleHeight, u_paddle_left_style, false);
+
+    // --- Right paddle ---
+    float rpx = 1.0 - courtMargin - 0.03;
+    float rpy = u_paddle_right_y;
+    col = drawPaddle(col, uv, rpx, rpy, paddleWidth, paddleHeight, u_paddle_right_style, true);
 
     fragColor = vec4(col, 1.0);
 }
