@@ -189,6 +189,8 @@ let pong = {
   ball_y: 0.5,
   paddle_left_y: 0.5,
   paddle_right_y: 0.5,
+  paddle_left_style: 0.0,   // 0 = hoop, 1 = bat
+  paddle_right_style: 0.0,
 };
 
 function handlePongMessage(data) {
@@ -200,6 +202,9 @@ function handlePongMessage(data) {
     } else if (msg.type === 'paddle') {
       if (msg.id === 'left'  && msg.y !== undefined) pong.paddle_left_y  = msg.y;
       if (msg.id === 'right' && msg.y !== undefined) pong.paddle_right_y = msg.y;
+    } else if (msg.type === 'paddle_style') {
+      if (msg.id === 'left')  pong.paddle_left_style  = msg.style;
+      if (msg.id === 'right') pong.paddle_right_style = msg.style;
     }
     return true;
   } catch (e) {
@@ -290,7 +295,9 @@ function buildPipeline(src) {
 
   const pongUniforms = `uniform vec2  u_ball_pos;
 uniform float u_paddle_left_y;
-uniform float u_paddle_right_y;`;
+uniform float u_paddle_right_y;
+uniform float u_paddle_left_style;
+uniform float u_paddle_right_style;`;
 
     const uniformsMain = `uniform sampler2D iChannel0;
 uniform vec3  iResolution;
@@ -371,6 +378,8 @@ function setPongUniforms(prog) {
   gl.uniform2f(gl.getUniformLocation(prog, 'u_ball_pos'), pong.ball_x, pong.ball_y);
   gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_left_y'), pong.paddle_left_y);
   gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_right_y'), pong.paddle_right_y);
+  gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_left_style'), pong.paddle_left_style);
+  gl.uniform1f(gl.getUniformLocation(prog, 'u_paddle_right_style'), pong.paddle_right_style);
 }
 
 // ============================================================

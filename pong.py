@@ -61,6 +61,7 @@ def handler (eh,mev):
         zd.send (eh, "quit", "", mev)
     elif mev.port == "init":
         zd.send (eh, "gui", f'{{"type":"paddle","id":"left","y":{left_paddle_y}}}', mev)
+        zd.send (eh, "gui", f'{{"type":"paddle_style","id":"left","style":1}}', mev)
         zd.send (eh, "gui", f'{{"type":"paddle","id":"right","y":{right_paddle_y}}}', mev)
         zd.send (eh, "gui", f'{{"type":"ball","x":{ballx},"y":{bally}}}', mev)
         zd.send (eh, "more", "", mev)
