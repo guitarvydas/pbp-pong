@@ -12,6 +12,11 @@ echo 'right paddle p ; (up,down)'
 echo 'ball h j k l (left down up right)'
 echo
 
+echo "making ballhit state machine"
+@make "$(realpath ~/projects/sm-pbp)" "$(pwd)" ballhit
+echo "DONE making ballhit state machine"
+
+
 das2json pong.drawio
 python main.py "pong.glsl" testgame pong.drawio.json
 stty sane
