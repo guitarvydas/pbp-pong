@@ -2,6 +2,7 @@
 import sys
 import re
 import subprocess
+import tempfile
 import shlex
 import os
 import json
@@ -271,120 +272,123 @@ def force_tick (parent,eh):                            #line 281
 
 def push_mevent (parent,receiver,inq,m):               #line 287
     inq.append ( m)                                    #line 288
-    parent.visit_ordering.append ( receiver)           #line 289#line 290#line 291
+    if ( receiver.special):                            #line 289
+        parent.visit_ordering.appendleft ( receiver)   #line 290
+    else:                                              #line 291
+        parent.visit_ordering.append ( receiver)       #line 292#line 293#line 294#line 295#line 296
 
-def is_self (child,container):                         #line 292
-    # in an earlier version “self“ was denoted as ϕ    #line 293
-    return  child ==  container                        #line 294#line 295#line 296
+def is_self (child,container):                         #line 297
+    # in an earlier version “self“ was denoted as ϕ    #line 298
+    return  child ==  container                        #line 299#line 300#line 301
 
-def step_child_once (child,mev):                       #line 297
-    if ( False ):                                      #line 298
-        print ( str( "-- stepping '") +  str( child.name) +  "'"  , file=sys.stderr)#line 299
-                                                       #line 300#line 301
-    before_state =  child.state                        #line 302
-    child.handler ( child, mev)                        #line 303
-    after_state =  child.state                         #line 304
-    return [ before_state ==  "idle" and  after_state!= "idle", before_state!= "idle" and  after_state!= "idle", before_state!= "idle" and  after_state ==  "idle"]#line 307#line 308#line 309
+def step_child_once (child,mev):                       #line 302
+    if ( ("PBPSTEPPING" in os.environ) ):              #line 303
+        print ( str( "-- stepping ❮") +  str( child.name) +  "❯"  , file=sys.stderr)#line 304
+                                                       #line 305#line 306
+    before_state =  child.state                        #line 307
+    child.handler ( child, mev)                        #line 308
+    after_state =  child.state                         #line 309
+    return [ before_state ==  "idle" and  after_state!= "idle", before_state!= "idle" and  after_state!= "idle", before_state!= "idle" and  after_state ==  "idle"]#line 312#line 313#line 314
 
-def step_children (container,causingMevent):           #line 310
-    container.state =  "idle"                          #line 311#line 312
-    # phase 1 - loop through children and process inputs or children that not "idle" #line 313
-    for child in  list ( container.visit_ordering):    #line 314
-        # child = container represents self, skip it   #line 315
-        if (not (is_self ( child, container))):        #line 316
-            if (not ((0==len( child.inq)))):           #line 317
-                mev =  child.inq.popleft ()            #line 318
-                step_child_once ( child, mev)          #line 319#line 320
-                destroy_mevent ( mev)                  #line 321
-            else:                                      #line 322
-                if  child.state!= "idle":              #line 323
-                    print (f'/{child.name}/ d', file = sys.stderr)
-                    mev = force_tick ( container, child)#line 324
-                    step_child_once ( child, mev)      #line 325
-                    destroy_mevent ( mev)              #line 326#line 327#line 328#line 329#line 330
+def step_children (container,causingMevent):           #line 315
+    container.state =  "idle"                          #line 316#line 317
+    # phase 1 - loop through children and process inputs or children that not "idle" #line 318
+    for child in  list ( container.visit_ordering):    #line 319
+        # child = container represents self, skip it   #line 320
+        if (not (is_self ( child, container))):        #line 321
+            if (not ((0==len( child.inq)))):           #line 322
+                mev =  child.inq.popleft ()            #line 323
+                step_child_once ( child, mev)          #line 324#line 325
+                destroy_mevent ( mev)                  #line 326
+            else:                                      #line 327
+                if  child.state ==  "idle":            #line 328
+                    pass                               #line 329
+                else:                                  #line 330
+                    mev = force_tick ( container, child)#line 331
+                    step_child_once ( child, mev)      #line 332
+                    destroy_mevent ( mev)              #line 333#line 334#line 335#line 336#line 337
 
-    container.visit_ordering.clear ()                  #line 331#line 332
+    container.visit_ordering.clear ()                  #line 338#line 339
+    # phase 2 - loop through children and route their outputs to appropriate receiver queues based on .connections #line 340
+    for child in  container.children:                  #line 341
+        if  child.state ==  "active":                  #line 342
+            # if child remains active, then the container must remain active and must propagate “ticks“ to child#line 343
+            container.state =  "active"                #line 344#line 345#line 346
+        while (not ((0==len( child.outq)))):           #line 347
+            mev =  child.outq.popleft ()               #line 348
+            route ( container, child, mev)             #line 349
+            destroy_mevent ( mev)                      #line 350#line 351#line 352#line 353#line 354
 
-    # phase 2 - loop through children and route their outputs to appropriate receiver queues based on .connections #line 333
-    for child in  container.children:                  #line 334
-        if  child.state ==  "active":                  #line 335
-            # if child remains active, then the container must remain active and must propagate “ticks“ to child#line 336
-            container.state =  "active"                #line 337#line 338#line 339
-        while (not ((0==len( child.outq)))):           #line 340
-            mev =  child.outq.popleft ()               #line 341
-            route ( container, child, mev)             #line 342
-            destroy_mevent ( mev)                      #line 343#line 344#line 345#line 346#line 347
+def attempt_tick (parent,eh):                          #line 355
+    if  eh.state!= "idle":                             #line 356
+        force_tick ( parent, eh)                       #line 357#line 358#line 359#line 360
 
-def attempt_tick (parent,eh):                          #line 348
-    if  eh.state!= "idle":                             #line 349
-        force_tick ( parent, eh)                       #line 350#line 351#line 352#line 353
-
-def is_tick (mev):                                     #line 354
+def is_tick (mev):                                     #line 361
     return  "." ==  mev.port
-    # assume that any mevent that is sent to port "." is a tick #line 355#line 356#line 357
+    # assume that any mevent that is sent to port "." is a tick #line 362#line 363#line 364
 
-# Routes a single mevent to all matching destinations, according to#line 358
-# the container's connection network.                  #line 359#line 360
-def route (container,from_component,mevent):           #line 361
+# Routes a single mevent to all matching destinations, according to#line 365
+# the container's connection network.                  #line 366#line 367
+def route (container,from_component,mevent):           #line 368
     was_sent =  False
-    # for checking that output went somewhere (at least during bootstrap)#line 362
-    fromname =  ""                                     #line 363
-    global ticktime                                    #line 364
-    ticktime =  ticktime+ 1                            #line 365
-    if is_tick ( mevent):                              #line 366
-        for child in  container.children:              #line 367
-            attempt_tick ( container, child)           #line 368
-        was_sent =  True                               #line 369
-    else:                                              #line 370
-        if (not (is_self ( from_component, container))):#line 371
-            fromname =  from_component.name            #line 372#line 373
-        from_sender = mkSender ( fromname, from_component, mevent.port)#line 374#line 375
-        for connector in  container.connections:       #line 376
-            if sender_eq ( from_sender, connector.sender):#line 377
-                deposit ( container, connector, mevent)#line 378
-                was_sent =  True                       #line 379#line 380#line 381#line 382
-    if not ( was_sent):                                #line 383
-        live_update ( "internal error",  str( container.name) +  str( ": mevent on port '") +  str( mevent.port) +  str( "' from ") +  str( fromname) +  " dropped on floor..."     )#line 384#line 385#line 386#line 387
+    # for checking that output went somewhere (at least during bootstrap)#line 369
+    fromname =  ""                                     #line 370
+    global ticktime                                    #line 371
+    ticktime =  ticktime+ 1                            #line 372
+    if is_tick ( mevent):                              #line 373
+        for child in  container.children:              #line 374
+            attempt_tick ( container, child)           #line 375
+        was_sent =  True                               #line 376
+    else:                                              #line 377
+        if (not (is_self ( from_component, container))):#line 378
+            fromname =  from_component.name            #line 379#line 380
+        from_sender = mkSender ( fromname, from_component, mevent.port)#line 381#line 382
+        for connector in  container.connections:       #line 383
+            if sender_eq ( from_sender, connector.sender):#line 384
+                deposit ( container, connector, mevent)#line 385
+                was_sent =  True                       #line 386#line 387#line 388#line 389
+    if not ( was_sent):                                #line 390
+        live_update ( "internal error",  str( container.name) +  str( ": mevent on port '") +  str( mevent.port) +  str( "' from ") +  str( fromname) +  " dropped on floor..."     )#line 391#line 392#line 393#line 394
 
-def any_child_ready (container):                       #line 388
-    for child in  container.children:                  #line 389
-        if child_is_ready ( child):                    #line 390
-            return  True                               #line 391#line 392#line 393
-    return  False                                      #line 394#line 395#line 396
+def any_child_ready (container):                       #line 395
+    for child in  container.children:                  #line 396
+        if child_is_ready ( child):                    #line 397
+            return  True                               #line 398#line 399#line 400
+    return  False                                      #line 401#line 402#line 403
 
-def child_is_ready (eh):                               #line 397
-    return (not ((0==len( eh.outq)))) or (not ((0==len( eh.inq)))) or ( eh.state!= "idle") or (any_child_ready ( eh))#line 398#line 399#line 400
+def child_is_ready (eh):                               #line 404
+    return (not ((0==len( eh.outq)))) or (not ((0==len( eh.inq)))) or ( eh.state!= "idle") or (any_child_ready ( eh))#line 405#line 406#line 407
 
-def append_routing_descriptor (container,desc):        #line 401
-    container.routings.append ( desc)                  #line 402#line 403#line 404
+def append_routing_descriptor (container,desc):        #line 408
+    container.routings.append ( desc)                  #line 409#line 410#line 411
 
-def injector (eh,mevent):                              #line 405
-    eh.handler ( eh, mevent)                           #line 406#line 407#line 408
-                                                       #line 409#line 410#line 411
+def injector (eh,mevent):                              #line 412
+    eh.handler ( eh, mevent)                           #line 413#line 414#line 415
+                                                       #line 416#line 417#line 418
 class Component_Registry:
-    def __init__ (self,):                              #line 412
-        self.templates = {}                            #line 413#line 414
-                                                       #line 415
+    def __init__ (self,):                              #line 419
+        self.templates = {}                            #line 420#line 421
+                                                       #line 422
 class Template:
-    def __init__ (self,):                              #line 416
-        self.name =  None                              #line 417
-        self.container =  None                         #line 418
-        self.instantiator =  None                      #line 419#line 420
-                                                       #line 421
-def mkTemplate (name,template_data,instantiator):      #line 422
-    templ =  Template ()                               #line 423
-    templ.name =  name                                 #line 424
-    templ.template_data =  template_data               #line 425
-    templ.instantiator =  instantiator                 #line 426
-    return  templ                                      #line 427#line 428#line 429
-                                                       #line 430
-# convert a little-network to internal form (an object data structure created by json parser) ... #line 431
-# the actual data structure depends on the json parser library used by the target language #line 432
-# the form of the data structure doesn't matter here, as long as we use lookup operators "@" in this .rt code #line 433#line 434
-# ... by reading the little-net from an external file  #line 435
-def lnet2internal_from_file (container_xml):           #line 436
-    pathname = os.getenv('PBPWD', '<none>')            #line 437
-    filename =  os.path.basename ( container_xml)      #line 438
+    def __init__ (self,):                              #line 423
+        self.name =  None                              #line 424
+        self.container =  None                         #line 425
+        self.instantiator =  None                      #line 426#line 427
+                                                       #line 428
+def mkTemplate (name,template_data,instantiator):      #line 429
+    templ =  Template ()                               #line 430
+    templ.name =  name                                 #line 431
+    templ.template_data =  template_data               #line 432
+    templ.instantiator =  instantiator                 #line 433
+    return  templ                                      #line 434#line 435#line 436
+                                                       #line 437
+# convert a little-network to internal form (an object data structure created by json parser) ... #line 438
+# the actual data structure depends on the json parser library used by the target language #line 439
+# the form of the data structure doesn't matter here, as long as we use lookup operators "@" in this .rt code #line 440#line 441
+# ... by reading the little-net from an external file  #line 442
+def lnet2internal_from_file (container_xml):           #line 443
+    pathname = os.getenv('PBPWD', '<none>')            #line 444
+    filename =  os.path.basename ( container_xml)      #line 445
 
     try:
         fil = open(filename, "r")
@@ -398,10 +402,10 @@ def lnet2internal_from_file (container_xml):           #line 436
     except json.JSONDecodeError as e:
         print (f"Error decoding JSON in path /{pathname}/: '{e}'", file=sys.stderr)
         return None
-                                                       #line 439#line 440#line 441
+                                                       #line 446#line 447#line 448
 
-# ... by reading the little-net from an embedded string (an aspect of creating t2t tool code) #line 442
-def lnet2internal_from_string (lnet):                  #line 443
+# ... by reading the little-net from an embedded string (an aspect of creating t2t tool code) #line 449
+def lnet2internal_from_string (lnet):                  #line 450
 
     try:
         routings = json.loads(lnet)
@@ -409,253 +413,315 @@ def lnet2internal_from_string (lnet):                  #line 443
     except json.JSONDecodeError as e:
         print ("Error decoding JSON from string 'lnet': '{e}'")
         return None
-                                                       #line 444#line 445#line 446
+                                                       #line 451#line 452#line 453
 
-def delete_decls (d):                                  #line 447
-    pass                                               #line 448#line 449#line 450
+def delete_decls (d):                                  #line 454
+    pass                                               #line 455#line 456#line 457
 
-def make_component_registry ():                        #line 451
-    return  Component_Registry ()                      #line 452#line 453#line 454
+def make_component_registry ():                        #line 458
+    return  Component_Registry ()                      #line 459#line 460#line 461
 
 def register_component (reg,template):
-    return abstracted_register_component ( reg, template, False)#line 455
+    return abstracted_register_component ( reg, template, False)#line 462
 
 def register_component_allow_overwriting (reg,template):
-    return abstracted_register_component ( reg, template, True)#line 456#line 457
+    return abstracted_register_component ( reg, template, True)#line 463#line 464
 
-def abstracted_register_component (reg,template,ok_to_overwrite):#line 458
-    name = mangle_name ( template.name)                #line 459
-    if  reg!= None and  name in  reg.templates and not  ok_to_overwrite:#line 460
-        load_error ( str( "Component /") +  str( template.name) +  "/ already declared"  )#line 461
-        return  reg                                    #line 462
-    else:                                              #line 463
-        reg.templates [name] =  template               #line 464
-        return  reg                                    #line 465#line 466#line 467#line 468
+def abstracted_register_component (reg,template,ok_to_overwrite):#line 465
+    name = mangle_name ( template.name)                #line 466
+    if  reg!= None and  name in  reg.templates and not  ok_to_overwrite:#line 467
+        load_error ( str( "Component /") +  str( template.name) +  "/ already declared"  )#line 468
+        return  reg                                    #line 469
+    else:                                              #line 470
+        reg.templates [name] =  template               #line 471
+        return  reg                                    #line 472#line 473#line 474#line 475
 
-def get_component_instance (reg,full_name,owner):      #line 469
-    # If a part name begins with ":", it is treated as a JIT part and we let the runtime factory generate it on-the-fly (see kernel_external.rt and external.rt) else it is assumed to be a regular AOT part and assumed to have been registered before runtime, so we just pull its template out of the registry and instantiate it. #line 470
-    # ":?<string>" is a probe part that is tagged with <string> #line 471
-    # ":$ <command>" is a shell-out part that sends <command> to the operating system shell #line 472
-    # ":<string>" else, it's just treated as a string part that produces <string> on its output #line 473
-    template_name = mangle_name ( full_name)           #line 474
-    if  ":" ==   full_name[0] :                        #line 475
-        instance_name = generate_instance_name ( owner, template_name)#line 476
-        instance = external_instantiate ( reg, owner, instance_name, full_name)#line 477
-        return  instance                               #line 478
-    else:                                              #line 479
-        if  template_name in  reg.templates:           #line 480
-            template =  reg.templates [template_name]  #line 481
-            if ( template ==  None):                   #line 482
-                load_error ( str( "Registry Error (A): Can't find component /") +  str( template_name) +  "/"  )#line 483
-                return  None                           #line 484
-            else:                                      #line 485
-                instance_name = generate_instance_name ( owner, template_name)#line 486
-                instance =  template.instantiator ( reg, owner, instance_name, template.template_data, "")#line 487
-                return  instance                       #line 488#line 489
-        else:                                          #line 490
-            load_error ( str( "Registry Error (B): Can't find component /") +  str( template_name) +  "/"  )#line 491
-            return  None                               #line 492#line 493#line 494#line 495#line 496
+def get_component_instance (reg,full_name,owner):      #line 476
+    # If a part name begins with ":", it is treated as a JIT part and we let the runtime factory generate it on-the-fly (see kernel_external.rt and external.rt) else it is assumed to be a regular AOT part and assumed to have been registered before runtime, so we just pull its template out of the registry and instantiate it. #line 477
+    # ":?<string>" is a probe part that is tagged with <string> #line 478
+    # ":$ <command>" is a shell-out part that sends <command> to the operating system shell #line 479
+    # ":<string>" else, it's just treated as a string part that produces <string> on its output #line 480
+    template_name = mangle_name ( full_name)           #line 481
+    if  ":" ==   full_name[0] :                        #line 482
+        instance_name = generate_instance_name ( owner, template_name)#line 483
+        instance = jit_instantiate ( reg, owner, instance_name, full_name)#line 484
+        return  instance                               #line 485
+    else:                                              #line 486
+        if  template_name in  reg.templates:           #line 487
+            template =  reg.templates [template_name]  #line 488
+            if ( template ==  None):                   #line 489
+                load_error ( str( "Registry Error (A): Can't find component /") +  str( template_name) +  "/"  )#line 490
+                return  None                           #line 491
+            else:                                      #line 492
+                instance_name = generate_instance_name ( owner, template_name)#line 493
+                instance =  template.instantiator ( reg, owner, instance_name, template.template_data, "")#line 494
+                return  instance                       #line 495#line 496
+        else:                                          #line 497
+            load_error ( str( "Registry Error (B): Can't find component /") +  str( template_name) +  "/"  )#line 498
+            return  None                               #line 499#line 500#line 501#line 502#line 503
 
-def generate_instance_name (owner,template_name):      #line 497
-    owner_name =  ""                                   #line 498
-    instance_name =  template_name                     #line 499
-    if  None!= owner:                                  #line 500
-        owner_name =  owner.name                       #line 501
-        instance_name =  str( owner_name) +  str( "▹") +  template_name  #line 502
-    else:                                              #line 503
-        instance_name =  template_name                 #line 504#line 505
-    return  instance_name                              #line 506#line 507#line 508
+def generate_instance_name (owner,template_name):      #line 504
+    owner_name =  ""                                   #line 505
+    instance_name =  template_name                     #line 506
+    if  None!= owner:                                  #line 507
+        owner_name =  owner.name                       #line 508
+        instance_name =  str( owner_name) +  str( "▹") +  template_name  #line 509
+    else:                                              #line 510
+        instance_name =  template_name                 #line 511#line 512
+    return  instance_name                              #line 513#line 514#line 515
 
-def mangle_name (s):                                   #line 509
-    # trim name to remove code from Container component names _ deferred until later (or never)#line 510
-    return  s                                          #line 511#line 512#line 513
-                                                       #line 514
-# Data for an asyncronous component _ effectively, a function with input#line 515
-# and output queues of mevents.                        #line 516
-#                                                      #line 517
-# Components can either be a user_supplied function (“leaf“), or a “container“#line 518
-# that routes mevents to child components according to a list of connections#line 519
-# that serve as a mevent routing table.                #line 520
-#                                                      #line 521
-# Child components themselves can be leaves or other containers.#line 522
-#                                                      #line 523
-# `handler` invokes the code that is attached to this component.#line 524
-#                                                      #line 525
-# `instance_data` is a pointer to instance data that the `leaf_handler`#line 526
-# function may want whenever it is invoked again.      #line 527#line 528
-# TODO: what is .routings for? (is it a historical artefact that can be removed?) #line 529#line 530
-# Eh_States :: enum { idle, active }                   #line 531
+def mangle_name (s):                                   #line 516
+    # trim name to remove code from Container component names _ deferred until later (or never)#line 517
+    return  s                                          #line 518#line 519#line 520
+                                                       #line 521
+# Data for an asyncronous component _ effectively, a function with input#line 522
+# and output queues of mevents.                        #line 523
+#                                                      #line 524
+# Components can either be a user_supplied function (“leaf“), or a “container“#line 525
+# that routes mevents to child components according to a list of connections#line 526
+# that serve as a mevent routing table.                #line 527
+#                                                      #line 528
+# Child components themselves can be leaves or other containers.#line 529
+#                                                      #line 530
+# `handler` invokes the code that is attached to this component.#line 531
+#                                                      #line 532
+# `instance_data` is a pointer to instance data that the `leaf_handler`#line 533
+# function may want whenever it is invoked again.      #line 534#line 535
+# TODO: what is .routings for? (is it a historical artefact that can be removed?) #line 536#line 537
+# Eh_States :: enum { idle, active }                   #line 538
 class Eh:
-    def __init__ (self,):                              #line 532
-        self.name =  ""                                #line 533
-        self.inq =  deque ([])                         #line 534
-        self.outq =  deque ([])                        #line 535
-        self.owner =  None                             #line 536
-        self.children = []                             #line 537
-        self.visit_ordering =  deque ([])              #line 538
-        self.connections = []                          #line 539
-        self.routings =  deque ([])                    #line 540
-        self.handler =  None                           #line 541
-        self.reset_instance_data =  None               #line 542
-        self.finject =  None                           #line 543
-        self.stop =  None                              #line 544
-        self.instance_data =  None                     #line 545# arg needed for probe support #line 546
-        self.arg =  ""                                 #line 547
-        self.state =  "idle"                           #line 548# bootstrap debugging#line 549
-        self.kind =  None # enum { container, leaf, }  #line 550#line 551
-                                                       #line 552
-# Creates a component that acts as a container. It is the same as a `Eh` instance#line 553
-# whose handler function is `container_handler`.       #line 554
-def make_container (name,owner):                       #line 555
-    eh =  Eh ()                                        #line 556
-    eh.name =  name                                    #line 557
-    eh.owner =  owner                                  #line 558
-    eh.handler =  container_handler                    #line 559
-    eh.finject =  injector                             #line 560
-    eh.stop =  container_reset_children                #line 561
-    eh.state =  "idle"                                 #line 562
-    eh.kind =  "container"                             #line 563
-    return  eh                                         #line 564#line 565#line 566
+    def __init__ (self,):                              #line 539
+        self.name =  ""                                #line 540
+        self.inq =  deque ([])                         #line 541
+        self.outq =  deque ([])                        #line 542
+        self.owner =  None                             #line 543
+        self.children = []                             #line 544
+        self.visit_ordering =  deque ([])              #line 545
+        self.connections = []                          #line 546
+        self.routings =  deque ([])                    #line 547
+        self.handler =  None                           #line 548
+        self.reset_instance_data =  None               #line 549
+        self.finject =  None                           #line 550
+        self.stop =  None                              #line 551
+        self.instance_data =  None                     #line 552# arg needed for probe support #line 553
+        self.arg =  ""                                 #line 554
+        self.state =  "idle"                           #line 555
+        self.special =  False                          #line 556# bootstrap debugging#line 557
+        self.kind =  None # enum { container, leaf, }  #line 558#line 559
+                                                       #line 560
+# Creates a component that acts as a container. It is the same as a `Eh` instance#line 561
+# whose handler function is `container_handler`.       #line 562
+def make_container (name,owner):                       #line 563
+    eh =  Eh ()                                        #line 564
+    eh.name =  name                                    #line 565
+    eh.owner =  owner                                  #line 566
+    eh.handler =  container_handler                    #line 567
+    eh.finject =  injector                             #line 568
+    eh.stop =  container_reset_children                #line 569
+    eh.state =  "idle"                                 #line 570
+    eh.kind =  "container"                             #line 571
+    return  eh                                         #line 572#line 573#line 574
 
-# Creates a new leaf component out of a handler function, and a data parameter#line 567
-# that will be passed back to your handler when called.#line 568#line 569
-def make_leaf (name,owner,instance_data,arg,handler,reset_handler):#line 570
-    eh =  Eh ()                                        #line 571
-    nm =  ""                                           #line 572
-    if  None!= owner:                                  #line 573
-        nm =  owner.name                               #line 574#line 575
-    eh.name =  str( nm) +  str( "▹") +  name           #line 576
-    eh.owner =  owner                                  #line 577
-    eh.handler =  handler                              #line 578
-    eh.reset_handler =  reset_handler                  #line 579
-    eh.finject =  injector                             #line 580
-    eh.stop =  leaf_reset                              #line 581
-    eh.instance_data =  instance_data                  #line 582
-    eh.arg =  arg                                      #line 583
-    eh.state =  "idle"                                 #line 584
-    eh.kind =  "leaf"                                  #line 585
-    return  eh                                         #line 586#line 587#line 588
+# Creates a new leaf component out of a handler function, and a data parameter#line 575
+# that will be passed back to your handler when called.#line 576#line 577
+def make_leaf (name,owner,instance_data,arg,handler,reset_handler):#line 578
+    eh =  Eh ()                                        #line 579
+    nm =  ""                                           #line 580
+    if  None!= owner:                                  #line 581
+        nm =  owner.name                               #line 582#line 583
+    eh.name =  str( nm) +  str( "▹") +  name           #line 584
+    eh.owner =  owner                                  #line 585
+    eh.handler =  handler                              #line 586
+    eh.reset_handler =  reset_handler                  #line 587
+    eh.finject =  injector                             #line 588
+    eh.stop =  leaf_reset                              #line 589
+    eh.instance_data =  instance_data                  #line 590
+    eh.arg =  arg                                      #line 591
+    eh.state =  "idle"                                 #line 592
+    eh.kind =  "leaf"                                  #line 593
+    return  eh                                         #line 594#line 595#line 596
 
-# Reset Leaf part to a known, idle state. Hit the big red button. #line 589
-def leaf_reset (part):                                 #line 590
+# Reset Leaf part to a known, idle state. Hit the big red button. #line 597
+def leaf_reset (part):                                 #line 598
 
-    part.inq.clear ()                                  #line 591
+    part.inq.clear ()                                  #line 599
 
-    part.outq.clear ()                                 #line 592
-    if ( part.reset_handler!= None):                   #line 593
-        part.reset_handler ( part)                     #line 594#line 595
-    part.state =  "idle"                               #line 596#line 597#line 598
+    part.outq.clear ()                                 #line 600
+    if ( part.reset_handler!= None):                   #line 601
+        part.reset_handler ( part)                     #line 602#line 603
+    part.state =  "idle"                               #line 604#line 605#line 606
 
-# Sends a mevent on the given `port` with `data`, placing it on the output#line 599
-# of the given component.                              #line 600#line 601
-def send (eh,port,obj,causingMevent):                  #line 602
-    d =  Datum ()                                      #line 603
-    d.v =  obj                                         #line 604
-    d.clone =  lambda : obj_clone ( d)                 #line 605
-    d.reclaim =  None                                  #line 606
-    mev = make_mevent ( port, d)                       #line 607
-    put_output ( eh, mev)                              #line 608#line 609#line 610
+# Sends a mevent on the given `port` with `data`, placing it on the output#line 607
+# of the given component.                              #line 608#line 609
+def send (eh,port,obj,causingMevent):                  #line 610
+    d =  Datum ()                                      #line 611
+    d.v =  obj                                         #line 612
+    d.clone =  lambda : obj_clone ( d)                 #line 613
+    d.reclaim =  None                                  #line 614
+    mev = make_mevent ( port, d)                       #line 615
+    put_output ( eh, mev)                              #line 616#line 617#line 618
 
-def forward (eh,port,mev):                             #line 611
-    fwdmev = make_mevent ( port, mev.datum)            #line 612
-    put_output ( eh, fwdmev)                           #line 613#line 614#line 615
+def forward (eh,port,mev):                             #line 619
+    fwdmev = make_mevent ( port, mev.datum)            #line 620
+    put_output ( eh, fwdmev)                           #line 621#line 622#line 623
 
-def inject_mevent (eh,mev):                            #line 616
-    eh.finject ( eh, mev)                              #line 617#line 618#line 619
+def inject_mevent (eh,mev):                            #line 624
+    eh.finject ( eh, mev)                              #line 625#line 626#line 627
 
-def set_active (eh):                                   #line 620
-    eh.state =  "active"                               #line 621#line 622#line 623
+def set_active (eh):                                   #line 628
+    eh.state =  "active"                               #line 629#line 630#line 631
 
-def set_idle (eh):                                     #line 624
-    eh.state =  "idle"                                 #line 625#line 626#line 627
+def set_idle (eh):                                     #line 632
+    eh.state =  "idle"                                 #line 633#line 634#line 635
 
-def put_output (eh,mev):                               #line 628
-    eh.outq.append ( mev)                              #line 629#line 630#line 631
+def put_output (eh,mev):                               #line 636
+    eh.outq.append ( mev)                              #line 637#line 638#line 639
 
-def obj_clone (obj):                                   #line 632
-    return  obj                                        #line 633#line 634#line 635
+def obj_clone (obj):                                   #line 640
+    return  obj                                        #line 641#line 642#line 643
 
-def initialize_component_palette_from_files (diagram_source_files):#line 636
-    reg = make_component_registry ()                   #line 637
-    for diagram_source in  diagram_source_files:       #line 638
-        all_containers_within_single_file = lnet2internal_from_file ( diagram_source)#line 639
-        for container in  all_containers_within_single_file:#line 640
-            register_component ( reg,mkTemplate ( container [ "name"], container, container_instantiator))#line 641#line 642#line 643
-    initialize_stock_components ( reg)                 #line 644
-    return  reg                                        #line 645#line 646#line 647
+def initialize_component_palette_from_files (diagram_source_files):#line 644
+    reg = make_component_registry ()                   #line 645
+    for diagram_source in  diagram_source_files:       #line 646
+        all_containers_within_single_file = lnet2internal_from_file ( diagram_source)#line 647
+        for container in  all_containers_within_single_file:#line 648
+            register_component ( reg,mkTemplate ( container [ "name"], container, container_instantiator))#line 649#line 650#line 651
+    initialize_stock_components ( reg)                 #line 652
+    return  reg                                        #line 653#line 654#line 655
 
-def initialize_component_palette_from_string (lnet):   #line 648
-    reg = make_component_registry ()                   #line 649
-    all_containers = lnet2internal_from_string ( lnet) #line 650
-    for container in  all_containers:                  #line 651
-        register_component ( reg,mkTemplate ( container [ "name"], container, container_instantiator))#line 652#line 653
-    initialize_stock_components ( reg)                 #line 654
-    return  reg                                        #line 655#line 656#line 657
-                                                       #line 658
-def clone_string (s):                                  #line 659
-    return  s                                          #line 660#line 661#line 662
+def initialize_component_palette_from_string (lnet):   #line 656
+    reg = make_component_registry ()                   #line 657
+    all_containers = lnet2internal_from_string ( lnet) #line 658
+    for container in  all_containers:                  #line 659
+        register_component ( reg,mkTemplate ( container [ "name"], container, container_instantiator))#line 660#line 661
+    initialize_stock_components ( reg)                 #line 662
+    return  reg                                        #line 663#line 664#line 665
+                                                       #line 666
+def clone_string (s):                                  #line 667
+    return  s                                          #line 668#line 669#line 670
 
-load_errors =  False                                   #line 663
-runtime_errors =  False                                #line 664#line 665
-def load_error (s):                                    #line 666
-    global load_errors                                 #line 667
-    print ( s, file=sys.stderr)                        #line 668
-                                                       #line 669
-    load_errors =  True                                #line 670#line 671#line 672
+load_errors =  False                                   #line 671
+runtime_errors =  False                                #line 672#line 673
+def load_error (s):                                    #line 674
+    global load_errors                                 #line 675
+    print ( s, file=sys.stderr)                        #line 676
+                                                       #line 677
+    load_errors =  True                                #line 678#line 679#line 680
 
-def runtime_error (s):                                 #line 673
-    global runtime_errors                              #line 674
-    print ( s, file=sys.stderr)                        #line 675
-    exit (1)                                           #line 676
-    runtime_errors =  True                             #line 677#line 678#line 679
-                                                       #line 680
-def initialize_from_files (diagram_names):             #line 681
-    arg =  None                                        #line 682
-    palette = initialize_component_palette_from_files ( diagram_names)#line 683
-    return [ palette,[ diagram_names, arg]]            #line 684#line 685#line 686
+def runtime_error (s):                                 #line 681
+    global runtime_errors                              #line 682
+    print ( s, file=sys.stderr)                        #line 683
+    exit (1)                                           #line 684
+    runtime_errors =  True                             #line 685#line 686#line 687
+                                                       #line 688
+def initialize_from_files (diagram_names):             #line 689
+    arg =  None                                        #line 690
+    palette = initialize_component_palette_from_files ( diagram_names)#line 691
+    return [ palette,[ diagram_names, arg]]            #line 692#line 693#line 694
 
-def initialize_from_string ():                         #line 687
-    arg =  None                                        #line 688
-    palette = initialize_component_palette_from_string ()#line 689
-    return [ palette,[ None, arg]]                     #line 690#line 691#line 692
+def initialize_from_string ():                         #line 695
+    arg =  None                                        #line 696
+    palette = initialize_component_palette_from_string ()#line 697
+    return [ palette,[ None, arg]]                     #line 698#line 699#line 700
 
-def start (arg,part_name,palette,env):                 #line 693
-    part = start_bare ( part_name, palette, env)       #line 694
-    inject ( part, "", arg)                            #line 695
-    finalize ( part)                                   #line 696#line 697#line 698
+def start (arg,part_name,palette,env):                 #line 701
+    part = start_bare ( part_name, palette, env)       #line 702
+    inject ( part, "", arg)                            #line 703
+    finalize ( part)                                   #line 704#line 705#line 706
 
-def start_bare (part_name,palette,env):                #line 699
-    diagram_names =  env [ 0]                          #line 700
-    # get entrypoint container                         #line 701
-    part = get_component_instance ( palette, part_name, None)#line 702
-    if  None ==  part:                                 #line 703
-        load_error ( str( "Couldn't find container with page name /") +  str( part_name) +  str( "/ in files ") +  str(str ( diagram_names)) +  " (check tab names, or disable compression?)"    )#line 707#line 708
-    return  part                                       #line 709#line 710#line 711
+def start_bare (part_name,palette,env):                #line 707
+    diagram_names =  env [ 0]                          #line 708
+    # get entrypoint container                         #line 709
+    part = get_component_instance ( palette, part_name, None)#line 710
+    if  None ==  part:                                 #line 711
+        load_error ( str( "Couldn't find container with page name /") +  str( part_name) +  str( "/ in files ") +  str(str ( diagram_names)) +  " (check tab names, or disable compression?)"    )#line 715#line 716
+    return  part                                       #line 717#line 718#line 719
 
-def inject (part,port,payload):                        #line 712
-    if not  load_errors:                               #line 713
-        d =  Datum ()                                  #line 714
-        d.v =  payload                                 #line 715
-        d.clone =  lambda : obj_clone ( d)             #line 716
-        d.reclaim =  None                              #line 717
-        mev = make_mevent ( port, d)                   #line 718
-        inject_mevent ( part, mev)                     #line 719
-    else:                                              #line 720
-        exit (1)                                       #line 721#line 722#line 723#line 724
+def inject (part,port,payload):                        #line 720
+    if not  load_errors:                               #line 721
+        d =  Datum ()                                  #line 722
+        d.v =  payload                                 #line 723
+        d.clone =  lambda : obj_clone ( d)             #line 724
+        d.reclaim =  None                              #line 725
+        mev = make_mevent ( port, d)                   #line 726
+        inject_mevent ( part, mev)                     #line 727
+    else:                                              #line 728
+        exit (1)                                       #line 729#line 730#line 731#line 732
 
-def finalize (part):                                   #line 725
-    print (deque_to_json ( part.outq))                 #line 726#line 727#line 728
+def finalize (part):                                   #line 733
+    print (deque_to_json ( part.outq))                 #line 734#line 735#line 736
 
-def new_datum_bang ():                                 #line 729
-    d =  Datum ()                                      #line 730
-    d.v =  "!"                                         #line 731
-    d.clone =  lambda : obj_clone ( d)                 #line 732
-    d.reclaim =  None                                  #line 733
-    return  d                                          #line 734#line 735
-# This is called `external` due to historical reasons. This has evolved into 2 kinds of Leaf parts: AOT and JIT (statically generated before runtime, vs. dynamically generated at runtime). If a part name begins with ;:', it is treated specially as a JIT part, else the part is assumed to have been pre-loaded into the register in the regular way. #line 1#line 2
-def external_instantiate (reg,owner,name,arg):         #line 3
+def new_datum_bang ():                                 #line 737
+    d =  Datum ()                                      #line 738
+    d.v =  "!"                                         #line 739
+    d.clone =  lambda : obj_clone ( d)                 #line 740
+    d.reclaim =  None                                  #line 741
+    return  d                                          #line 742#line 743
+# (This used to be called `external` due to historical reasons). This has evolved into 2 kinds of Leaf parts: AOT and JIT (statically generated before runtime, vs. dynamically generated at runtime). If a part name begins with ;:', it is treated specially as a JIT part, else the part is assumed to have been pre-loaded into the register in the regular way. #line 1#line 2
+def jit_instantiate (reg,owner,name,arg):              #line 3
     name_with_id = gensymbol ( name)                   #line 4
-    return make_leaf ( name_with_id, owner, None, arg, handle_external, None)#line 5#line 6#line 7
+    inst = make_leaf ( name_with_id, owner, None, arg, handle_jit, None)#line 5
+    firstc =  name [ 1]                                #line 6
+    if ( firstc!= "$"):                                #line 7
+        # probes get to go to the front of the line    #line 8
+        inst.special =  True                           #line 9#line 10
+    return  inst                                       #line 11#line 12#line 13
+
+def handle_jit (eh,mev):                               #line 14
+    s =  eh.arg                                        #line 15
+    firstc =  s [ 1]                                   #line 16
+    if  firstc ==  "$":                                #line 17
+        shell_out_handler ( eh,    s[1:] [1:] [1:] , mev)#line 18
+    elif  firstc ==  "?":                              #line 19
+        probe_handler ( eh,  s[1:] , mev)              #line 20
+    else:                                              #line 21
+        # just a string, send it out                   #line 22
+        send ( eh, "",  s[1:] , mev)                   #line 23#line 24#line 25#line 26
+
+def probe_handler (eh,tag,mev):                        #line 27
+    s =  mev.datum.v                                   #line 28
+    live_update ( "Info",  str( "  @") +  str(str ( ticktime)) +  str( "  ") +  str( "probe ") +  str( eh.name) +  str( ": ") + str ( s)      )#line 36#line 37#line 38
+
+def shell_out_handler (eh,cmd,mev):                    #line 39
+    s =  mev.datum.v                                   #line 40
+    ret =  None                                        #line 41
+    rc =  None                                         #line 42
+    stdout =  None                                     #line 43
+    stderr =  None                                     #line 44
+    command =  cmd                                     #line 45
+    pbpRoot = os.getenv('PBP', '<none>')               #line 46
+    if  pbpRoot!= "":                                  #line 47
+        command = re.sub ( "_/",  str( pbpRoot) +  "/" ,  command)#line 50#line 51
+    if ( ("PBPSHELLUT" in os.environ) ):               #line 52
+        print ( str( "- --- shell-out: ") +  command , file=sys.stderr)#line 53
+                                                       #line 54#line 55
+
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as tmp:
+            tmp.write( s)
+            tmp_path = tmp.name
+        try:
+            with open(tmp_path, 'r') as stdin_file:
+                ret = subprocess.run(
+                shlex.split( command),
+                stdin=stdin_file,
+                text=True,
+                capture_output=True
+                )
+        finally:
+            os.unlink(tmp_path)
+        rc = ret.returncode
+        stdout = ret.stdout.strip()
+        stderr = ret.stderr.strip()
+    except Exception as e:
+        rc = 1
+        stdout = ''
+        stderr = str(e)
+                                                       #line 56
+    if  rc ==  0:                                      #line 57
+        send ( eh, "", str( stdout) +  stderr , mev)   #line 58
+    else:                                              #line 59
+        send ( eh, "✗", str( stdout) +  stderr , mev)  #line 60#line 61#line 62#line 63
 #line 1
 def trash_instantiate (reg,owner,name,template_data,arg):#line 2
     name_with_id = gensymbol ( "trash")                #line 3
@@ -790,7 +856,7 @@ class StringConcat_Instance_Data:
         self.buffer1 =  None                           #line 137
         self.buffer2 =  None                           #line 138#line 139
                                                        #line 140
-def strinconcat_reset_handler (eh):                    #line 141
+def stringconcat_reset_handler (eh):                   #line 141
     inst =  eh.instance_data                           #line 142
     inst.buffer1 =  None                               #line 143
     inst.buffer2 =  None                               #line 144#line 145#line 146
@@ -901,105 +967,33 @@ def strcatstar_handler (eh,mev):                       #line 264
     else:                                              #line 270
         send ( eh, "✗", "internal error bad mevent for String Concat *", mev)#line 271#line 272#line 273#line 274
 
-class BlockOnErrorState:
-    def __init__ (self,):                              #line 275
-        self.hasError =  "no"                          #line 276#line 277
-                                                       #line 278
-def blockOnError_reset_handler (eh):                   #line 279
-    eh.instance_data =  BlockOnErrorState ()           #line 280#line 281#line 282
+def stop_instantiate (reg,owner,name,template_data,arg):#line 275
+    name_with_id = gensymbol ( "Stop")                 #line 276
+    inst =  None                                       #line 277
+    return make_leaf ( name_with_id, owner, inst, "", stop_handler, None)#line 278#line 279#line 280
 
-def blockOnError_instantiate (reg,owner,name,template_data,arg):#line 283
-    name_with_id = gensymbol ( "blockOnError")         #line 284
-    instp =  BlockOnErrorState ()                      #line 285
-    return make_leaf ( name_with_id, owner, instp, "", blockOnError_handler, blockOnError_reset_handler)#line 286#line 287#line 288
+def stop_handler (eh,mev):                             #line 281
+    inst =  eh.instance_data                           #line 282
+    parent =  eh.owner                                 #line 283
+    s =  str( "   !!! stopping: '") +  str( parent.name) +  "'"  #line 284
+    print ( s, file=sys.stderr)                        #line 285
+                                                       #line 286
+    parent.stop ( parent)                              #line 287
+    send ( eh, "", mev.datum.v, mev)                   #line 288#line 289#line 290
 
-def blockOnError_handler (eh,mev):                     #line 289
-    inst =  eh.instance_data                           #line 290
-    if  "" ==  mev.port:                               #line 291
-        if  inst.hasError ==  "no":                    #line 292
-            send ( eh, "", mev.datum.v, mev)           #line 293#line 294
-    elif  "✗" ==  mev.port:                            #line 295
-        inst.hasError =  "yes"                         #line 296
-    elif  "reset" ==  mev.port:                        #line 297
-        inst.hasError =  "no"                          #line 298#line 299#line 300#line 301
-
-def stop_instantiate (reg,owner,name,template_data,arg):#line 302
-    name_with_id = gensymbol ( "Stop")                 #line 303
-    inst =  None                                       #line 304
-    return make_leaf ( name_with_id, owner, inst, "", stop_handler, None)#line 305#line 306#line 307
-
-def stop_handler (eh,mev):                             #line 308
-    inst =  eh.instance_data                           #line 309
-    parent =  eh.owner                                 #line 310
-    s =  str( "   !!! stopping: '") +  str( parent.name) +  "'"  #line 311
-    print ( s, file=sys.stderr)                        #line 312
-                                                       #line 313
-    parent.stop ( parent)                              #line 314
-    send ( eh, "", mev.datum.v, mev)                   #line 315#line 316#line 317
-
-# all of the the built_in leaves are listed here       #line 318
-# future: refactor this such that programmers can pick and choose which (lumps of) builtins are used in a specific project#line 319#line 320
-def initialize_stock_components (reg):                 #line 321
-    register_component ( reg,mkTemplate ( "1then2", None, deracer_instantiate))#line 322
-    register_component ( reg,mkTemplate ( "1→2", None, deracer_instantiate))#line 323
-    register_component ( reg,mkTemplate ( "trash", None, trash_instantiate))#line 324
-    register_component ( reg,mkTemplate ( "🗑️", None, trash_instantiate))#line 325
-    register_component ( reg,mkTemplate ( "🚫", None, stop_instantiate))#line 326
-    register_component ( reg,mkTemplate ( "blockOnError", None, blockOnError_instantiate))#line 327#line 328#line 329
-    register_component ( reg,mkTemplate ( "Read Text File", None, low_level_read_text_file_instantiate))#line 330
-    register_component ( reg,mkTemplate ( "Ensure String Datum", None, ensure_string_datum_instantiate))#line 331#line 332
-    register_component ( reg,mkTemplate ( "syncfilewrite", None, syncfilewrite_instantiate))#line 333
-    register_component ( reg,mkTemplate ( "String Concat", None, stringconcat_instantiate))#line 334
-    register_component ( reg,mkTemplate ( "switch1*", None, switch1star_instantiate))#line 335
-    register_component ( reg,mkTemplate ( "String Concat *", None, strcatstar_instantiate))#line 336
-    # for fakepipe                                     #line 337
-    register_component ( reg,mkTemplate ( "fakepipename", None, fakepipename_instantiate))#line 338#line 339#line 340
-def handle_external (eh,mev):                          #line 1
-    s =  eh.arg                                        #line 2
-    firstc =  s [ 1]                                   #line 3
-    if  firstc ==  "$":                                #line 4
-        shell_out_handler ( eh,    s[1:] [1:] [1:] , mev)#line 5
-    elif  firstc ==  "?":                              #line 6
-        probe_handler ( eh,  s[1:] , mev)              #line 7
-    else:                                              #line 8
-        # just a string, send it out                   #line 9
-        send ( eh, "",  s[1:] , mev)                   #line 10#line 11#line 12#line 13
-
-def probe_handler (eh,tag,mev):                        #line 14
-    s =  mev.datum.v                                   #line 15
-    live_update ( "Info",  str( "  @") +  str(str ( ticktime)) +  str( "  ") +  str( "probe ") +  str( eh.name) +  str( ": ") + str ( s)      )#line 23#line 24#line 25
-
-def shell_out_handler (eh,cmd,mev):                    #line 26
-    s =  mev.datum.v                                   #line 27
-    ret =  None                                        #line 28
-    rc =  None                                         #line 29
-    stdout =  None                                     #line 30
-    stderr =  None                                     #line 31
-    command =  cmd                                     #line 32
-    pbpRoot = os.getenv('PBP', '<none>')               #line 33
-    if  pbpRoot!= "":                                  #line 34
-        command = re.sub ( "_/",  str( pbpRoot) +  "/" ,  command)#line 37#line 38
-    if ( False ):                                      #line 39
-        print ( str( "- --- shell-out: ") +  command , file=sys.stderr)#line 40
-                                                       #line 41#line 42
-
-    try:
-        with open('junk.command.txt', 'w') as file:
-            file.write(os.getcwd())
-            file.write(' ')
-            file.write(cmd)
-            file.write(' ')
-        ret = subprocess.run (shlex.split ( command), input= s, text=True, capture_output=True)
-        rc = ret.returncode
-        stdout = ret.stdout.strip ()
-        stderr = ret.stderr.strip ()
-    except Exception as e:
-        ret = None
-        rc = 1
-        stdout = ''
-        stderr = str(e)
-                                                       #line 43
-    if  rc ==  0:                                      #line 44
-        send ( eh, "", str( stdout) +  stderr , mev)   #line 45
-    else:                                              #line 46
-        send ( eh, "✗", str( stdout) +  stderr , mev)  #line 47#line 48#line 49#line 50
+# all of the the built_in leaves are listed here       #line 291
+# future: refactor this such that programmers can pick and choose which (lumps of) builtins are used in a specific project#line 292#line 293
+def initialize_stock_components (reg):                 #line 294
+    register_component ( reg,mkTemplate ( "1then2", None, deracer_instantiate))#line 295
+    register_component ( reg,mkTemplate ( "1→2", None, deracer_instantiate))#line 296
+    register_component ( reg,mkTemplate ( "trash", None, trash_instantiate))#line 297
+    register_component ( reg,mkTemplate ( "🗑️", None, trash_instantiate))#line 298
+    register_component ( reg,mkTemplate ( "🚫", None, stop_instantiate))#line 299#line 300#line 301
+    register_component ( reg,mkTemplate ( "Read Text File", None, low_level_read_text_file_instantiate))#line 302
+    register_component ( reg,mkTemplate ( "Ensure String Datum", None, ensure_string_datum_instantiate))#line 303#line 304
+    register_component ( reg,mkTemplate ( "syncfilewrite", None, syncfilewrite_instantiate))#line 305
+    register_component ( reg,mkTemplate ( "String Concat", None, stringconcat_instantiate))#line 306
+    register_component ( reg,mkTemplate ( "switch1*", None, switch1star_instantiate))#line 307
+    register_component ( reg,mkTemplate ( "String Concat *", None, strcatstar_instantiate))#line 308
+    # for fakepipe                                     #line 309
+    register_component ( reg,mkTemplate ( "fakepipename", None, fakepipename_instantiate))#line 310#line 311#line 312

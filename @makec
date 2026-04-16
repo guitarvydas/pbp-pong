@@ -1,5 +1,11 @@
 #!/bin/bash
 ######### commands specific to this project #############
+# env vars that may be used in this script:
+#  $PATH
+#  $TOOLWD ($(pwd))
+#  $CALLERPATH
+#  $TARGET
+#  $PYTHONPATH
 
 echo 'left paddle q a (up,down)'
 echo 'right paddle p ; (up,down)'
@@ -8,7 +14,6 @@ echo
 
 das2json pong.drawio
 python main.py "pong.glsl" testgame pong.drawio.json
-rm -f ${SELF}*
 stty sane
 echo -n 'fini '
 
