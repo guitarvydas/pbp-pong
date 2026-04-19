@@ -7,6 +7,16 @@
 #  $TARGET
 #  $PYTHONPATH
 
+cleanup() {
+    stty sane
+    local exit_code=$?
+    echo "Exiting with code $exit_code"
+    # Cleanup: rm -rf /tmp/mystuff
+    exit $exit_code  # Preserve original status
+}
+
+trap cleanup ERR EXIT INT TERM
+
 echo 'left paddle q a (up,down)'
 echo 'right paddle p ; (up,down)'
 echo 'ball h j k l (left down up right)'
@@ -16,9 +26,10 @@ echo "making ballhit state machine"
 @make "$(realpath ~/projects/sm-pbp)" "$(pwd)" ballhit
 echo "DONE making ballhit state machine"
 
+sourcecode=testgame
 
 das2json pong.drawio
-python main.py "pong.glsl" testgame pong.drawio.json
+python main.py "pong.glsl" ${sourcecode} pong.drawio.json
 stty sane
 echo -n 'fini '
 

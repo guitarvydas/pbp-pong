@@ -369,6 +369,7 @@
   "active": "ee861da341b29b7c",
   "lastOpenFiles": [
     "pong.drawio.json",
+    "#@makec#",
     "ballhit.py",
     "pbp/errgrep",
     "pbp/pbplog",
@@ -378,7 +379,6 @@
     "pbp/include",
     "pbp/check-for-html",
     "pbp/output_to_port",
-    "pbp/output_begin",
     "pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/README.process_json.md",
     "pbp/dtree/README.md",
