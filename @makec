@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ######### commands specific to this project #############
 # env vars that may be used in this script:
 #  $PATH
@@ -7,31 +8,12 @@
 #  $TARGET
 #  $PYTHONPATH
 
-cleanup() {
-    stty sane
-    local exit_code=$?
-    echo "Exiting with code $exit_code"
-    # Cleanup: rm -rf /tmp/mystuff
-    exit $exit_code  # Preserve original status
-}
-
-trap cleanup ERR EXIT INT TERM
-
-echo 'left paddle q a (up,down)'
-echo 'right paddle p ; (up,down)'
-echo 'ball h j k l (left down up right)'
-echo
-
-echo "making ballhit state machine"
-@make "$(realpath ~/projects/sm-pbp)" "$(pwd)" ballhit
-echo "DONE making ballhit state machine"
-
-sourcecode=testgame
-
+# 1. convert diagram to JSON, cull out graphics rendering info, leave only semantic info
 das2json pong.drawio
-python main.py "pong.glsl" ${sourcecode} pong.drawio.json
-stty sane
-echo -n 'fini '
-
+# 2. run the diagram by running main.py with 2 args (an arg (empty for this simple test), tab name of top diagram) followed by all diagrams converted to JSON
+python main.py "" main pong.drawio.json
 
 ############################
+
+
+

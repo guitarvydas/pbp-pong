@@ -368,6 +368,8 @@
   },
   "active": "ee861da341b29b7c",
   "lastOpenFiles": [
+    "attic/claudeoptimize.md",
+    "attic/#claudeoptimize.md#",
     "pong.drawio.json",
     "#@makec#",
     "ballhit.py",
@@ -377,8 +379,6 @@
     "pbp/output_end",
     "pbp/fanout",
     "pbp/include",
-    "pbp/check-for-html",
-    "pbp/output_to_port",
     "pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/README.process_json.md",
     "pbp/dtree/README.md",

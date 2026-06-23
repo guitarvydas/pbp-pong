@@ -1,41 +1,26 @@
 import sys
 import kernel0d as zd
 
-import io
-import termios
-import tty
+try:
 
-import keyboard_receiver
-import pong
-import cdecode
+    # initialize palette of parts and environment for the kernel (names of Container parts on diagram, along with command line arg)
+    [palette, env] = zd.initialize_component_palette_from_files (sys.argv[1], sys.argv[4:])
+    # begin running the part
+    part = zd.start_bare (arg=sys.argv[2], Part_name=sys.argv[3], palette=palette, env=env)
 
-###
-fd = None
-old_settings = None
+    # inject False on both input ports A and B
+    part.inject ("A", "") # empty string payload is converted to False
+    part.inject ("B", "") # empty string payload is converted to False
 
-def keyboard_init ():
-    global fd, old_settings
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    tty.setraw(fd)
+    # show output queue of part as JSON array of mevents (key/value pairs in order that they were generated)
+    part.finalize ()
 
-def keyboard_reset ():
-    global fd, old_settings
-    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-
-###
-
-keyboard_init ()
-[palette, env] = zd.initialize_from_files (sys.argv[3:])
-keyboard_receiver.install (palette)
-pong.install (palette)
-cdecode.install (palette)
-top = zd.start_bare (part_name=sys.argv[2], palette=palette, env=env)
-zd.inject (top, "", sys.argv[1])
-keyboard_reset ()
-zd.finalize (top)
-
-
-
-
+except Exception as e:
+    _, _, tb = sys.exc_info()
+    while tb.tb_next:
+        tb = tb.tb_next
+    frame = tb.tb_frame
+    filename = frame.f_code.co_filename
+    line_number = tb.tb_lineno
+    print(f"\n\n\n*** {type(e).__name__} at {filename}:{line_number}: {e}", file=sys.stderr)
 

@@ -583,19 +583,20 @@
         <mxCell id="RIJMUg-LJt6V8FD3d8Ry-0" parent="w4Ni3fDW1iel-VH2bCc_-1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontColor=#000000;darkOpacity=0.05;fillColor=#FFF9B2;strokeColor=none;fillStyle=solid;direction=west;gradientDirection=north;gradientColor=#FFF2A1;shadow=1;size=20;autosizeText=1;fontSize=17;" value="This is a test of the ball hit tester. Every time a &quot;bump&quot; mevent is received, the logic increments the X position of the ball, in the correct direction and runs the hit tester." vertex="1">
           <mxGeometry height="155" width="225" x="45" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="RIJMUg-LJt6V8FD3d8Ry-1" parent="w4Ni3fDW1iel-VH2bCc_-1" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;container=1;recursiveResize=0;verticalAlign=bottom;arcSize=6;fontStyle=0;autosize=0;points=[];absoluteArcSize=1;shadow=0;strokeColor=#d79b00;fillColor=#FFFFFF;fontFamily=Helvetica;fontSize=11;dashed=1;opacity=30;align=right;textOpacity=30;gradientColor=#006666;fontColor=default;" value=":?A" vertex="1">
-          <mxGeometry height="50" width="40" x="650" y="55" as="geometry">
-            <mxRectangle height="26" width="99" x="-98" y="-1230" as="alternateBounds" />
+        <mxCell id="RIJMUg-LJt6V8FD3d8Ry-3" edge="1" parent="w4Ni3fDW1iel-VH2bCc_-1" source="w4Ni3fDW1iel-VH2bCc_-21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;curved=0;" target="w_sxcFpFt81Qm6xiheFt-0">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="595" y="163" />
+              <mxPoint x="595" y="100" />
+            </Array>
+            <mxPoint x="638" y="80" as="targetPoint" />
           </mxGeometry>
-        </mxCell>
-        <mxCell id="RIJMUg-LJt6V8FD3d8Ry-2" parent="RIJMUg-LJt6V8FD3d8Ry-1" style="rounded=1;whiteSpace=wrap;html=1;sketch=0;points=[[0,0.5,0,0,0],[1,0.5,0,0,0]];arcSize=50;fontFamily=Helvetica;fontSize=11;fontColor=default;dashed=1;textOpacity=50;opacity=30;fontStyle=0" value="" vertex="1">
-          <mxGeometry height="25" width="39.25" x="-12" y="12.5" as="geometry" />
-        </mxCell>
-        <mxCell id="RIJMUg-LJt6V8FD3d8Ry-3" edge="1" parent="w4Ni3fDW1iel-VH2bCc_-1" source="w4Ni3fDW1iel-VH2bCc_-21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;curved=0;" target="RIJMUg-LJt6V8FD3d8Ry-2">
-          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="RIJMUg-LJt6V8FD3d8Ry-4" parent="w4Ni3fDW1iel-VH2bCc_-1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#ffe6cc;strokeColor=#d79b00;fillStyle=solid;direction=west;gradientDirection=north;shadow=1;size=20;autosizeText=1;fontFamily=Helvetica;fontSize=18;labelBackgroundColor=none;" value="sanity test 1 - just see that this version reinitializes the GUI then sends one &quot;more&quot; mevent" vertex="1">
           <mxGeometry height="160" width="160" x="340" y="435" as="geometry" />
+        </mxCell>
+        <mxCell id="w_sxcFpFt81Qm6xiheFt-0" parent="w4Ni3fDW1iel-VH2bCc_-1" style="rhombus;whiteSpace=wrap;html=1;rounded=1;fontStyle=1;glass=0;sketch=0;fontSize=12;points=[[0,0.5,0,0,0],[0.5,0,0,0,0],[0.5,1,0,0,0],[1,0.5,0,0,0]];shadow=1;fontFamily=Helvetica;fontColor=default;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="815" y="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
