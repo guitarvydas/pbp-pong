@@ -8,8 +8,6 @@
 #  $TARGET
 #  $PYTHONPATH
 
-export PBPSTEPPING="1"
-
 node ./pbp/das/das2json.mjs pong.drawio
 python main.py '' main pong.drawio.json
 

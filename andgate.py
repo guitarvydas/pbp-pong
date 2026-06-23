@@ -16,7 +16,6 @@ class AndGate:
         zd.send (eh, outport, bool_to_str (self.out), cause)
         
 def handler (eh, mev):
-    print (f'handler {mev.port}', file=sys.stderr)
     self = eh.instance_data
     if mev.port == "A":
         self.inA = bool (mev.datum.v)
