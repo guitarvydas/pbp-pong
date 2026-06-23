@@ -1,0 +1,63 @@
+[
+  {
+    "name": "main",
+    "children": [
+      {
+        "name": "AndGate",
+        "id": 6
+      }
+    ],
+    "connections": [
+      {
+        "dir": 0,
+        "source_port": "B",
+        "target_port": "B",
+        "target": {
+          "name": "AndGate",
+          "id": 6
+        }
+      },
+      {
+        "dir": 0,
+        "source_port": "A",
+        "target_port": "A",
+        "target": {
+          "name": "AndGate",
+          "id": 6
+        }
+      },
+      {
+        "dir": 1,
+        "source_port": "B",
+        "target_port": "B",
+        "source": {
+          "name": "AndGate",
+          "id": 6
+        },
+        "target": {
+          "name": "AndGate",
+          "id": 6
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "✗",
+        "target_port": "✗",
+        "source": {
+          "name": "AndGate",
+          "id": 6
+        }
+      },
+      {
+        "dir": 2,
+        "source_port": "",
+        "target_port": "",
+        "source": {
+          "name": "AndGate",
+          "id": 6
+        }
+      }
+    ],
+    "file": "pong.drawio"
+  }
+]

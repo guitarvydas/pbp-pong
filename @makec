@@ -8,10 +8,10 @@
 #  $TARGET
 #  $PYTHONPATH
 
-# 1. convert diagram to JSON, cull out graphics rendering info, leave only semantic info
-das2json pong.drawio
-# 2. run the diagram by running main.py with 2 args (an arg (empty for this simple test), tab name of top diagram) followed by all diagrams converted to JSON
-python main.py "" main pong.drawio.json
+export PBPSTEPPING="1"
+
+node ./pbp/das/das2json.mjs pong.drawio
+python main.py '' main pong.drawio.json
 
 ############################
 
