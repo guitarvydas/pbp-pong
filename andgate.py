@@ -11,19 +11,19 @@ class AndGate:
         self.inB = False
         self.out = False
         
-    def eval (self, outport, cause):
+    def eval (self, eh, outport, cause):
         self.out = self.inA & self.inB
-        zd.send (self, outport, bool_to_str (self.out), cause)
+        zd.send (eh, outport, bool_to_str (self.out), cause)
         
 def handler (eh, mev):
     print (f'handler {mev.port}', file=sys.stderr)
     self = eh.instance_data
     if mev.port == "A":
         self.inA = bool (mev.datum.v)
-        self.eval ("", mev)
+        self.eval (eh, "", mev)
     elif mev.port == "B":
         self.inB = bool (mev.datum.v)
-        self.eval ("", mev)
+        self.eval (eh, "", mev)
 
 def reset_handler (eh):
     eh.instance_data.reset ()
