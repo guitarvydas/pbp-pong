@@ -195,12 +195,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "misc/prompt.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "prompt"
             }
           }
         ],
@@ -368,6 +368,10 @@
   },
   "active": "ee861da341b29b7c",
   "lastOpenFiles": [
+    "ai/pong_sections_3.drawio",
+    "ai/pong_sections_2.drawio",
+    "ai/pong_sections_1.drawio",
+    "README.md",
     "attic/claudeoptimize.md",
     "attic/#claudeoptimize.md#",
     "pong.drawio.json",
@@ -377,8 +381,6 @@
     "pbp/pbplog",
     "pbp/checkfailure",
     "pbp/output_end",
-    "pbp/fanout",
-    "pbp/include",
     "pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/README.process_json.md",
     "pbp/dtree/README.md",
@@ -407,8 +409,6 @@
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/api.md",
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/api.md",
-    "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/dtree/README.process_json.md",
-    "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/dtree/README.md",
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/pbp/dtree/pbp/dtree/pbp/dtree/pbp/sm/pbp/pbp-lifecycle.drawio.png",

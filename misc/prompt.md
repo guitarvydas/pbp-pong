@@ -51,3 +51,64 @@ Take a look, and if the style's right I'll trace section 2 (the horizontal count
 ---
 
 Each wire has exactly one beginning and one end. Fanout and tapping must be handled by creating separate wires that originate at the same output port and end at different ports. Likewise, fanin must be represented with unique wires.
+
+---
+
+Good constraint, and it matches how you parse draw.io into factbases — every wire must be its own edge cell with exactly one source and one target, no shared polylines or T‑junctions. The model I generated already does this (each `wire()` call emits a discrete edge), but let me make it explicit and also spread the fanout so overlapping route segments don't *read* as a single tapped wire. I'll defer all wires and give each its own exit/entry point.Small bug — my refactored `Page` lost its `add` helper. Let me restore it and rebuild.Done. Every wire is now a discrete edge with exactly one source and one target — the integrity check confirms all 25 edges have precisely one of each, with no shared polylines or junctions.
+
+Fanout and fanin are handled exactly as you specified:
+- The first inverter's output fans out to **4 separate wires** (to the coupling cap, its bias resistor, and both NAND inputs), each originating at that one output port and ending at a distinct input.
+- The GND sink receives **5 unique wires** (the two filter caps, the regulator's GND, and harness returns J‑7/J‑12) — each its own edge, no tapping.
+
+I also gave each wire its own exit/entry point along the pins, so overlapping route segments no longer read as a single branched wire. That keeps the visual in step with the model, and the XML stays clean for a factbase parse — each edge is one `source`→`target` fact.
+
+Style and wire conventions are now locked. Whenever you're ready, I'll trace section 2 (the horizontal counter chain off CLOCK, plus the H‑sync/blanking decode) onto page 2 of the same file, following these same rules.
+
+---
+Proceeding with section 2 — the horizontal counter chain off CLOCK and the H‑sync/blanking decode. Let me trace it carefully from the high‑res scan, starting with the counter chain just downstream of the clock.This is the counter chain: CLOCK into a divider, then 7493s producing the 8H/16H/32H/64H/128H taps, a flip‑flop generating 256H, and H RESET running across the top. The right side and the sync/blank decode are still below — let me grab those before I commit wiring, so I trace rather than guess.I can now see the H RESET decode (a 7430 8‑input NAND, F7, gating selected H taps into a reset flip‑flop) and the 256H flip‑flop, plus confirmation that the far‑right 7493 is actually the _vertical_ counter (2V/4V/8V taps) — so that belongs to a later page, not this one. Let me grab the sync/blank latch region to finish the decode before I build.I've now traced the whole horizontal block. The decode is clear: 7410 G5 NANDs 64H·16H (pin 4 tied high), feeding a cross‑coupled 7400 H5 NAND latch that produces H BLANKING (set by the decode, reset by H RESET), and a third H5 gate NANDs that against 32H to make H SYNC. H RESET itself comes from the 7430 F7 eight‑input NAND decoding the line‑end count into a reset flip‑flop. The "HORIZONTAL POSITION" label and "FROM HIT DETECTOR" mark the section‑3 boundary, so I'll stop there.
+
+Let me build page 2. A few tap‑level details on a 1972 scan are at the edge of legibility, so I'll trace the structure faithfully and flag the specific spots to verify rather than inventing them.Page 2 is in the same file now (`pong_sections.drawio`), following all the locked conventions — rounded boxes/pins, longer overlapping pins, arrows into inputs, white in / blue out, and every fanout/fanin as its own discrete wire (72 edges total across both pages, all verified one‑source/one‑target).
+
+What's on page 2, traced from the scan:
+
+- **Counter chain:** CLOCK → F6 (÷2, gives 1H) → 7493 F8 (÷16) → 7493 E8 (÷16) → 256H flip‑flop, producing the 1H…256H taps. The QA→CKB ÷16 jumpers are shown as internal wires.
+- **H BLANK decode:** 7410 G5 NANDs 64H·16H (pin 4 strapped to +5) into a cross‑coupled 7400 H5 NAND latch — set by the decode, reset by H RESET — producing H BLANKING.
+- **H SYNC:** a third H5 gate NANDs the blank signal against 32H.
+- **H RESET:** 7430 F7 eight‑input NAND decodes the line‑end count into the E7 reset flip‑flop, whose output fans back out (separate wires) to both 7493 resets, the 256H FF, F6, and the blank latch.
+- **Forward outputs:** the 1H…256H tap bus (→ page 3 horizontal position), plus H BLANK / H BLANKING / H SYNC tags (→ later pages).
+
+I put a **yellow "VERIFY" note** right on the page listing the four spots where the 1972 scan is at the edge of legibility and I inferred rather than read cleanly: the exact 7493 QA–QD↔tap mapping, the specific 8 taps feeding the 7430 reset decode, the F6/E7 flip‑flop pin roles, and which latch output is H BLANK vs H BLANKING. Everything structural (the parts, the cascade order, the decode topology, the tap names feeding each gate) I'm confident in; those four are the details worth checking against your own print before you build on them.
+
+If that looks right, section 3 (Horizontal Position — the ball‑H counter fed from the hit detector, which the "HORIZONTAL POSITION / FROM HIT DETECTOR" boundary marks) is next on page 3.
+
+---
+
+wires should use a "rounded" style instead of a "sharp" style
+
+---
+
+Easy change — I'll switch the edges to rounded corners (`rounded=1`) and regenerate both pages.Done — all 72 wires across both pages now use the rounded corner style; no sharp‑cornered edges remain. Everything else is unchanged, so the conventions still hold (arrows into inputs, white in / blue out, one discrete edge per wire).
+
+Whenever you're ready, section 3 (Horizontal Position) goes on page 3.
+
+---
+
+remind me: a CRT is essentially a grid of dots, lit up by a electron beam that scans from left to right top to bottom. In NTSC, how many columns are there and how many rows?
+
+---
+
+Happy to. The two axes are quite different in nature, which is the key thing:
+
+**Rows (vertical) — a real, fixed count.** NTSC is **525 scan lines per frame**, drawn interlaced as two fields of 262.5 lines each. Not all of those are visible: roughly **480–486 are "active"** picture lines, and the remaining ~40 are consumed by the vertical blanking interval while the beam retraces from bottom back to top. So "rows" ≈ 525 total, ~480 you actually see. The vertical (line) rate is 15,734 Hz for color NTSC, and the field rate is 59.94 Hz.
+
+**Columns (horizontal) — not a fixed count.** Along a line the beam sweeps _continuously_; there are no native columns. The line period is ~63.5 µs (of which ~52.6 µs is active video before horizontal blanking/retrace). How many distinct dots you can place across that sweep is set by whatever dot clock you choose, capped by NTSC's ~4.2 MHz luma bandwidth (~440 distinguishable TV‑lines of real horizontal detail). When people quote a number, it's a digitization convention — e.g. **640 columns** to get square pixels against 480 active lines (the familiar "640×480"), or 720×486 in digital‑video land.
+
+So: vertical is genuinely a grid (525/~480), horizontal is analog and only becomes a "column count" once you pick a clock.
+
+This is exactly what the counters we've been tracing do, by the way. The **horizontal counter** doesn't count NTSC columns — it counts master‑clock ticks per line and H RESET fires at the line‑end count to define the line length (your chosen horizontal "resolution"). The **vertical counter** counts lines per field and V RESET fires to define the field length. Pong picks its own modest counts rather than filling full NTSC, and typically runs progressive (~262 lines/field, non‑interlaced) rather than the full 525‑line interlace.
+
+---
+
+I would prefer that wires do not cross over logic elements. Wires need to be routed through spaces outside of parts.
+
+---
