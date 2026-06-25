@@ -112,3 +112,9 @@ This is exactly what the counters we've been tracing do, by the way. The **horiz
 I would prefer that wires do not cross over logic elements. Wires need to be routed through spaces outside of parts.
 
 ---
+
+That's a routing requirement — wires must go around part bodies through the open channels, not straight through them. draw.io doesn't auto‑avoid obstacles on its own, so I'll add a proper obstacle‑avoiding orthogonal router to the builder: it blocks out every part's bounding box and runs an A* search (with a turn penalty for clean routes) through the free space, emitting the path as edge waypoints. This is reusable for every remaining section. Let me build it and verify no wire crosses a part.The reminder is about copyright; I'm working from the schematic you uploaded, so that's fine. Let me rebuild both pages with the router and add an automated check that no wire segment passes through any non‑endpoint part.Zero part‑crossing violations across all 72 wires on both pages — the router now blocks out every part's bounding box and runs A* through the open channels, so wires go around boxes instead of through them. Corners are rounded, and each wire is still a single discrete edge with its arrowhead landing on the input. The check is automated, so it'll keep every future section clean too.Both pages are updated in `pong_sections.drawio` with the new routing. Open page 2 and you'll see the counter‑chain and decode wires now weaving through the gaps between boxes rather than overlapping them.
+
+When you're ready, section 3 (Horizontal Position — the ball‑H counter fed from the hit detector) goes on page 3 with all the same conventions baked in.
+
+---

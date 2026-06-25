@@ -368,6 +368,7 @@
   },
   "active": "ee861da341b29b7c",
   "lastOpenFiles": [
+    "ai/pong_sections_4.drawio",
     "ai/pong_sections_3.drawio",
     "ai/pong_sections_2.drawio",
     "ai/pong_sections_1.drawio",
@@ -380,7 +381,6 @@
     "pbp/errgrep",
     "pbp/pbplog",
     "pbp/checkfailure",
-    "pbp/output_end",
     "pbp/pbp-lifecycle.drawio.png",
     "pbp/dtree/README.process_json.md",
     "pbp/dtree/README.md",
