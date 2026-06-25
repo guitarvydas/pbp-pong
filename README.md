@@ -1,5 +1,5 @@
 # Pong in PBP Cloning Original Atari Schematic
-	![latest top-level diagram](./misc/pong.drawio.png)
+![latest top-level diagram](misc/pong.drawio.png)
 
 # usage:
 `./@make`
