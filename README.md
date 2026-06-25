@@ -1,4 +1,5 @@
 # Pong in PBP Cloning Original Atari Schematic
+	![latest top-level diagram](./misc/pong.drawio.png)
 
 # usage:
 `./@make`
@@ -17,3 +18,5 @@ For the initial test, we are sending False to both inputs and expect one False o
 In later tests, we will send 4 combinations of inputs and expect to see 4 output mevents.
 
 
+# Further Reading
+[Thinking About the Game of Pong](https://programmingsimplicity.substack.com/p/2024-07-17-thinking-about-the-game)
